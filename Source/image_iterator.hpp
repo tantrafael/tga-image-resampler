@@ -1,0 +1,44 @@
+#ifndef image_iterator_hpp
+#define image_iterator_hpp
+
+#include "header.hpp"
+#include "image.hpp"
+
+namespace tga
+{
+	class ImageIterator
+	{
+	public:
+		ImageIterator();
+		ImageIterator(const Header& header, Image& image);
+
+		// Put a pixel value into the image and advance the iterator.
+		template<typename T>
+		bool putPixel(const T value)
+		{
+		  *((T*)m_ptr) = value;
+		  return advance();
+		}
+
+		// Get one pixel from the image and advance the iterator.
+		template<typename T>
+		T getPixel()
+		{
+			T value = *((T*)m_ptr);
+			advance();
+			return value;
+		}
+
+	private:
+		bool advance();
+		void calcPtr();
+
+		Image* m_image;
+		int m_x, m_y;
+		int m_w, m_h;
+		int m_dx, m_dy;
+		uint8_t* m_ptr;
+	};
+}
+
+#endif /* image_iterator_hpp */
