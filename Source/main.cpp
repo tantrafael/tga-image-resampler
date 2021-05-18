@@ -1,6 +1,7 @@
 //#include <iostream>
 #include <vector>
 
+#include "stdio_file_interface.hpp"
 #include "decoder.hpp"
 #include "header.hpp"
 #include "image.hpp"
@@ -11,6 +12,7 @@ int main(int argc, const char * argv[]) {
 	//std::string sourceFilePath{ "/Users/raffa/Work/Star Stable/Sample images/football_seal.tga" };
 	//std::string sourceFilePath{ "/Users/raffa/Work/Star Stable/resample.tga" };
 
+	/*
 	//std::ifstream sourceImageFile{ sourceImageFilePath, std::ifstream::binary|std::ifstream::ate };
 	std::ifstream sourceFile{ sourceFilePath, std::ifstream::binary };
 
@@ -19,8 +21,15 @@ int main(int argc, const char * argv[]) {
 		std::cerr << "Source file could not be opened for reading.\n";
 		return 1;
 	}
+	*/
+
+	//FILE* f = std::fopen(argv[1], "rb");
+	//FILE* f = std::fopen((char*) &sourceFilePath, "rb");
+	FILE* f = std::fopen("/Users/raffa/Work/Star Stable/Sample images/sample_640×426.tga", "rb");
+	tga::StdioFileInterface sourceFile{ f };
 
 	//tga::Decoder decoder{ sourceImageFile };
+	//tga::Decoder decoder{ &sourceFile };
 	tga::Decoder decoder{ &sourceFile };
 	tga::Header header{};
 

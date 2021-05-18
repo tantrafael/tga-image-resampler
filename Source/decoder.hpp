@@ -4,8 +4,10 @@
 #include <iostream>
 #include <fstream>
 
+#include "color.hpp"
 #include "header.hpp"
 #include "image.hpp"
+#include "file_interface.hpp"
 #include "image_iterator.hpp"
 
 namespace tga
@@ -14,7 +16,8 @@ namespace tga
 	{
 	public:
 		//Decoder(std::ifstream& file);
-		Decoder(std::ifstream* file);
+		//Decoder(std::ifstream* file);
+		Decoder(FileInterface* file);
 
 		bool readHeader(Header& header);
 		//bool readImage(const Header& header, Image& image, Delegate* delegate = nullptr);
@@ -26,7 +29,14 @@ namespace tga
 		template<typename T>
 		bool readUncompressedData(const int w, uint32_t (Decoder::*readPixel)());
 
-		std::ifstream* m_file;
+		uint8_t read8();
+		uint16_t read16();
+
+		color read8Color() { return (color)read8(); }
+		color read24AsRgb();
+
+		//std::ifstream* m_file;
+		FileInterface* m_file;
 		ImageIterator m_iterator;
 	};
 }

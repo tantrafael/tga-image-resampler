@@ -25,6 +25,7 @@ namespace tga
 		std::string imageId;
 		ColorMap colorMap;
 
+		// TODO: Move implementations to header.cpp.
 		bool leftToRight() const
 		{
 			return !(imageDescriptor & 0x10);

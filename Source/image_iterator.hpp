@@ -16,14 +16,16 @@ namespace tga
 		template<typename T>
 		bool putPixel(const T value)
 		{
-		  *((T*)m_ptr) = value;
-		  return advance();
+			// TODO: Clean up type cast.
+			*((T*)m_ptr) = value;
+			return advance();
 		}
 
 		// Get one pixel from the image and advance the iterator.
 		template<typename T>
 		T getPixel()
 		{
+			// TODO: Clean up type cast.
 			T value = *((T*)m_ptr);
 			advance();
 			return value;
