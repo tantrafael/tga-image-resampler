@@ -2,7 +2,6 @@
 #define stdio_file_interface_hpp
 
 #include <cstdio>
-#include <stdint.h>
 
 #include "file_interface.hpp"
 

@@ -4,10 +4,10 @@
 #include <iostream>
 #include <fstream>
 
-#include "color.hpp"
+#include "file_interface.hpp"
 #include "header.hpp"
 #include "image.hpp"
-#include "file_interface.hpp"
+#include "color.hpp"
 #include "image_iterator.hpp"
 
 namespace tga
@@ -32,10 +32,8 @@ namespace tga
 		uint8_t read8();
 		uint16_t read16();
 
-		color read8Color() { return (color)read8(); }
 		color read24AsRgb();
 
-		//std::ifstream* m_file;
 		FileInterface* m_file;
 		ImageIterator m_iterator;
 	};

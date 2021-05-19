@@ -1,6 +1,9 @@
 #ifndef file_interface_hpp
 #define file_interface_hpp
 
+#include <cstddef>
+#include <cinttypes>
+
 namespace tga
 {
 	class FileInterface

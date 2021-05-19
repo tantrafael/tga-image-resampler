@@ -11,6 +11,7 @@ namespace tga
 	public:
 		ImageIterator();
 		ImageIterator(const Header& header, Image& image);
+		// TODO: Consider constructor with const image for encoding.
 
 		// Put a pixel value into the image and advance the iterator.
 		template<typename T>

@@ -3,62 +3,49 @@
 
 #include "stdio_file_interface.hpp"
 #include "decoder.hpp"
+#include "encoder.hpp"
 #include "header.hpp"
 #include "image.hpp"
 
 int main(int argc, const char * argv[]) {
-	std::string sourceFilePath{ "/Users/raffa/Work/Star Stable/Sample images/sample_640×426.tga" };
-	//std::string sourceFilePath{ "/Users/raffa/Work/Star Stable/Sample images/shuttle.tga" };
-	//std::string sourceFilePath{ "/Users/raffa/Work/Star Stable/Sample images/football_seal.tga" };
-	//std::string sourceFilePath{ "/Users/raffa/Work/Star Stable/resample.tga" };
+	// "sample_640×426.tga"
+	// "shuttle.tga"
+	// "football_seal.tga"
 
-	/*
-	//std::ifstream sourceImageFile{ sourceImageFilePath, std::ifstream::binary|std::ifstream::ate };
-	std::ifstream sourceFile{ sourceFilePath, std::ifstream::binary };
+	// Read source image file.
+	auto sourceFilePath{ "/Users/raffa/Work/Star Stable/Sample images/sample_640×426.tga" };
 
-	if (!sourceFile)
-	{
-		std::cerr << "Source file could not be opened for reading.\n";
-		return 1;
-	}
-	*/
+	FILE* f0 = std::fopen(sourceFilePath, "rb");
+	tga::StdioFileInterface sourceFile{ f0 };
 
-	//FILE* f = std::fopen(argv[1], "rb");
-	//FILE* f = std::fopen((char*) &sourceFilePath, "rb");
-	FILE* f = std::fopen("/Users/raffa/Work/Star Stable/Sample images/sample_640×426.tga", "rb");
-	tga::StdioFileInterface sourceFile{ f };
-
-	//tga::Decoder decoder{ sourceImageFile };
-	//tga::Decoder decoder{ &sourceFile };
 	tga::Decoder decoder{ &sourceFile };
 	tga::Header header{};
 
 	decoder.readHeader(header);
 
-	tga::Image image;
+	tga::Image image{};
 	image.pixelByteDepth = header.pixelByteDepth();
 	image.rowStride = header.width * header.pixelByteDepth();
 
-	std::vector<uint8_t> buffer(image.rowStride * header.height);
-	//image.pixels = &buffer[0];
+	const auto bufferSize{ image.rowStride * header.height };
+	std::vector<uint8_t> buffer(bufferSize);
 	image.pixels = buffer.data();
 
 	decoder.readImage(header, image);
 
-	/*
+	std::fclose(f0);
+
 	// Write target image file.
-	std::ofstream targetImageFile{ targetImageFilePath, std::ifstream::binary };
+	auto targetFilePath{ "/Users/raffa/Work/Star Stable/resample.tga" };
+	
+	FILE* f1 = std::fopen(targetFilePath, "wb");
+	tga::StdioFileInterface targetFile{ f1 };
 
-	if (!targetImageFile)
-	{
-		std::cerr << "Target image file could not be opened for writing.\n";
-		return 1;
-	}
+	tga::Encoder encoder{ &sourceFile };
+	encoder.writeHeader(header);
+	encoder.writeImage(header, image);
 
-	targetImageFile.write(sourceImageBuffer.data(), sourceImageFileSize);
-
-	std::cout << "Target image file written.\n";
-	*/
+	std::fclose(f1);
 
 	return 0;
 }
