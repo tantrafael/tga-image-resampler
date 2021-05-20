@@ -3,6 +3,7 @@
 
 #include "stdio_file_interface.hpp"
 #include "decoder.hpp"
+#include "resampler.hpp"
 #include "encoder.hpp"
 #include "header.hpp"
 #include "image.hpp"
@@ -14,36 +15,37 @@ int main(int argc, const char * argv[]) {
 
 	// Read source image file.
 	auto sourceFilePath{ "/Users/raffa/Work/Star Stable/Sample images/sample_640×426.tga" };
-
 	FILE* f0 = std::fopen(sourceFilePath, "rb");
 	tga::StdioFileInterface sourceFile{ f0 };
 
 	tga::Decoder decoder{ &sourceFile };
-	tga::Header header{};
+	tga::Header sourceHeader{};
+	decoder.readHeader(sourceHeader);
 
-	decoder.readHeader(header);
-
-	tga::Image image{};
-	image.pixelByteDepth = header.pixelByteDepth();
-	image.rowStride = header.width * header.pixelByteDepth();
-
-	const auto bufferSize{ image.rowStride * header.height };
+	tga::Image sourceImage{};
+	sourceImage.pixelByteDepth = sourceHeader.pixelByteDepth();
+	sourceImage.rowStride = sourceHeader.width * sourceHeader.pixelByteDepth();
+	const auto bufferSize{ sourceImage.rowStride * sourceHeader.height };
 	std::vector<uint8_t> buffer(bufferSize);
-	image.pixels = buffer.data();
-
-	decoder.readImage(header, image);
+	sourceImage.pixels = buffer.data();
+	decoder.readImage(sourceHeader, sourceImage);
 
 	std::fclose(f0);
 
+	// Resample image.
+	tga::Header targetHeader{};
+	tga::Image targetImage{};
+	tga::Resampler resampler{};
+	resampler.resample(sourceHeader, sourceImage, targetHeader, targetImage);
+
 	// Write target image file.
 	auto targetFilePath{ "/Users/raffa/Work/Star Stable/resample.tga" };
-	
 	FILE* f1 = std::fopen(targetFilePath, "wb");
 	tga::StdioFileInterface targetFile{ f1 };
 
-	tga::Encoder encoder{ &sourceFile };
-	encoder.writeHeader(header);
-	encoder.writeImage(header, image);
+	tga::Encoder encoder{ &targetFile };
+	encoder.writeHeader(targetHeader);
+	encoder.writeImage(targetHeader, targetImage);
 
 	std::fclose(f1);
 
