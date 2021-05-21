@@ -8,7 +8,8 @@ namespace tga
 	bool Resampler::resample(const Header& sourceHeader,
 							 const Image& sourceImage,
 							 Header& targetHeader,
-							 Image& targetImage)
+							 Image& targetImage,
+							 const unsigned int bufferSize)
 	{
 		targetHeader.idLength = sourceHeader.idLength;
 		targetHeader.colorMapType = sourceHeader.colorMapType;
@@ -25,7 +26,9 @@ namespace tga
 		targetHeader.imageId = sourceHeader.imageId;
 		targetHeader.colorMap = sourceHeader.colorMap;
 
-		targetImage.pixels = sourceImage.pixels;
+		//targetImage.pixels = sourceImage.pixels;
+		memcpy(targetImage.pixels, sourceImage.pixels, bufferSize);
+
 		targetImage.pixelByteDepth = sourceImage.pixelByteDepth;
 		targetImage.rowStride = sourceImage.rowStride;
 

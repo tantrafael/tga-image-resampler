@@ -11,10 +11,23 @@ namespace tga
 	public:
 		Resampler();
 
+
 		bool resample(const Header& sourceHeader,
 					  const Image& sourceImage,
 					  Header& targetHeader,
-					  Image& targetImage);
+					  Image& targetImage,
+					  const unsigned int bufferSize);
+
+		
+		/*
+		bool resample(const Header& sourceHeader,
+					  const Image& sourceImage,
+					  const uint8_t width,
+					  const uint8_t height,
+					  Header& targetHeader,
+					  Image& targetImage,
+					  const uint8_t bufferSize);
+		*/
 	};
 }
 
