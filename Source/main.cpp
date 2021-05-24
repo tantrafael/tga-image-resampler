@@ -25,7 +25,6 @@ int main(int argc, const char * argv[]) {
 	decoder.readHeader(sourceHeader);
 	sourceImage.pixelByteDepth = sourceHeader.pixelByteDepth();
 	sourceImage.rowStride = sourceHeader.width * sourceHeader.pixelByteDepth();
-	//const auto bufferSize{ sourceImage.rowStride * sourceHeader.height };
 	const unsigned int sourceBufferSize{ sourceImage.rowStride * sourceHeader.height };
 	std::vector<uint8_t> sourceBuffer(sourceBufferSize);
 	sourceImage.pixels = sourceBuffer.data();
@@ -38,15 +37,11 @@ int main(int argc, const char * argv[]) {
 	tga::Image targetImage{};
 	tga::Resampler resampler{};
 
-	//targetHeader.width = sourceHeader.width;
-	//targetHeader.height = sourceHeader.height;
-	targetHeader.width = sourceHeader.width / 2;
-	targetHeader.height = sourceHeader.height / 2;
+	targetHeader.width = 800;
+	targetHeader.height = 600;
 	targetImage.pixelByteDepth = sourceImage.pixelByteDepth;
 	targetImage.rowStride = targetHeader.width * targetImage.pixelByteDepth;
-	//targetImage.rowStride = sourceImage.rowStride;
 	const unsigned int targetBufferSize{ targetImage.rowStride * targetHeader.height };
-	//std::vector<uint8_t> targetBuffer(sourceBufferSize);
 	std::vector<uint8_t> targetBuffer(targetBufferSize);
 	targetImage.pixels = targetBuffer.data();
 	resampler.resample(sourceHeader, sourceImage, targetHeader, targetImage);

@@ -18,51 +18,22 @@ namespace tga
 		targetHeader.colorMapBitDepth = sourceHeader.colorMapBitDepth;
 		targetHeader.xOrigin = sourceHeader.xOrigin;
 		targetHeader.yOrigin = sourceHeader.yOrigin;
-		//targetHeader.width = sourceHeader.width;
-		//targetHeader.height = sourceHeader.height;
-		targetHeader.width = sourceHeader.width / 2;
-		targetHeader.height = sourceHeader.height / 2;
 		targetHeader.pixelBitDepth = sourceHeader.pixelBitDepth;
 		targetHeader.imageDescriptor = sourceHeader.imageDescriptor;
 		targetHeader.imageId = sourceHeader.imageId;
 		targetHeader.colorMap = sourceHeader.colorMap;
 
-		//memcpy(targetImage.pixels, sourceImage.pixels, bufferSize);
 		targetImage.pixelByteDepth = sourceImage.pixelByteDepth;
-		//targetImage.rowStride = sourceImage.rowStride;
-		targetImage.rowStride = targetHeader.width * targetImage.pixelByteDepth;
+		//targetImage.rowStride = targetHeader.width * targetImage.pixelByteDepth;
 
-
-		//uint32_t src_row_pitch = 3 * sourceHeader.width;
-		//uint32_t dst_row_pitch = 3 * targetHeader.width;
-		//uint32_t buffer_size = dst_row_pitch * sourceHeader.height;
-		//uint32_t dst_image_size = dst_row_pitch * targetHeader.height;
-
-		//uint32_t bufferSize = targetImage.rowStride * sourceHeader.height;
-		//uint32_t bufferSize = targetImage.rowStride * sourceHeader.height;
-		const unsigned int bufferSize{ sourceImage.rowStride * sourceHeader.height };
-		//memcpy(targetImage.pixels, sourceImage.pixels, bufferSize);
-
+		const unsigned int bufferSize{ targetImage.rowStride * sourceHeader.height };
 		std::unique_ptr<uint8_t[]> buffer(new uint8_t[bufferSize]);
 
-		/*
-		for (uint32_t j = 0; j < targetHeader.height; ++j)
-		{
-			for (uint32_t i = 0; i < targetHeader.width; ++i)
-			{
-				//uint8_t* output = BLOCK_OFFSET_RGB24(buffer.get(), targetHeader.width, i, j);
-				//uint8_t* output = BLOCK_OFFSET_RGB24(targetImage.pixels, targetHeader.width, i, j);
-				uint8_t* output = targetImage.pixels + 4 * targetHeader.width * j + 4 * i;
-				output[0] = 255;
-				output[1] = 0;
-				output[2] = 255;
-				output[3] = 0;
-			}
-		}
-		*/
+		float_t h_ratio = static_cast<float_t>(sourceHeader.width - 1)
+						/ static_cast<float_t>(targetHeader.width - 1);
 
-		float_t h_ratio = (sourceHeader.width - 1) / (targetHeader.width - 1);
-		float_t v_ratio = (sourceHeader.height - 1) / (targetHeader.height - 1);
+		float_t v_ratio = static_cast<float_t>(sourceHeader.height - 1)
+						/ static_cast<float_t>(targetHeader.height - 1);
 
 		// Horizontal resampling.
 		for (uint32_t j = 0; j < sourceHeader.height; ++j)
@@ -131,7 +102,7 @@ namespace tga
 
 			float_t x_delta = (float_t)f_x - i_x;
 			float_t distance = fabs(x_delta);
-			float_t weight = bicubic_weight(0.0, 1.0, distance);
+			float_t weight = bicubicWeight(0.0, 1.0, distance);
 			uint8_t* src_pixel = BLOCK_OFFSET_RGB24(sourcePixels, sourceWidth, i_x, i_y);
 
 			/* accumulate bicubic weighted samples from the source. */
@@ -145,15 +116,9 @@ namespace tga
 
 		/* Normalize our bicubic sum back to the valid pixel range. */
 		float_t scale_factor = 1.0f / sample_count;
-		output[0] = clip_range(scale_factor * total_samples[0], 0, 255);
-		output[1] = clip_range(scale_factor * total_samples[1], 0, 255);
-		output[2] = clip_range(scale_factor * total_samples[2], 0, 255);
-
-		/*
-		output[0] = 255;
-		output[1] = 0;
-		output[2] = 0;
-		*/
+		output[0] = clipRange(scale_factor * total_samples[0], 0, 255);
+		output[1] = clipRange(scale_factor * total_samples[1], 0, 255);
+		output[2] = clipRange(scale_factor * total_samples[2], 0, 255);
 
 		return true;
 	}
@@ -180,7 +145,7 @@ namespace tga
 
 			float_t y_delta = (float_t)f_y - i_y;
 			float_t distance = fabs(y_delta);
-			float_t weight = bicubic_weight(0.0, 1.0, distance);
+			float_t weight = bicubicWeight(0.0, 1.0, distance);
 			uint8_t* src_pixel = BLOCK_OFFSET_RGB24(sourcePixels, sourceWidth, i_x, i_y);
 
 			/* accumulate bicubic weighted samples from the source. */
@@ -194,15 +159,9 @@ namespace tga
 
 		/* Normalize our bicubic sum back to the valid pixel range. */
 		float_t scale_factor = 1.0f / sample_count;
-		output[0] = clip_range(scale_factor * total_samples[0], 0, 255);
-		output[1] = clip_range(scale_factor * total_samples[1], 0, 255);
-		output[2] = clip_range(scale_factor * total_samples[2], 0, 255);
-
-		/*
-		output[0] = 0;
-		output[1] = 255;
-		output[2] = 0;
-		*/
+		output[0] = clipRange(scale_factor * total_samples[0], 0, 255);
+		output[1] = clipRange(scale_factor * total_samples[1], 0, 255);
+		output[2] = clipRange(scale_factor * total_samples[2], 0, 255);
 
 		return true;
 	}

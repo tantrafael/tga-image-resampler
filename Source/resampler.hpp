@@ -8,11 +8,12 @@ namespace tga
 {
 	#define BLOCK_OFFSET_RGB24(ptr, width, x, y) (ptr + (4 * width) * y + 4 * x)
 
-	inline int32_t clip_range(int32_t input, int32_t low, int32_t high) {
+	inline int32_t clipRange(int32_t input, int32_t low, int32_t high)
+	{
 		return (input < low) ? low : (input > high) ? high : input;
 	}
 
-inline float_t bicubic_weight(float_t f_b, float_t f_c, float_t distance)
+	inline float_t bicubicWeight(float_t f_b, float_t f_c, float_t distance)
 	{
 		/* Our bicubic function is designed to provide feedback over a radius of 2.0
 		* pixels. */
