@@ -134,35 +134,6 @@ namespace tga
 		// 24: &Decoder::read24AsRgb
 		// 32:
 
-		/*
-		for (int y = 0; y < header.height; ++y)
-		{
-			switch (header.imageType)
-			{
-				case UncompressedColorMapped:
-					//a();
-					break;
-				case UncompressedTrueColor:
-					//bar = foo[header.pixelBitDepth]
-					//readUncompressedData<uint32_t>(header.width, bar)
-					return readRowUncompressedTrueColor(header.width, header.pixelBitDepth);
-					break;
-				case UncompressedGrayscale:
-					//c();
-					break;
-				case RunLengthEncodedColorMapped:
-					//d();
-					break;
-				case RunLengthEncodedTrueColor:
-					//e();
-					break;
-				case RunLengthEncodedGrayscale:
-					//f();
-					break;
-			}
-		}
-		*/
-
 		for (int y = 0; y < header.height; ++y)
 		{
 			readImageRow(header.imageType, header.pixelBitDepth, header.width);
@@ -172,8 +143,8 @@ namespace tga
 	}
 
 	bool Decoder::readImageRow(const ImageType imageType,
-					const uint8_t pixelBitDepth,
-					const uint16_t width)
+							   const uint8_t pixelBitDepth,
+							   const uint16_t width)
 	{
 		switch (imageType)
 		{
@@ -182,23 +153,10 @@ namespace tga
 			case UncompressedColorMapped:
 				break;
 			case UncompressedTrueColor:
-				switch (pixelBitDepth)
+				if (!readImageRowUncompressedTrueColor(pixelBitDepth, width))
 				{
-					case 15:
-					case 16:
-					case 24:
-						if (readUncompressedData<uint32_t>(width, &Decoder::read24AsRgb))
-						{
-							return true;
-						}
-						break;
-					case 32:
-					default:
-						assert(false);
-						break;
+					return false;
 				}
-
-				//return readImageRowUncompressedTrueColor(pixelBitDepth, width);
 				break;
 			case UncompressedGrayscale:
 				break;
@@ -210,20 +168,20 @@ namespace tga
 				break;
 		}
 
-		return false;
+		return true;
 	}
 
 	bool Decoder::readImageRowUncompressedTrueColor(const uint8_t pixelBitDepth,
-													const uint8_t width)
+													const uint16_t width)
 	{
 		switch (pixelBitDepth)
 		{
 			case 15:
 			case 16:
 			case 24:
-				if (readUncompressedData<uint32_t>(width, &Decoder::read24AsRgb))
+				if (!readUncompressedData<uint32_t>(width, &Decoder::read24AsRgb))
 				{
-					return true;
+					return false;
 				}
 				break;
 			case 32:
@@ -232,7 +190,7 @@ namespace tga
 				break;
 		}
 
-		return false;
+		return true;
 	}
 
 	template<typename T>
@@ -242,13 +200,13 @@ namespace tga
 		{
 			T value = static_cast<T>((this->*readPixel)());
 
-			if (m_iterator.putPixel<T>(value))
+			if (!m_iterator.putPixel<T>(value))
 			{
-				return true;
+				return false;
 			}
 		}
 
-		return false;
+		return true;
 	}
 
 	uint8_t Decoder::read8()

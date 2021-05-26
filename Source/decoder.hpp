@@ -31,7 +31,7 @@ namespace tga
 			   const uint16_t width);
 
 		bool readImageRowUncompressedTrueColor(const uint8_t pixelBitDepth,
-											   const uint8_t width);
+											   const uint16_t width);
 
 		template<typename T>
 		bool readUncompressedData(const int w, uint32_t (Decoder::*readPixel)());

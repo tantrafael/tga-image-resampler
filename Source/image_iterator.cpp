@@ -30,13 +30,13 @@ namespace tga
 
 			if ((m_dy < 0 && m_y < 0) || (m_dy > 0 && m_y == m_h))
 			{
-				return true;
+				return false;
 			}
 
 			calcPtr();
 		}
 
-		return false;
+		return true;
 	}
 
 	void ImageIterator::calcPtr()
