@@ -8,8 +8,10 @@ namespace tga
 	bool Resampler::resample(const Header& sourceHeader,
 							 const Image& sourceImage,
 							 Header& targetHeader,
-							 Image& targetImage)
+							 Image& targetImage,
+							 KernelType type)
 	{
+		// Header
 		targetHeader.idLength = sourceHeader.idLength;
 		targetHeader.colorMapType = sourceHeader.colorMapType;
 		targetHeader.imageType = sourceHeader.imageType;
@@ -23,6 +25,7 @@ namespace tga
 		targetHeader.imageId = sourceHeader.imageId;
 		targetHeader.colorMap = sourceHeader.colorMap;
 
+		// Image
 		targetImage.pixelByteDepth = sourceImage.pixelByteDepth;
 		//targetImage.rowStride = targetHeader.width * targetImage.pixelByteDepth;
 
@@ -47,12 +50,25 @@ namespace tga
 				float_t f_x = (float_t) i * h_ratio;
 				float_t f_y = (float_t) j;
 
+				/*
 				sampleKernelBicubicH(sourceImage.pixels,
 									 sourceHeader.width,
 									 sourceHeader.height,
 									 f_x,
 									 f_y,
 									 output);
+				*/
+
+				sampleKernel(sourceImage.pixels,
+							 sourceHeader.width,
+							 sourceHeader.height,
+							 Horizontal,
+							 f_x,
+							 f_y,
+							 type,
+							 h_ratio,
+							 v_ratio,
+							 output);
 			}
 		}
 
@@ -68,16 +84,132 @@ namespace tga
 				float_t f_x = (float_t) i;
 				float_t f_y = (float_t) j * v_ratio;
 
+				/*
 				sampleKernelBicubicV(buffer.get(),
 									 targetHeader.width,
 									 sourceHeader.height,
 									 f_x,
 									 f_y,
 									 output);
+				*/
+
+				sampleKernel(buffer.get(),
+							 targetHeader.width,
+							 sourceHeader.height,
+							 Vertical,
+							 f_x,
+							 f_y,
+							 type,
+							 h_ratio,
+							 v_ratio,
+							 output);
 			}
 		}
 
 		return true;
+	}
+
+	bool Resampler::sampleKernel(uint8_t* sourcePixels,
+								 uint32_t sourceWidth,
+								 uint32_t sourceHeight,
+								 KernelDirection direction,
+								 float_t f_x,
+								 float_t f_y,
+								 KernelType type,
+								 float_t h_ratio,
+								 float_t v_ratio,
+								 uint8_t* output)
+	{
+		switch (type)
+		{
+			case Bicubic:
+				return sampleKernelBicubic(sourcePixels,
+										   sourceWidth,
+										   sourceHeight,
+										   direction,
+										   f_x,
+										   f_y,
+										   0.0f,
+										   1.0f,
+										   output);
+			case Catmull:
+				return sampleKernelBicubic(sourcePixels,
+										   sourceWidth,
+										   sourceHeight,
+										   direction,
+										   f_x,
+										   f_y,
+										   0.0f,
+										   0.5f,
+										   output);
+			case Mitchell:
+				return sampleKernelBicubic(sourcePixels,
+										   sourceWidth,
+										   sourceHeight,
+										   direction,
+										   f_x,
+										   f_y,
+										   1.0f / 3.0f,
+										   1.0f / 3.0f,
+										   output);
+			case Cardinal:
+				return sampleKernelBicubic(sourcePixels,
+										   sourceWidth,
+										   sourceHeight,
+										   direction,
+										   f_x,
+										   f_y,
+										   0.0f,
+										   0.75f,
+										   output);
+			case BSpline:
+				return sampleKernelBicubic(sourcePixels,
+										   sourceWidth,
+										   sourceHeight,
+										   direction,
+										   f_x,
+										   f_y,
+										   1.0f,
+										   0.0f,
+										   output);
+		}
+
+		return false;
+	}
+
+	bool Resampler::sampleKernelBicubic(uint8_t* src,
+										uint32_t src_width,
+										uint32_t src_height,
+										KernelDirection direction,
+										float_t f_x,
+										float_t f_y,
+										float_t coeff_b,
+										float_t coeff_c,
+										uint8_t* output)
+	{
+		switch (direction)
+		{
+			case Horizontal:
+				return sampleKernelBicubicH(src,
+											src_width,
+											src_height,
+											f_x,
+											f_y,
+											coeff_b,
+											coeff_c,
+											output);
+			case Vertical:
+				return sampleKernelBicubicV(src,
+											src_width,
+											src_height,
+											f_x,
+											f_y,
+											coeff_b,
+											coeff_c,
+											output);
+		}
+
+		return false;
 	}
 
 	bool Resampler::sampleKernelBicubicH(uint8_t* sourcePixels,
@@ -85,6 +217,8 @@ namespace tga
 										 uint32_t sourceHeight,
 										 float_t f_x,
 										 float_t f_y,
+										 float_t coeff_b,
+										 float_t coeff_c,
 										 uint8_t* output)
 	{
 		float_t sample_count = 0;
@@ -102,7 +236,7 @@ namespace tga
 
 			float_t x_delta = (float_t)f_x - i_x;
 			float_t distance = fabs(x_delta);
-			float_t weight = bicubicWeight(0.0, 1.0, distance);
+			float_t weight = bicubicWeight(coeff_b, coeff_c, distance);
 			uint8_t* src_pixel = BLOCK_OFFSET_RGB24(sourcePixels, sourceWidth, i_x, i_y);
 
 			/* accumulate bicubic weighted samples from the source. */
@@ -128,6 +262,8 @@ namespace tga
 										 uint32_t sourceHeight,
 										 float_t f_x,
 										 float_t f_y,
+										 float_t coeff_b,
+										 float_t coeff_c,
 										 uint8_t* output)
 	{
 		float_t sample_count = 0;
@@ -145,7 +281,7 @@ namespace tga
 
 			float_t y_delta = (float_t)f_y - i_y;
 			float_t distance = fabs(y_delta);
-			float_t weight = bicubicWeight(0.0, 1.0, distance);
+			float_t weight = bicubicWeight(coeff_b, coeff_c, distance);
 			uint8_t* src_pixel = BLOCK_OFFSET_RGB24(sourcePixels, sourceWidth, i_x, i_y);
 
 			/* accumulate bicubic weighted samples from the source. */

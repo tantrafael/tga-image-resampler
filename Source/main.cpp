@@ -37,14 +37,19 @@ int main(int argc, const char * argv[]) {
 	tga::Image targetImage{};
 	tga::Resampler resampler{};
 
-	targetHeader.width = 800;
-	targetHeader.height = 600;
+	targetHeader.width = 400;
+	targetHeader.height = 300;
 	targetImage.pixelByteDepth = sourceImage.pixelByteDepth;
 	targetImage.rowStride = targetHeader.width * targetImage.pixelByteDepth;
 	const unsigned int targetBufferSize{ targetImage.rowStride * targetHeader.height };
 	std::vector<uint8_t> targetBuffer(targetBufferSize);
 	targetImage.pixels = targetBuffer.data();
-	resampler.resample(sourceHeader, sourceImage, targetHeader, targetImage);
+	//resampler.resample(sourceHeader, sourceImage, targetHeader, targetImage);
+	resampler.resample(sourceHeader,
+					   sourceImage,
+					   targetHeader,
+					   targetImage,
+					   tga::Bicubic);
 
 	// Write target image file.
 	auto targetFilePath{ "/Users/raffa/Work/Star Stable/resample.tga" };

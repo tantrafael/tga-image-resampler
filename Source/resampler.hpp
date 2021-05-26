@@ -3,6 +3,8 @@
 
 #include "header.hpp"
 #include "image.hpp"
+#include "kernel_type.hpp"
+#include "kernel_direction.hpp"
 
 namespace tga
 {
@@ -54,14 +56,38 @@ namespace tga
 		bool resample(const Header& sourceHeader,
 					  const Image& sourceImage,
 					  Header& targetHeader,
-					  Image& targetImage);
+					  Image& targetImage,
+					  KernelType type);
 
 	private:
+		bool sampleKernel(uint8_t* sourcePixels,
+						  uint32_t sourceWidth,
+						  uint32_t sourceHeight,
+						  KernelDirection direction,
+						  float_t f_x,
+						  float_t f_y,
+						  KernelType type,
+						  float_t h_ratio,
+						  float_t v_ratio,
+						  uint8_t* output);
+
+		bool sampleKernelBicubic(uint8_t* sourcePixels,
+								 uint32_t sourceWidth,
+								 uint32_t sourceHeight,
+								 KernelDirection direction,
+								 float_t f_x,
+								 float_t f_y,
+								 float_t coeff_b,
+								 float_t coeff_c,
+								 uint8_t* output);
+
 		bool sampleKernelBicubicH(uint8_t* sourcePixels,
 								  uint32_t sourceWidth,
 								  uint32_t sourceHeight,
 								  float_t f_x,
 								  float_t f_y,
+								  float_t coeff_b,
+								  float_t coeff_c,
 								  uint8_t* output);
 
 		bool sampleKernelBicubicV(uint8_t* sourcePixels,
@@ -69,6 +95,8 @@ namespace tga
 								  uint32_t sourceHeight,
 								  float_t f_x,
 								  float_t f_y,
+								  float_t coeff_b,
+								  float_t coeff_c,
 								  uint8_t* output);
 	};
 }
