@@ -165,18 +165,22 @@ namespace tga
 
 		for (int y = 0; y < header.height; ++y)
 		{
-			f(header.imageType, header.pixelBitDepth, header.width);
+			readImageRow(header.imageType, header.pixelBitDepth, header.width);
 		}
 
 		return true;
 	}
 
-	bool Decoder::f(const ImageType imageType,
+	bool Decoder::readImageRow(const ImageType imageType,
 					const uint8_t pixelBitDepth,
 					const uint16_t width)
 	{
 		switch (imageType)
 		{
+			case NoImageData:
+				break;
+			case UncompressedColorMapped:
+				break;
 			case UncompressedTrueColor:
 				switch (pixelBitDepth)
 				{
@@ -194,14 +198,23 @@ namespace tga
 						break;
 				}
 
+				//return readImageRowUncompressedTrueColor(pixelBitDepth, width);
+				break;
+			case UncompressedGrayscale:
+				break;
+			case RunLengthEncodedColorMapped:
+				break;
+			case RunLengthEncodedTrueColor:
+				break;
+			case RunLengthEncodedGrayscale:
 				break;
 		}
 
 		return false;
 	}
 
-	/*
-	bool Decoder::readRowUncompressedTrueColor(const uint8_t width, const uint8_t pixelBitDepth)
+	bool Decoder::readImageRowUncompressedTrueColor(const uint8_t pixelBitDepth,
+													const uint8_t width)
 	{
 		switch (pixelBitDepth)
 		{
@@ -221,7 +234,6 @@ namespace tga
 
 		return false;
 	}
-	*/
 
 	template<typename T>
 	bool Decoder::readUncompressedData(const int w, uint32_t (Decoder::*readPixel)())

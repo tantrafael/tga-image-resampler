@@ -26,10 +26,12 @@ namespace tga
 	private:
 		void readColorMap(Header& header);
 
-		bool f(const ImageType type,
+		bool readImageRow(const ImageType type,
 			   const uint8_t pixelBitDepth,
 			   const uint16_t width);
-		//bool readRowUncompressedTrueColor(const uint8_t width, const uint8_t pixelBitDepth);
+
+		bool readImageRowUncompressedTrueColor(const uint8_t pixelBitDepth,
+											   const uint8_t width);
 
 		template<typename T>
 		bool readUncompressedData(const int w, uint32_t (Decoder::*readPixel)());
