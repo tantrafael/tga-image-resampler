@@ -41,9 +41,8 @@ namespace tga
 
 	void ImageIterator::calcPtr()
 	{
-		m_ptr =
-			m_image->pixels
-			+ m_image->rowStride * m_y
-			+ m_image->pixelByteDepth * m_x;
+		m_ptr = m_image->pixels
+				+ m_image->rowStride * m_y
+				+ m_image->pixelByteDepth * m_x;
 	}
 }

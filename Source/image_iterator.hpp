@@ -13,7 +13,7 @@ namespace tga
 		ImageIterator(const Header& header, Image& image);
 		// TODO: Consider constructor with const image for encoding.
 
-		// Put a pixel value into the image and advance the iterator.
+		// Put one pixel value into the image and advance the iterator.
 		template<typename T>
 		bool putPixel(const T value)
 		{
@@ -22,7 +22,7 @@ namespace tga
 			return advance();
 		}
 
-		// Get one pixel from the image and advance the iterator.
+		// Get one pixel value from the image and advance the iterator.
 		template<typename T>
 		T getPixel()
 		{

@@ -50,15 +50,6 @@ namespace tga
 				float_t f_x = (float_t) i * h_ratio;
 				float_t f_y = (float_t) j;
 
-				/*
-				sampleKernelBicubicH(sourceImage.pixels,
-									 sourceHeader.width,
-									 sourceHeader.height,
-									 f_x,
-									 f_y,
-									 output);
-				*/
-
 				sampleKernel(sourceImage.pixels,
 							 sourceHeader.width,
 							 sourceHeader.height,
@@ -83,15 +74,6 @@ namespace tga
 				// coordinate, in the space of our temp image.
 				float_t f_x = (float_t) i;
 				float_t f_y = (float_t) j * v_ratio;
-
-				/*
-				sampleKernelBicubicV(buffer.get(),
-									 targetHeader.width,
-									 sourceHeader.height,
-									 f_x,
-									 f_y,
-									 output);
-				*/
 
 				sampleKernel(buffer.get(),
 							 targetHeader.width,
@@ -120,6 +102,8 @@ namespace tga
 								 float_t v_ratio,
 								 uint8_t* output)
 	{
+		//foo[type]
+
 		switch (type)
 		{
 			case Bicubic:

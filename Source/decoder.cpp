@@ -25,7 +25,8 @@ namespace tga
 
 		header.idLength = read8();
 		header.colorMapType = read8();
-		header.imageType = read8();
+		//header.imageType = read8();
+		header.imageType = static_cast<ImageType>(read8());
 		header.colorMapOrigin = read16();
 		header.colorMapLength = read16();
 		header.colorMapBitDepth = read8();
@@ -98,7 +99,8 @@ namespace tga
 	{
 		m_iterator = ImageIterator{ header, image };
 
-		// TODO: Clean up. Use foreach.
+		// TODO: Clean up.
+		/*
 		for (int y = 0; y < header.height; ++y)
 		{
 			switch (header.imageType)
@@ -123,14 +125,107 @@ namespace tga
 					break;
 			}
 		}
+		*/
+
+		//color (Decoder::*foo)() = &Decoder::read24AsRgb;
+
+		// 15:
+		// 16:
+		// 24: &Decoder::read24AsRgb
+		// 32:
+
+		/*
+		for (int y = 0; y < header.height; ++y)
+		{
+			switch (header.imageType)
+			{
+				case UncompressedColorMapped:
+					//a();
+					break;
+				case UncompressedTrueColor:
+					//bar = foo[header.pixelBitDepth]
+					//readUncompressedData<uint32_t>(header.width, bar)
+					return readRowUncompressedTrueColor(header.width, header.pixelBitDepth);
+					break;
+				case UncompressedGrayscale:
+					//c();
+					break;
+				case RunLengthEncodedColorMapped:
+					//d();
+					break;
+				case RunLengthEncodedTrueColor:
+					//e();
+					break;
+				case RunLengthEncodedGrayscale:
+					//f();
+					break;
+			}
+		}
+		*/
+
+		for (int y = 0; y < header.height; ++y)
+		{
+			f(header.imageType, header.pixelBitDepth, header.width);
+		}
 
 		return true;
 	}
 
+	bool Decoder::f(const ImageType imageType,
+					const uint8_t pixelBitDepth,
+					const uint16_t width)
+	{
+		switch (imageType)
+		{
+			case UncompressedTrueColor:
+				switch (pixelBitDepth)
+				{
+					case 15:
+					case 16:
+					case 24:
+						if (readUncompressedData<uint32_t>(width, &Decoder::read24AsRgb))
+						{
+							return true;
+						}
+						break;
+					case 32:
+					default:
+						assert(false);
+						break;
+				}
+
+				break;
+		}
+
+		return false;
+	}
+
+	/*
+	bool Decoder::readRowUncompressedTrueColor(const uint8_t width, const uint8_t pixelBitDepth)
+	{
+		switch (pixelBitDepth)
+		{
+			case 15:
+			case 16:
+			case 24:
+				if (readUncompressedData<uint32_t>(width, &Decoder::read24AsRgb))
+				{
+					return true;
+				}
+				break;
+			case 32:
+			default:
+				assert(false);
+				break;
+		}
+
+		return false;
+	}
+	*/
+
 	template<typename T>
 	bool Decoder::readUncompressedData(const int w, uint32_t (Decoder::*readPixel)())
 	{
-		// TODO: Use foreach.
 		for (int x = 0; x < w; ++x)
 		{
 			T value = static_cast<T>((this->*readPixel)());
