@@ -114,46 +114,54 @@ namespace tga
 		}
 		*/
 
-		const uint16_t width{ header.width };
-		const uint16_t height{ header.height };
-
+		const auto width{ header.width };
+		const auto height{ header.height };
+		//const auto imageType { header.imageType };
+		//const uint8_t pixelBitDepth{ header.pixelBitDepth };
 		auto readPixel { &Decoder::read24AsRgb };
+		//uint32_t (Decoder::*readPixel)() { &Decoder::read24AsRgb };
 
-		readImageUncompressed<uint32_t>(width, height, readPixel);
+		//readImageUncompressed<uint32_t>(width, height, readPixel);
 
-		return true;
-	}
+		switch (header.pixelBitDepth)
+		{
+			case 8:
+				//readPixel = &Decoder::read8Color;
+				break;
+			case 15:
+			case 16:
+				//readPixel = &Decoder::read16AsRgb;
+				break;
+			case 24:
+				readPixel = &Decoder::read24AsRgb;
+				break;
+			case 32:
+				//readPixel = &Decoder::read32AsRgb;
+				break;
+		}
 
-	/*
-	bool Decoder::readImageRow(const ImageType imageType,
-							   const uint8_t pixelBitDepth,
-							   const uint16_t width)
-	{
-		switch (imageType)
+		switch (header.imageType)
 		{
 			case NoImageData:
 				break;
 			case UncompressedColorMapped:
+			case UncompressedGrayscale:
+				readImageUncompressed<uint8_t>(width, height, readPixel);
 				break;
 			case UncompressedTrueColor:
-				if (!readImageRowUncompressedTrueColor(pixelBitDepth, width))
-				{
-					return false;
-				}
-				break;
-			case UncompressedGrayscale:
+				readImageUncompressed<uint32_t>(width, height, readPixel);
 				break;
 			case RunLengthEncodedColorMapped:
+			case RunLengthEncodedGrayscale:
+				//readImageRunLengthEncoded<uint8_t>(width, height, readPixel);
 				break;
 			case RunLengthEncodedTrueColor:
-				break;
-			case RunLengthEncodedGrayscale:
+				//readImageRunLengthEncoded<uint32_t>(width, height, readPixel);
 				break;
 		}
 
 		return true;
 	}
-	*/
 
 	/*
 	bool Decoder::readImageRowUncompressedTrueColor(const uint8_t pixelBitDepth,
