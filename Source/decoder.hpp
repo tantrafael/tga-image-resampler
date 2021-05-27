@@ -26,15 +26,26 @@ namespace tga
 	private:
 		void readColorMap(Header& header);
 
+		template<typename T>
+		bool readImageUncompressed(const int width,
+								   const int height,
+								   uint32_t (Decoder::*readPixel)());
+
+		/*
 		bool readImageRow(const ImageType type,
 			   const uint8_t pixelBitDepth,
 			   const uint16_t width);
+		*/
 
+		/*
 		bool readImageRowUncompressedTrueColor(const uint8_t pixelBitDepth,
 											   const uint16_t width);
+		*/
 
+		/*
 		template<typename T>
 		bool readUncompressedData(const int w, uint32_t (Decoder::*readPixel)());
+		*/
 
 		uint8_t read8();
 		uint16_t read16();

@@ -1,6 +1,7 @@
 #include "decoder.hpp"
 
 #include <cassert>
+#include <functional>
 
 namespace tga
 {
@@ -8,16 +9,7 @@ namespace tga
 	//Decoder::Decoder(std::ifstream* file)
 	Decoder::Decoder(FileInterface* file)
 		: m_file{ file }
-	{
-		/*
-		auto sourceImageFileSize = sourceImageFile.tellg();
-		std::vector<char> sourceImageBuffer(sourceImageFileSize);
-		sourceImageFile.seekg(0);
-		sourceImageFile.read(sourceImageBuffer.data(), sourceImageFileSize);
-
-		std::cout << "Source image file read.\n";
-		*/
-	}
+	{}
 
 	bool Decoder::readHeader(Header& header)
 	{
@@ -99,34 +91,6 @@ namespace tga
 	{
 		m_iterator = ImageIterator{ header, image };
 
-		// TODO: Clean up.
-		/*
-		for (int y = 0; y < header.height; ++y)
-		{
-			switch (header.imageType)
-			{
-				case UncompressedTrueColor:
-					switch (header.pixelBitDepth)
-					{
-						case 15:
-						case 16:
-						case 24:
-							if (readUncompressedData<uint32_t>(header.width, &Decoder::read24AsRgb))
-							{
-								return true;
-							}
-							break;
-						case 32:
-						default:
-							assert(false);
-							break;
-					}
-
-					break;
-			}
-		}
-		*/
-
 		//color (Decoder::*foo)() = &Decoder::read24AsRgb;
 
 		// 15:
@@ -134,14 +98,33 @@ namespace tga
 		// 24: &Decoder::read24AsRgb
 		// 32:
 
+		//bool (Decoder::*foo)(uint8_t, uint16_t){ &Decoder::readImageRowUncompressedTrueColor };
+		//std::function<bool(uint8_t, uint16_t)> fcnPtr{ &Decoder::readImageRowUncompressedTrueColor };
+		//std::function<bool(const int, uint32_t)> fcnPtr = &Decoder::readUncompressedData;
+		//auto fcnPtr = &Decoder::read8;
+		//auto fcnPtr = &Decoder::readUncompressedData;
+		//auto lambda = []<typename T>(std::vector<T> t){};
+
+		/*
 		for (int y = 0; y < header.height; ++y)
 		{
-			readImageRow(header.imageType, header.pixelBitDepth, header.width);
+			//readImageRow(header.imageType, header.pixelBitDepth, header.width);
+			//(*foo)(header.pixelBitDepth, header.width);
+			//readUncompressedData<uint32_t>(header.width, &Decoder::read24AsRgb);
 		}
+		*/
+
+		const uint16_t width{ header.width };
+		const uint16_t height{ header.height };
+
+		auto readPixel { &Decoder::read24AsRgb };
+
+		readImageUncompressed<uint32_t>(width, height, readPixel);
 
 		return true;
 	}
 
+	/*
 	bool Decoder::readImageRow(const ImageType imageType,
 							   const uint8_t pixelBitDepth,
 							   const uint16_t width)
@@ -170,7 +153,9 @@ namespace tga
 
 		return true;
 	}
+	*/
 
+	/*
 	bool Decoder::readImageRowUncompressedTrueColor(const uint8_t pixelBitDepth,
 													const uint16_t width)
 	{
@@ -192,7 +177,30 @@ namespace tga
 
 		return true;
 	}
+	*/
 
+	template<typename T>
+	bool Decoder::readImageUncompressed(const int width,
+										const int height,
+										uint32_t (Decoder::*readPixel)())
+	{
+		for (int y = 0; y < height; ++y)
+		{
+			for (int x = 0; x < width; ++x)
+			{
+				T value = static_cast<T>((this->*readPixel)());
+
+				if (!m_iterator.putPixel<T>(value))
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/*
 	template<typename T>
 	bool Decoder::readUncompressedData(const int w, uint32_t (Decoder::*readPixel)())
 	{
@@ -208,6 +216,7 @@ namespace tga
 
 		return true;
 	}
+	*/
 
 	uint8_t Decoder::read8()
 	{

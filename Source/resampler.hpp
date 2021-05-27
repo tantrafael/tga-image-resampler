@@ -15,27 +15,27 @@ namespace tga
 		return (input < low) ? low : (input > high) ? high : input;
 	}
 
-	inline float_t bicubicWeight(float_t f_b, float_t f_c, float_t distance)
+	inline float bicubicWeight(float f_b, float f_c, float distance)
 	{
 		/* Our bicubic function is designed to provide feedback over a radius of 2.0
 		* pixels. */
-		float_t distance2 = distance * distance;
-		float_t distance3 = distance * distance * distance;
-		float_t result = 0.0;
+		float distance2 = distance * distance;
+		float distance3 = distance * distance * distance;
+		float result = 0.0;
 
 		if (distance < 1.0)
 		{
-			float_t cubic_term = (12.0 - 9.0 * f_b - 6.0 * f_c) * distance3;
-			float_t quad_term = (-18.0 + 12.0 * f_b + 6.0 * f_c) * distance2;
-			float_t const_term = (6.0 - 2.0 * f_b);
+			float cubic_term = (12.0 - 9.0 * f_b - 6.0 * f_c) * distance3;
+			float quad_term = (-18.0 + 12.0 * f_b + 6.0 * f_c) * distance2;
+			float const_term = (6.0 - 2.0 * f_b);
 			result = (1.0f / 6.0f) * (cubic_term + quad_term + const_term);
 		}
 		else if (distance >= 1.0 && distance < 2.0)
 		{
-			float_t cubic_term = (-f_b - 6.0 * f_c) * distance3;
-			float_t quad_term = (6.0 * f_b + 30.0 * f_c) * distance2;
-			float_t lin_term = (-12.0 * f_b - 48.0 * f_c) * distance;
-			float_t const_term = (8.0 * f_b + 24.0 * f_c);
+			float cubic_term = (-f_b - 6.0 * f_c) * distance3;
+			float quad_term = (6.0 * f_b + 30.0 * f_c) * distance2;
+			float lin_term = (-12.0 * f_b - 48.0 * f_c) * distance;
+			float const_term = (8.0 * f_b + 24.0 * f_c);
 			result = (1.0f / 6.0f) * (cubic_term + quad_term + lin_term + const_term);
 		}
 
@@ -64,39 +64,39 @@ namespace tga
 						  uint32_t sourceWidth,
 						  uint32_t sourceHeight,
 						  KernelDirection direction,
-						  float_t f_x,
-						  float_t f_y,
+						  float f_x,
+						  float f_y,
 						  KernelType type,
-						  float_t h_ratio,
-						  float_t v_ratio,
+						  float h_ratio,
+						  float v_ratio,
 						  uint8_t* output);
 
 		bool sampleKernelBicubic(uint8_t* sourcePixels,
 								 uint32_t sourceWidth,
 								 uint32_t sourceHeight,
 								 KernelDirection direction,
-								 float_t f_x,
-								 float_t f_y,
-								 float_t coeff_b,
-								 float_t coeff_c,
+								 float f_x,
+								 float f_y,
+								 float coeff_b,
+								 float coeff_c,
 								 uint8_t* output);
 
 		bool sampleKernelBicubicH(uint8_t* sourcePixels,
 								  uint32_t sourceWidth,
 								  uint32_t sourceHeight,
-								  float_t f_x,
-								  float_t f_y,
-								  float_t coeff_b,
-								  float_t coeff_c,
+								  float f_x,
+								  float f_y,
+								  float coeff_b,
+								  float coeff_c,
 								  uint8_t* output);
 
 		bool sampleKernelBicubicV(uint8_t* sourcePixels,
 								  uint32_t sourceWidth,
 								  uint32_t sourceHeight,
-								  float_t f_x,
-								  float_t f_y,
-								  float_t coeff_b,
-								  float_t coeff_c,
+								  float f_x,
+								  float f_y,
+								  float coeff_b,
+								  float coeff_c,
 								  uint8_t* output);
 	};
 }
