@@ -12,7 +12,6 @@ namespace tga
 	{
 		uint8_t  idLength;
 		uint8_t  colorMapType;
-		//uint8_t  imageType;
 		ImageType imageType;
 		uint16_t colorMapOrigin;
 		uint16_t colorMapLength;

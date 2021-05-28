@@ -18,6 +18,11 @@ namespace tga
 		void writeImage(const Header& header, const Image& image);
 
 	private:
+		template<typename T>
+		bool writeImageUncompressed(const int width,
+									const int height,
+									void (Encoder::*writePixel)(T));
+
 		void write8(uint8_t value);
 		void write16(uint16_t value);
 		void write24AsRgb(color c);

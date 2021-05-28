@@ -40,9 +40,9 @@ namespace tga
 						/ static_cast<float>(targetHeader.height - 1);
 
 		// Horizontal resampling.
-		for (uint32_t j = 0; j < sourceHeader.height; ++j)
+		for (int j = 0; j < sourceHeader.height; ++j)
 		{
-			for (uint32_t i = 0; i < targetHeader.width; ++i)
+			for (int i = 0; i < targetHeader.width; ++i)
 			{
 				uint8_t* output = BLOCK_OFFSET_RGB24(buffer.get(), targetHeader.width, i, j);
 
@@ -65,9 +65,9 @@ namespace tga
 		}
 
 		// Vertical resampling.
-		for (uint32_t j = 0; j < targetHeader.height; ++j)
+		for (int j = 0; j < targetHeader.height; ++j)
 		{
-			for (uint32_t i = 0; i < targetHeader.width; i++)
+			for (int i = 0; i < targetHeader.width; i++)
 			{
 				uint8_t* output = BLOCK_OFFSET_RGB24(targetImage.pixels, targetHeader.width, i, j);
 

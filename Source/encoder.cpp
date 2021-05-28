@@ -28,30 +28,64 @@ namespace tga
 
 	void Encoder::writeImage(const Header &header, const Image &image)
 	{
-		const int w{ header.width };
-		const int h{ header.height };
+		m_iterator = ImageIterator{ header, const_cast<Image&>(image) };
 
-		// TODO: Question const cast.
-		m_iterator = ImageIterator(header, const_cast<Image&>(image));
+		const auto width{ header.width };
+		const auto height{ header.height };
+		void (Encoder::*writePixel)(color){};
 
-		// TODO: Clean up.
-		switch (header.imageType)
+		switch (header.pixelBitDepth)
 		{
-			case UncompressedTrueColor:
-				switch (header.pixelBitDepth)
-				{
-					case 24:
-							for (int y = 0; y < h; ++y)
-							{
-								for (int x = 0; x < w; ++x)
-								{
-									write24AsRgb(m_iterator.getPixel<uint32_t>());
-								}
-							}
-						break;
-				}
+			case 8:
+				//writePixel = &Encoder::read8color;
+				break;
+			case 15:
+			case 16:
+				//writePixel = &Encoder::read16AsRgb;
+				break;
+			case 24:
+				writePixel = &Encoder::write24AsRgb;
+				break;
+			case 32:
+				//writePixel = &Encoder::read32AsRgb;
 				break;
 		}
+
+		switch (header.imageType)
+		{
+			case NoImageData:
+				break;
+			case UncompressedColorMapped:
+			case UncompressedGrayscale:
+				//writeImageUncompressed<uint8_t>(width, height, writePixel);
+				break;
+			case UncompressedTrueColor:
+				writeImageUncompressed<uint32_t>(width, height, writePixel);
+				break;
+			case RunLengthEncodedColorMapped:
+			case RunLengthEncodedGrayscale:
+				//readImageRunLengthEncoded<uint8_t>(width, height, readPixel);
+				break;
+			case RunLengthEncodedTrueColor:
+				//readImageRunLengthEncoded<uint32_t>(width, height, readPixel);
+				break;
+		}
+	}
+
+	template<typename T>
+	bool Encoder::writeImageUncompressed(const int width,
+										 const int height,
+										 void (Encoder::*writePixel)(T))
+	{
+		for (int y = 0; y < height; ++y)
+		{
+			for (int x = 0; x < width; ++x)
+			{
+				(this->*writePixel)(m_iterator.getPixel<T>());
+			}
+		}
+
+		return true;
 	}
 
 	void Encoder::write8(uint8_t value)

@@ -12,11 +12,16 @@
 
 namespace tga
 {
+	static inline uint8_t scale_5bits_to_8bits(uint8_t v)
+	{
+		assert(v >= 0 && v < 32);
+
+		return (v << 3) | (v >> 2);
+	}
+
 	class Decoder
 	{
 	public:
-		//Decoder(std::ifstream& file);
-		//Decoder(std::ifstream* file);
 		Decoder(FileInterface* file);
 
 		bool readHeader(Header& header);
@@ -31,28 +36,16 @@ namespace tga
 								   const int height,
 								   uint32_t (Decoder::*readPixel)());
 
-		/*
-		bool readImageRow(const ImageType type,
-			   const uint8_t pixelBitDepth,
-			   const uint16_t width);
-		*/
-
-		/*
-		bool readImageRowUncompressedTrueColor(const uint8_t pixelBitDepth,
-											   const uint16_t width);
-		*/
-
-		/*
-		template<typename T>
-		bool readUncompressedData(const int w, uint32_t (Decoder::*readPixel)());
-		*/
-
 		uint8_t read8();
 		uint16_t read16();
 
+		color read8color();
+		color read16AsRgb();
 		color read24AsRgb();
+		color read32AsRgb();
 
 		FileInterface* m_file;
+		bool m_hasAlpha;
 		ImageIterator m_iterator;
 	};
 }
