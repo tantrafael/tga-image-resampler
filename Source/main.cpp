@@ -41,7 +41,7 @@ int main(int argc, const char * argv[]) {
 	std::vector<uint8_t> targetBuffer(targetBufferSize);
 	targetImage.pixels = targetBuffer.data();
 	//resampler.resample(sourceHeader, sourceImage, targetHeader, targetImage, tga::Bicubic);
-	resampler.resample(sourceHeader, sourceImage, targetHeader, targetImage, tga::BSpline);
+	resampler.resample(sourceHeader, sourceImage, targetHeader, targetImage, tga::Lanczos5);
 
 	// Write target image file.
 	auto targetFilePath{ "/Users/raffa/Work/Star Stable/resample.tga" };

@@ -166,6 +166,56 @@ namespace tga
 										   1.0f,
 										   0.0f,
 										   output);
+
+			case Lanczos:
+				return sampleKernelLanczos(pixels,
+										   width,
+										   height,
+										   direction,
+										   subPixelPosX,
+										   subPixelPosY,
+										   1,
+										   output);
+
+			case Lanczos2:
+				return sampleKernelLanczos(pixels,
+										   width,
+										   height,
+										   direction,
+										   subPixelPosX,
+										   subPixelPosY,
+										   2,
+										   output);
+
+			case Lanczos3:
+				return sampleKernelLanczos(pixels,
+										   width,
+										   height,
+										   direction,
+										   subPixelPosX,
+										   subPixelPosY,
+										   3,
+										   output);
+
+			case Lanczos4:
+				return sampleKernelLanczos(pixels,
+										   width,
+										   height,
+										   direction,
+										   subPixelPosX,
+										   subPixelPosY,
+										   4,
+										   output);
+
+			case Lanczos5:
+				return sampleKernelLanczos(pixels,
+										   width,
+										   height,
+										   direction,
+										   subPixelPosX,
+										   subPixelPosY,
+										   5,
+										   output);
 		}
 
 		return false;
@@ -181,6 +231,20 @@ namespace tga
 										float coeffC,
 										uint8_t* output)
 	{
+		const bool isValidInput = (pixels != nullptr
+								   && width >= 0
+								   && height >= 0
+								   && subPixelPosX >= 0.0f
+								   && subPixelPosY >= 0.0f
+								   && coeffB >= 0.0f
+								   && coeffC >= 0.0f
+								   && output != nullptr);
+
+		if (!isValidInput)
+		{
+			return false;
+		}
+
 		float sampleCount = 0;
 		float totalSamples[3] = {0};
 
@@ -188,16 +252,19 @@ namespace tga
 		{
 			int32_t samplePosX{};
 			int32_t samplePosY{};
+			float delta{};
 
 			if (direction == Horizontal)
 			{
 				samplePosX = static_cast<int32_t>(subPixelPosX + i);
 				samplePosY = static_cast<int32_t>(subPixelPosY);
+				delta = static_cast<float>(subPixelPosX - samplePosX);
 			}
 			else if (direction == Vertical)
 			{
 				samplePosX = static_cast<int32_t>(subPixelPosX);
 				samplePosY = static_cast<int32_t>(subPixelPosY + i);
+				delta = static_cast<float>(subPixelPosY - samplePosY);
 			}
 
 			if (samplePosX < 0
@@ -208,6 +275,7 @@ namespace tga
 				continue;
 			}
 
+			/*
 			float delta{};
 
 			if (direction == Horizontal)
@@ -218,10 +286,86 @@ namespace tga
 			{
 				delta = static_cast<float>(subPixelPosY - samplePosY);
 			}
+			*/
 
-			float distance = fabs(delta);
-			float weight = bicubicWeight(coeffB, coeffC, distance);
-			uint8_t* sourcePixel = BLOCK_OFFSET_RGB32(pixels, width, samplePosX, samplePosY);
+			const auto distance{ fabs(delta) };
+			const auto weight{ bicubicWeight(coeffB, coeffC, distance) };
+			const auto sourcePixel = BLOCK_OFFSET_RGB32(pixels, width, samplePosX, samplePosY);
+
+			// Accumulate bicubic weighted samples from the source.
+			totalSamples[0] += sourcePixel[0] * weight;
+			totalSamples[1] += sourcePixel[1] * weight;
+			totalSamples[2] += sourcePixel[2] * weight;
+
+			// Record the total weights of the sample for later normalization.
+			sampleCount += weight;
+		}
+
+		// Normalize our bicubic sum back to the valid pixel range.
+		float scaleFactor = 1.0f / sampleCount;
+		output[0] = clipRange(scaleFactor * totalSamples[0], 0, 255);
+		output[1] = clipRange(scaleFactor * totalSamples[1], 0, 255);
+		output[2] = clipRange(scaleFactor * totalSamples[2], 0, 255);
+
+		return true;
+	}
+
+	bool Resampler::sampleKernelLanczos(uint8_t* pixels,
+										uint32_t width,
+										uint32_t height,
+										KernelDirection direction,
+										float subPixelPosX,
+										float subPixelPosY,
+										float coeffA,
+										uint8_t* output)
+	{
+		const bool isValidInput = (pixels != nullptr
+								   && width >= 0
+								   && height >= 0
+								   && subPixelPosX >= 0.0f
+								   && subPixelPosY >= 0.0f
+								   && coeffA >= 0.0f
+								   && output != nullptr);
+
+		if (!isValidInput)
+		{
+			return false;
+		}
+
+		int32_t radius = coeffA;
+		float sampleCount = 0;
+		float totalSamples[3] = {0};
+
+		for (int i = -radius; i < radius; ++i)
+		{
+			int32_t samplePosX{};
+			int32_t samplePosY{};
+			float delta{};
+
+			if (direction == Horizontal)
+			{
+				samplePosX = static_cast<int32_t>(subPixelPosX + i);
+				samplePosY = static_cast<int32_t>(subPixelPosY);
+				delta = static_cast<float>(subPixelPosX - samplePosX);
+			}
+			else if (direction == Vertical)
+			{
+				samplePosX = static_cast<int32_t>(subPixelPosX);
+				samplePosY = static_cast<int32_t>(subPixelPosY + i);
+				delta = static_cast<float>(subPixelPosY - samplePosY);
+			}
+
+			if (samplePosX < 0
+				|| samplePosY < 0
+				|| samplePosX > width - 1
+				|| samplePosY > height - 1)
+			{
+				continue;
+			}
+
+			const auto distance{ fabs(delta) };
+			const auto weight{ lanczosWeight(coeffA, distance) };
+			const auto sourcePixel = BLOCK_OFFSET_RGB32(pixels, width, samplePosX, samplePosY);
 
 			// Accumulate bicubic weighted samples from the source.
 			totalSamples[0] += sourcePixel[0] * weight;

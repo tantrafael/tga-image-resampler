@@ -1,6 +1,8 @@
 #ifndef resampler_hpp
 #define resampler_hpp
 
+#include <math.h>
+
 #include "header.hpp"
 #include "image.hpp"
 #include "kernel_type.hpp"
@@ -49,6 +51,26 @@ namespace tga
 		return result;
 	}
 
+	inline float sinc(const float x)
+	{
+		if (x == 0.0f)
+		{
+			return 1.0f;
+		}
+
+		return sin(M_PI * x) / (M_PI * x);
+	}
+
+	inline float lanczosWeight(const float coeffA, const float distance)
+	{
+		if (distance <= coeffA)
+		{
+			return sinc(distance) * sinc(distance / coeffA);
+		}
+
+		return 0.0f;
+	}
+
 	class Resampler
 	{
 	public:
@@ -80,6 +102,15 @@ namespace tga
 								 float subPixelPosY,
 								 float coeffB,
 								 float coeffC,
+								 uint8_t* output);
+
+		bool sampleKernelLanczos(uint8_t* pixels,
+								 uint32_t width,
+								 uint32_t height,
+								 KernelDirection direction,
+								 float subPixelPosX,
+								 float subPixelPosY,
+								 float coeffA,
 								 uint8_t* output);
 	};
 }

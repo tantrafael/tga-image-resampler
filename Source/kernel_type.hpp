@@ -10,6 +10,11 @@ namespace tga
 		Mitchell,
 		Cardinal,
 		BSpline,
+		Lanczos,
+		Lanczos2,
+		Lanczos3,
+		Lanczos4,
+		Lanczos5,
 	};
 }
 
