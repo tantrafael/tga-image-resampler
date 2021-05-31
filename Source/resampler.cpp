@@ -103,8 +103,6 @@ namespace tga
 								 float v_ratio,
 								 uint8_t* output)
 	{
-		//foo[type]
-
 		switch (type)
 		{
 			case Bicubic:
@@ -172,114 +170,55 @@ namespace tga
 										float coeff_c,
 										uint8_t* output)
 	{
-		switch (direction)
-		{
-			case Horizontal:
-				return sampleKernelBicubicH(src,
-											src_width,
-											src_height,
-											f_x,
-											f_y,
-											coeff_b,
-											coeff_c,
-											output);
-			case Vertical:
-				return sampleKernelBicubicV(src,
-											src_width,
-											src_height,
-											f_x,
-											f_y,
-											coeff_b,
-											coeff_c,
-											output);
-		}
-
-		return false;
-	}
-
-	bool Resampler::sampleKernelBicubicH(uint8_t* sourcePixels,
-										 uint32_t sourceWidth,
-										 uint32_t sourceHeight,
-										 float f_x,
-										 float f_y,
-										 float coeff_b,
-										 float coeff_c,
-										 uint8_t* output)
-	{
 		float sample_count = 0;
 		float total_samples[3] = {0};
 
-		for (int32_t i = -2; i < 2; ++i)
+		for (int i = -2; i < 2; ++i)
 		{
-			int32_t i_x = (int32_t)f_x + i;
-			int32_t i_y = (int32_t)f_y;
+			int32_t i_x{};
+			int32_t i_y{};
 
-			if (i_x < 0 || i_y < 0 || i_x > sourceWidth - 1 || i_y > sourceHeight - 1)
+			if (direction == Horizontal)
+			{
+				i_x = static_cast<int32_t>(f_x + i);
+				i_y = static_cast<int32_t>(f_y);
+			}
+			else if (direction == Vertical)
+			{
+				i_x = static_cast<int32_t>(f_x);
+				i_y = static_cast<int32_t>(f_y + i);
+			}
+
+			if (i_x < 0 || i_y < 0 || i_x > src_width - 1 || i_y > src_height - 1)
 			{
 				continue;
 			}
 
-			// TODO: Clean up cast.
-			float x_delta = (float)f_x - i_x;
-			float distance = fabs(x_delta);
-			float weight = bicubicWeight(coeff_b, coeff_c, distance);
-			uint8_t* src_pixel = BLOCK_OFFSET_RGB24(sourcePixels, sourceWidth, i_x, i_y);
+			float delta{};
 
-			/* accumulate bicubic weighted samples from the source. */
-			total_samples[0] += src_pixel[0] * weight;
-			total_samples[1] += src_pixel[1] * weight;
-			total_samples[2] += src_pixel[2] * weight;
-
-			/* record the total weights of the sample for later normalization. */
-			sample_count += weight;
-		}
-
-		/* Normalize our bicubic sum back to the valid pixel range. */
-		float scale_factor = 1.0f / sample_count;
-		output[0] = clipRange(scale_factor * total_samples[0], 0, 255);
-		output[1] = clipRange(scale_factor * total_samples[1], 0, 255);
-		output[2] = clipRange(scale_factor * total_samples[2], 0, 255);
-
-		return true;
-	}
-
-	bool Resampler::sampleKernelBicubicV(uint8_t* sourcePixels,
-										 uint32_t sourceWidth,
-										 uint32_t sourceHeight,
-										 float f_x,
-										 float f_y,
-										 float coeff_b,
-										 float coeff_c,
-										 uint8_t* output)
-	{
-		float sample_count = 0;
-		float total_samples[3] = {0};
-
-		for (int32_t i = -2; i < 2; ++i)
-		{
-			int32_t i_x = (int32_t)f_x;
-			int32_t i_y = (int32_t)f_y + i;
-
-			if (i_x < 0 || i_y < 0 || i_x > sourceWidth - 1 || i_y > sourceHeight - 1)
+			if (direction == Horizontal)
 			{
-				continue;
+				delta = static_cast<float>(f_x - i_x);
+			}
+			else if (direction == Vertical)
+			{
+				delta = static_cast<float>(f_y - i_y);
 			}
 
-			float y_delta = (float)f_y - i_y;
-			float distance = fabs(y_delta);
+			float distance = fabs(delta);
 			float weight = bicubicWeight(coeff_b, coeff_c, distance);
-			uint8_t* src_pixel = BLOCK_OFFSET_RGB24(sourcePixels, sourceWidth, i_x, i_y);
+			uint8_t* src_pixel = BLOCK_OFFSET_RGB24(src, src_width, i_x, i_y);
 
-			/* accumulate bicubic weighted samples from the source. */
+			// Accumulate bicubic weighted samples from the source.
 			total_samples[0] += src_pixel[0] * weight;
 			total_samples[1] += src_pixel[1] * weight;
 			total_samples[2] += src_pixel[2] * weight;
 
-			/* record the total weights of the sample for later normalization. */
+			// Record the total weights of the sample for later normalization.
 			sample_count += weight;
 		}
 
-		/* Normalize our bicubic sum back to the valid pixel range. */
+		// Normalize our bicubic sum back to the valid pixel range.
 		float scale_factor = 1.0f / sample_count;
 		output[0] = clipRange(scale_factor * total_samples[0], 0, 255);
 		output[1] = clipRange(scale_factor * total_samples[1], 0, 255);
