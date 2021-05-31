@@ -8,38 +8,40 @@
 
 namespace tga
 {
-	#define BLOCK_OFFSET_RGB24(ptr, width, x, y) (ptr + (4 * width) * y + 4 * x)
+	#define BLOCK_OFFSET_RGB32(ptr, width, x, y) (ptr + (4 * width) * y + 4 * x)
 
 	inline int32_t clipRange(int32_t input, int32_t low, int32_t high)
 	{
 		return (input < low) ? low : (input > high) ? high : input;
 	}
 
-	inline float bicubicWeight(float f_b, float f_c, float distance)
+	inline float bicubicWeight(const float coeffB,
+							   const float coeffC,
+							   const float distance)
 	{
-		/* Our bicubic function is designed to provide feedback over a radius of 2.0
-		* pixels. */
+		// Our bicubic function is designed to provide feedback over a radius
+		// of 2.0 pixels.
 		float distance2 = distance * distance;
 		float distance3 = distance * distance * distance;
-		float result = 0.0;
+		float result = 0.0f;
 
-		if (distance < 1.0)
+		if (distance < 1.0f)
 		{
-			float cubic_term = (12.0 - 9.0 * f_b - 6.0 * f_c) * distance3;
-			float quad_term = (-18.0 + 12.0 * f_b + 6.0 * f_c) * distance2;
-			float const_term = (6.0 - 2.0 * f_b);
-			result = (1.0f / 6.0f) * (cubic_term + quad_term + const_term);
+			float cubicTerm = (12.0f - 9.0f * coeffB - 6.0f * coeffC) * distance3;
+			float quadTerm = (-18.0f + 12.0f * coeffB + 6.0f * coeffC) * distance2;
+			float constTerm = (6.0f - 2.0f * coeffB);
+			result = (1.0f / 6.0f) * (cubicTerm + quadTerm + constTerm);
 		}
-		else if (distance >= 1.0 && distance < 2.0)
+		else if (distance >= 1.0f && distance < 2.0f)
 		{
-			float cubic_term = (-f_b - 6.0 * f_c) * distance3;
-			float quad_term = (6.0 * f_b + 30.0 * f_c) * distance2;
-			float lin_term = (-12.0 * f_b - 48.0 * f_c) * distance;
-			float const_term = (8.0 * f_b + 24.0 * f_c);
-			result = (1.0f / 6.0f) * (cubic_term + quad_term + lin_term + const_term);
+			float cubicTerm = (-coeffB - 6.0f * coeffC) * distance3;
+			float quadTerm = (6.0f * coeffB + 30.0f * coeffC) * distance2;
+			float linTerm = (-12.0f * coeffB - 48.0f * coeffC) * distance;
+			float constTerm = (8.0f * coeffB + 24.0f * coeffC);
+			result = (1.0f / 6.0f) * (cubicTerm + quadTerm + linTerm + constTerm);
 		}
 
-		if (result < 0)
+		if (result < 0.0f)
 		{
 			result = 0.0;
 		}
@@ -52,7 +54,6 @@ namespace tga
 	public:
 		Resampler();
 
-
 		bool resample(const Header& sourceHeader,
 					  const Image& sourceImage,
 					  Header& targetHeader,
@@ -60,44 +61,26 @@ namespace tga
 					  KernelType type);
 
 	private:
-		bool sampleKernel(uint8_t* sourcePixels,
-						  uint32_t sourceWidth,
-						  uint32_t sourceHeight,
+		bool sampleKernel(uint8_t* pixels,
+						  uint32_t width,
+						  uint32_t height,
 						  KernelDirection direction,
-						  float f_x,
-						  float f_y,
+						  float subPixelPosX,
+						  float subPixelPosY,
 						  KernelType type,
-						  float h_ratio,
-						  float v_ratio,
+						  float mappingRatioX,
+						  float mappingRatioY,
 						  uint8_t* output);
 
-		bool sampleKernelBicubic(uint8_t* sourcePixels,
-								 uint32_t sourceWidth,
-								 uint32_t sourceHeight,
+		bool sampleKernelBicubic(uint8_t* pixels,
+								 uint32_t width,
+								 uint32_t height,
 								 KernelDirection direction,
-								 float f_x,
-								 float f_y,
-								 float coeff_b,
-								 float coeff_c,
+								 float subPixelPosX,
+								 float subPixelPosY,
+								 float coeffB,
+								 float coeffC,
 								 uint8_t* output);
-
-		bool sampleKernelBicubicH(uint8_t* sourcePixels,
-								  uint32_t sourceWidth,
-								  uint32_t sourceHeight,
-								  float f_x,
-								  float f_y,
-								  float coeff_b,
-								  float coeff_c,
-								  uint8_t* output);
-
-		bool sampleKernelBicubicV(uint8_t* sourcePixels,
-								  uint32_t sourceWidth,
-								  uint32_t sourceHeight,
-								  float f_x,
-								  float f_y,
-								  float coeff_b,
-								  float coeff_c,
-								  uint8_t* output);
 	};
 }
 

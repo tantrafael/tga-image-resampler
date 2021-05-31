@@ -30,61 +30,72 @@ namespace tga
 		targetImage.pixelByteDepth = sourceImage.pixelByteDepth;
 		//targetImage.rowStride = targetHeader.width * targetImage.pixelByteDepth;
 
-		const unsigned int bufferSize{ targetImage.rowStride * sourceHeader.height };
+		// Allocate a temporary buffer to hold our horizontal pass output.
+		// We're using unique_ptr rather than vector because we want a fast and
+		// smart way to allocate very large buffers without initialization.
+		const auto bufferSize{ targetImage.rowStride * sourceHeader.height };
 		std::unique_ptr<uint8_t[]> buffer(new uint8_t[bufferSize]);
 
-		float h_ratio = static_cast<float>(sourceHeader.width - 1)
-						/ static_cast<float>(targetHeader.width - 1);
+		const auto sourceMappingWidth{ static_cast<float>(sourceHeader.width - 1) };
+		const auto targetMappingWidth{ static_cast<float>(targetHeader.width - 1) };
+		const auto mappingRatioX = sourceMappingWidth / targetMappingWidth;
 
-		float v_ratio = static_cast<float>(sourceHeader.height - 1)
-						/ static_cast<float>(targetHeader.height - 1);
+		const auto sourceMappingHeight{ static_cast<float>(sourceHeader.height - 1) };
+		const auto targetMappingHeight{ static_cast<float>(targetHeader.height - 1) };
+		const auto mappingRatioY = sourceMappingHeight / targetMappingHeight;
 
 		// Horizontal resampling.
-		for (int j = 0; j < sourceHeader.height; ++j)
+		for (int row = 0; row < sourceHeader.height; ++row)
 		{
-			for (int i = 0; i < targetHeader.width; ++i)
+			for (int col = 0; col < targetHeader.width; ++col)
 			{
-				uint8_t* output = BLOCK_OFFSET_RGB24(buffer.get(), targetHeader.width, i, j);
+				uint8_t* output = BLOCK_OFFSET_RGB32(buffer.get(),
+													 targetHeader.width,
+													 col,
+													 row);
 
-				// Determine the sub-pixel location of our *target* (i,j)
+				// Determine the sub-pixel location of our target (col, row)
 				// coordinate, in the space of our source image.
-				float f_x = (float) i * h_ratio;
-				float f_y = (float) j;
+				auto subPixelPosX = static_cast<float>(col * mappingRatioX);
+				auto subPixelPosY = static_cast<float>(row);
 
 				sampleKernel(sourceImage.pixels,
 							 sourceHeader.width,
 							 sourceHeader.height,
 							 Horizontal,
-							 f_x,
-							 f_y,
+							 subPixelPosX,
+							 subPixelPosY,
 							 type,
-							 h_ratio,
-							 v_ratio,
+							 mappingRatioX,
+							 mappingRatioY,
 							 output);
 			}
 		}
 
 		// Vertical resampling.
-		for (int j = 0; j < targetHeader.height; ++j)
+		for (int row = 0; row < targetHeader.height; ++row)
 		{
-			for (int i = 0; i < targetHeader.width; i++)
+			for (int col = 0; col < targetHeader.width; col++)
 			{
-				uint8_t* output = BLOCK_OFFSET_RGB24(targetImage.pixels, targetHeader.width, i, j);
+				uint8_t* output = BLOCK_OFFSET_RGB32(targetImage.pixels,
+													 targetHeader.width,
+													 col,
+													 row);
 
-				// Determine the sub-pixel location of our *target* (i,j)
-				// coordinate, in the space of our temp image.
-				float f_x = (float) i;
-				float f_y = (float) j * v_ratio;
+				// Determine the sub-pixel location of our target (col, row)
+				// coordinate, in the space of our source image.
+				auto subPixelPosX = static_cast<float>(col);
+				auto subPixelPosY = static_cast<float>(row * mappingRatioY);
 
 				sampleKernel(buffer.get(),
 							 targetHeader.width,
 							 sourceHeader.height,
 							 Vertical,
-							 f_x,
-							 f_y,
+							 subPixelPosX,
+							 subPixelPosY,
 							 type,
-							 h_ratio,
-							 v_ratio,
+							 mappingRatioX,
+							 mappingRatioY,
 							 output);
 			}
 		}
@@ -92,66 +103,66 @@ namespace tga
 		return true;
 	}
 
-	bool Resampler::sampleKernel(uint8_t* sourcePixels,
-								 uint32_t sourceWidth,
-								 uint32_t sourceHeight,
+	bool Resampler::sampleKernel(uint8_t* pixels,
+								 uint32_t width,
+								 uint32_t height,
 								 KernelDirection direction,
-								 float f_x,
-								 float f_y,
+								 float subPixelPosX,
+								 float subPixelPosY,
 								 KernelType type,
-								 float h_ratio,
-								 float v_ratio,
+								 float mappingRatioX,
+								 float mappingRatioY,
 								 uint8_t* output)
 	{
 		switch (type)
 		{
 			case Bicubic:
-				return sampleKernelBicubic(sourcePixels,
-										   sourceWidth,
-										   sourceHeight,
+				return sampleKernelBicubic(pixels,
+										   width,
+										   height,
 										   direction,
-										   f_x,
-										   f_y,
+										   subPixelPosX,
+										   subPixelPosY,
 										   0.0f,
 										   1.0f,
 										   output);
 			case Catmull:
-				return sampleKernelBicubic(sourcePixels,
-										   sourceWidth,
-										   sourceHeight,
+				return sampleKernelBicubic(pixels,
+										   width,
+										   height,
 										   direction,
-										   f_x,
-										   f_y,
+										   subPixelPosX,
+										   subPixelPosY,
 										   0.0f,
 										   0.5f,
 										   output);
 			case Mitchell:
-				return sampleKernelBicubic(sourcePixels,
-										   sourceWidth,
-										   sourceHeight,
+				return sampleKernelBicubic(pixels,
+										   width,
+										   height,
 										   direction,
-										   f_x,
-										   f_y,
+										   subPixelPosX,
+										   subPixelPosY,
 										   1.0f / 3.0f,
 										   1.0f / 3.0f,
 										   output);
 			case Cardinal:
-				return sampleKernelBicubic(sourcePixels,
-										   sourceWidth,
-										   sourceHeight,
+				return sampleKernelBicubic(pixels,
+										   width,
+										   height,
 										   direction,
-										   f_x,
-										   f_y,
+										   subPixelPosX,
+										   subPixelPosY,
 										   0.0f,
 										   0.75f,
 										   output);
 			case BSpline:
-				return sampleKernelBicubic(sourcePixels,
-										   sourceWidth,
-										   sourceHeight,
+				return sampleKernelBicubic(pixels,
+										   width,
+										   height,
 										   direction,
-										   f_x,
-										   f_y,
+										   subPixelPosX,
+										   subPixelPosY,
 										   1.0f,
 										   0.0f,
 										   output);
@@ -160,36 +171,39 @@ namespace tga
 		return false;
 	}
 
-	bool Resampler::sampleKernelBicubic(uint8_t* src,
-										uint32_t src_width,
-										uint32_t src_height,
+	bool Resampler::sampleKernelBicubic(uint8_t* pixels,
+										uint32_t width,
+										uint32_t height,
 										KernelDirection direction,
-										float f_x,
-										float f_y,
-										float coeff_b,
-										float coeff_c,
+										float subPixelPosX,
+										float subPixelPosY,
+										float coeffB,
+										float coeffC,
 										uint8_t* output)
 	{
-		float sample_count = 0;
-		float total_samples[3] = {0};
+		float sampleCount = 0;
+		float totalSamples[3] = {0};
 
 		for (int i = -2; i < 2; ++i)
 		{
-			int32_t i_x{};
-			int32_t i_y{};
+			int32_t samplePosX{};
+			int32_t samplePosY{};
 
 			if (direction == Horizontal)
 			{
-				i_x = static_cast<int32_t>(f_x + i);
-				i_y = static_cast<int32_t>(f_y);
+				samplePosX = static_cast<int32_t>(subPixelPosX + i);
+				samplePosY = static_cast<int32_t>(subPixelPosY);
 			}
 			else if (direction == Vertical)
 			{
-				i_x = static_cast<int32_t>(f_x);
-				i_y = static_cast<int32_t>(f_y + i);
+				samplePosX = static_cast<int32_t>(subPixelPosX);
+				samplePosY = static_cast<int32_t>(subPixelPosY + i);
 			}
 
-			if (i_x < 0 || i_y < 0 || i_x > src_width - 1 || i_y > src_height - 1)
+			if (samplePosX < 0
+				|| samplePosY < 0
+				|| samplePosX > width - 1
+				|| samplePosY > height - 1)
 			{
 				continue;
 			}
@@ -198,31 +212,31 @@ namespace tga
 
 			if (direction == Horizontal)
 			{
-				delta = static_cast<float>(f_x - i_x);
+				delta = static_cast<float>(subPixelPosX - samplePosX);
 			}
 			else if (direction == Vertical)
 			{
-				delta = static_cast<float>(f_y - i_y);
+				delta = static_cast<float>(subPixelPosY - samplePosY);
 			}
 
 			float distance = fabs(delta);
-			float weight = bicubicWeight(coeff_b, coeff_c, distance);
-			uint8_t* src_pixel = BLOCK_OFFSET_RGB24(src, src_width, i_x, i_y);
+			float weight = bicubicWeight(coeffB, coeffC, distance);
+			uint8_t* sourcePixel = BLOCK_OFFSET_RGB32(pixels, width, samplePosX, samplePosY);
 
 			// Accumulate bicubic weighted samples from the source.
-			total_samples[0] += src_pixel[0] * weight;
-			total_samples[1] += src_pixel[1] * weight;
-			total_samples[2] += src_pixel[2] * weight;
+			totalSamples[0] += sourcePixel[0] * weight;
+			totalSamples[1] += sourcePixel[1] * weight;
+			totalSamples[2] += sourcePixel[2] * weight;
 
 			// Record the total weights of the sample for later normalization.
-			sample_count += weight;
+			sampleCount += weight;
 		}
 
 		// Normalize our bicubic sum back to the valid pixel range.
-		float scale_factor = 1.0f / sample_count;
-		output[0] = clipRange(scale_factor * total_samples[0], 0, 255);
-		output[1] = clipRange(scale_factor * total_samples[1], 0, 255);
-		output[2] = clipRange(scale_factor * total_samples[2], 0, 255);
+		float scaleFactor = 1.0f / sampleCount;
+		output[0] = clipRange(scaleFactor * totalSamples[0], 0, 255);
+		output[1] = clipRange(scaleFactor * totalSamples[1], 0, 255);
+		output[2] = clipRange(scaleFactor * totalSamples[2], 0, 255);
 
 		return true;
 	}
