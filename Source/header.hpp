@@ -25,24 +25,20 @@ namespace tga
 		std::string imageId;
 		ColorMap colorMap;
 
-		// TODO: Move implementations to header.cpp.
-		bool leftToRight() const
+		bool isLeftToRight() const
 		{
 			return !(imageDescriptor & 0x10);
 		}
 
-		bool topToBottom() const
+		bool isTopToBottom() const
 		{
 			return !(imageDescriptor & 0x20);
 		}
 
 		bool isTrueColor() const
 		{
-			return
-			(
-				imageType == UncompressedTrueColor
-				|| imageType == RunLengthEncodedTrueColor
-			);
+			return (imageType == UncompressedTrueColor
+					|| imageType == RunLengthEncodedTrueColor);
 		}
 
 		int pixelByteDepth() const

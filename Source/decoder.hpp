@@ -15,7 +15,6 @@ namespace tga
 	static inline uint8_t scale_5bits_to_8bits(uint8_t v)
 	{
 		assert(v >= 0 && v < 32);
-
 		return (v << 3) | (v >> 2);
 	}
 

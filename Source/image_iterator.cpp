@@ -8,12 +8,12 @@ namespace tga
 
 	ImageIterator::ImageIterator(const Header& header, Image& image)
 		: m_image{ &image }
-		, m_x{ header.leftToRight() ? 0 : header.width - 1 }
-		, m_y{ header.topToBottom() ? 0 : header.height - 1 }
+		, m_x{ header.isLeftToRight() ? 0 : header.width - 1 }
+		, m_y{ header.isTopToBottom() ? 0 : header.height - 1 }
 		, m_w{ header.width }
 		, m_h{ header.height }
-		, m_dx{ header.leftToRight() ? 1 : -1 }
-		, m_dy{ header.topToBottom() ? 1 : -1 }
+		, m_dx{ header.isLeftToRight() ? 1 : -1 }
+		, m_dy{ header.isTopToBottom() ? 1 : -1 }
 	{
 		calcPtr();
 	}

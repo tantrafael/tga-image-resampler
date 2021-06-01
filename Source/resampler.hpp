@@ -83,6 +83,7 @@ namespace tga
 					  KernelType type);
 
 	private:
+		/*
 		bool sampleKernel(uint8_t* pixels,
 						  uint32_t width,
 						  uint32_t height,
@@ -90,6 +91,19 @@ namespace tga
 						  float subPixelPosX,
 						  float subPixelPosY,
 						  KernelType type,
+						  float mappingRatioX,
+						  float mappingRatioY,
+						  uint8_t* output);
+		*/
+
+		/*
+		bool sampleKernel(foo,
+						  KernelDirection direction,
+						  uint8_t* pixels,
+						  uint32_t width,
+						  uint32_t height,
+						  float subPixelPosX,
+						  float subPixelPosY,
 						  float mappingRatioX,
 						  float mappingRatioY,
 						  uint8_t* output);
@@ -112,6 +126,17 @@ namespace tga
 								 float subPixelPosY,
 								 float coeffA,
 								 uint8_t* output);
+		*/
+
+		bool foo(KernelDirection direction,
+				 uint8_t* pixels,
+				 uint32_t width,
+				 uint32_t height,
+				 float subPixelPosX,
+				 float subPixelPosY,
+				 float mappingRatioX,
+				 float mappingRatioY,
+				 uint8_t* output);
 	};
 }
 

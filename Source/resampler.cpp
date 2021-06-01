@@ -1,5 +1,6 @@
 #include "resampler.hpp"
 #include <cmath>
+#include <unordered_map>
 
 namespace tga
 {
@@ -44,6 +45,8 @@ namespace tga
 		const auto targetMappingHeight{ static_cast<float>(targetHeader.height - 1) };
 		const auto mappingRatioY = sourceMappingHeight / targetMappingHeight;
 
+		//auto bar = &Resampler::foo;
+
 		// Horizontal resampling.
 		for (int row = 0; row < sourceHeader.height; ++row)
 		{
@@ -59,6 +62,7 @@ namespace tga
 				auto subPixelPosX = static_cast<float>(col * mappingRatioX);
 				auto subPixelPosY = static_cast<float>(row);
 
+				/*
 				sampleKernel(sourceImage.pixels,
 							 sourceHeader.width,
 							 sourceHeader.height,
@@ -69,6 +73,19 @@ namespace tga
 							 mappingRatioX,
 							 mappingRatioY,
 							 output);
+				*/
+
+				//bar(subPixelPosX, subPixelPosY, output);
+
+				foo(Horizontal,
+					sourceImage.pixels,
+					sourceHeader.width,
+					sourceHeader.height,
+					subPixelPosX,
+					subPixelPosY,
+					mappingRatioX,
+					mappingRatioY,
+					output);
 			}
 		}
 
@@ -87,6 +104,7 @@ namespace tga
 				auto subPixelPosX = static_cast<float>(col);
 				auto subPixelPosY = static_cast<float>(row * mappingRatioY);
 
+				/*
 				sampleKernel(buffer.get(),
 							 targetHeader.width,
 							 sourceHeader.height,
@@ -97,12 +115,103 @@ namespace tga
 							 mappingRatioX,
 							 mappingRatioY,
 							 output);
+				*/
+
+				foo(Vertical,
+					buffer.get(),
+					targetHeader.width,
+					sourceHeader.height,
+					subPixelPosX,
+					subPixelPosY,
+					mappingRatioX,
+					mappingRatioY,
+					output);
 			}
 		}
 
 		return true;
 	}
 
+	bool Resampler::foo(KernelDirection direction,
+						uint8_t* pixels,
+						uint32_t width,
+						uint32_t height,
+						float subPixelPosX,
+						float subPixelPosY,
+						float mappingRatioX,
+						float mappingRatioY,
+						uint8_t* output)
+	{
+		const bool isValidInput = (pixels != nullptr
+								   && width >= 0
+								   && height >= 0
+								   && subPixelPosX >= 0.0f
+								   && subPixelPosY >= 0.0f
+								   //&& coeffB >= 0.0f
+								   //&& coeffC >= 0.0f
+								   && output != nullptr);
+
+		if (!isValidInput)
+		{
+			return false;
+		}
+
+		// TODO: List initialize.
+		float sampleCount = 0;
+		float totalSamples[3] = {0};
+		float coeffB{ 0.0f };
+		float coeffC{ 1.0f };
+
+		for (int i = -2; i < 2; ++i)
+		{
+			int32_t samplePosX{};
+			int32_t samplePosY{};
+			float delta{};
+
+			if (direction == Horizontal)
+			{
+				samplePosX = static_cast<int32_t>(subPixelPosX + i);
+				samplePosY = static_cast<int32_t>(subPixelPosY);
+				delta = static_cast<float>(subPixelPosX - samplePosX);
+			}
+			else if (direction == Vertical)
+			{
+				samplePosX = static_cast<int32_t>(subPixelPosX);
+				samplePosY = static_cast<int32_t>(subPixelPosY + i);
+				delta = static_cast<float>(subPixelPosY - samplePosY);
+			}
+
+			if (samplePosX < 0
+				|| samplePosY < 0
+				|| samplePosX > width - 1
+				|| samplePosY > height - 1)
+			{
+				continue;
+			}
+
+			const auto distance{ fabs(delta) };
+			const auto weight{ bicubicWeight(coeffB, coeffC, distance) };
+			const auto sourcePixel = BLOCK_OFFSET_RGB32(pixels, width, samplePosX, samplePosY);
+
+			// Accumulate bicubic weighted samples from the source.
+			totalSamples[0] += sourcePixel[0] * weight;
+			totalSamples[1] += sourcePixel[1] * weight;
+			totalSamples[2] += sourcePixel[2] * weight;
+
+			// Record the total weights of the sample for later normalization.
+			sampleCount += weight;
+		}
+
+		// Normalize our bicubic sum back to the valid pixel range.
+		float scaleFactor = 1.0f / sampleCount;
+		output[0] = clipRange(scaleFactor * totalSamples[0], 0, 255);
+		output[1] = clipRange(scaleFactor * totalSamples[1], 0, 255);
+		output[2] = clipRange(scaleFactor * totalSamples[2], 0, 255);
+
+		return true;
+	}
+
+	/*
 	bool Resampler::sampleKernel(uint8_t* pixels,
 								 uint32_t width,
 								 uint32_t height,
@@ -220,7 +329,50 @@ namespace tga
 
 		return false;
 	}
+	*/
 
+	/*
+	bool Resampler::sampleKernel(uint8_t* pixels,
+								 uint32_t width,
+								 uint32_t height,
+								 KernelDirection direction,
+								 float subPixelPosX,
+								 float subPixelPosY,
+								 KernelType type,
+								 float mappingRatioX,
+								 float mappingRatioY,
+								 uint8_t* output)
+	{
+		std::unordered_map<KernelType, float> u =
+		{
+			{Bicubic, 0.0f},
+			{Catmull, 0.0f},
+			{Mitchell, 0.0f},
+			{Cardinal, 0.0f},
+			{BSpline, 0.0f}
+		};
+
+		if (type == Bicubic || type == Catmull || type == Mitchell || type == Cardinal || type == BSpline)
+		{
+			float coeffB{ u[Bicubic] };
+			float coeffC{ 1.0f };
+
+			sampleKernelBicubic(pixels,
+								width,
+								height,
+								direction,
+								subPixelPosX,
+								subPixelPosY,
+								coeffB,
+								coeffC,
+								output);
+		}
+
+		return true;
+	}
+	*/
+
+	/*
 	bool Resampler::sampleKernelBicubic(uint8_t* pixels,
 										uint32_t width,
 										uint32_t height,
@@ -274,19 +426,6 @@ namespace tga
 			{
 				continue;
 			}
-
-			/*
-			float delta{};
-
-			if (direction == Horizontal)
-			{
-				delta = static_cast<float>(subPixelPosX - samplePosX);
-			}
-			else if (direction == Vertical)
-			{
-				delta = static_cast<float>(subPixelPosY - samplePosY);
-			}
-			*/
 
 			const auto distance{ fabs(delta) };
 			const auto weight{ bicubicWeight(coeffB, coeffC, distance) };
@@ -384,4 +523,5 @@ namespace tga
 
 		return true;
 	}
+	*/
 }
