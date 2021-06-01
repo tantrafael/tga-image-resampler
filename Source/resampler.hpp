@@ -83,6 +83,32 @@ namespace tga
 					  KernelType type);
 
 	private:
+		bool foo(KernelDirection direction,
+				 uint8_t* pixels,
+				 uint32_t width,
+				 uint32_t height,
+				 float subPixelPosX,
+				 float subPixelPosY,
+				 float mappingRatioX,
+				 float mappingRatioY,
+				 uint8_t* output);
+
+		bool getSourcePixel(const float subPixelPosX,
+							const float subPixelPosY,
+							const KernelDirection direction,
+							const int i,
+							uint8_t* pixels,
+							const int32_t width,
+							const int32_t height,
+							float& distance,
+							uint8_t*& sourcePixel);
+
+		void accumulateSamples(const uint8_t* sourcePixel,
+							   const float weight,
+							   float (&totalSamples)[3],
+							   float& sampleCount);
+		};
+
 		/*
 		bool sampleKernel(uint8_t* pixels,
 						  uint32_t width,
@@ -127,27 +153,6 @@ namespace tga
 								 float coeffA,
 								 uint8_t* output);
 		*/
-
-		bool foo(KernelDirection direction,
-				 uint8_t* pixels,
-				 uint32_t width,
-				 uint32_t height,
-				 float subPixelPosX,
-				 float subPixelPosY,
-				 float mappingRatioX,
-				 float mappingRatioY,
-				 uint8_t* output);
-
-		bool bar(const int i,
-				 const KernelDirection direction,
-				 uint8_t* pixels,
-				 const int32_t width,
-				 const int32_t height,
-				 const float subPixelPosX,
-				 const float subPixelPosY,
-				 float &distance,
-				 uint8_t* &sourcePixel);
-	};
 }
 
 #endif /* resampler_hpp */

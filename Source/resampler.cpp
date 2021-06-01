@@ -145,8 +145,6 @@ namespace tga
 								   && height >= 0
 								   && subPixelPosX >= 0.0f
 								   && subPixelPosY >= 0.0f
-								   //&& coeffB >= 0.0f
-								   //&& coeffC >= 0.0f
 								   && output != nullptr);
 
 		if (!isValidInput)
@@ -162,63 +160,25 @@ namespace tga
 
 		for (int i = -2; i < 2; ++i)
 		{
-			/*
-			int32_t samplePosX{};
-			int32_t samplePosY{};
-			float delta{};
-
-			if (direction == Horizontal)
-			{
-				samplePosX = static_cast<int32_t>(subPixelPosX + i);
-				samplePosY = static_cast<int32_t>(subPixelPosY);
-				delta = static_cast<float>(subPixelPosX - samplePosX);
-			}
-			else if (direction == Vertical)
-			{
-				samplePosX = static_cast<int32_t>(subPixelPosX);
-				samplePosY = static_cast<int32_t>(subPixelPosY + i);
-				delta = static_cast<float>(subPixelPosY - samplePosY);
-			}
-
-			if (samplePosX < 0
-				|| samplePosY < 0
-				|| samplePosX > width - 1
-				|| samplePosY > height - 1)
-			{
-				continue;
-			}
-
-			const auto distance{ fabs(delta) };
-			const auto sourcePixel = BLOCK_OFFSET_RGB32(pixels, width, samplePosX, samplePosY);
-			*/
-
-			//int32_t samplePosX{};
-			//int32_t samplePosY{};
 			float distance{};
 			uint8_t* sourcePixel{};
 
-			if (!bar(i,
-					 direction,
-					 pixels,
-					 width,
-					 height,
-					 subPixelPosX,
-					 subPixelPosY,
-					 distance,
-					 sourcePixel))
+			if (!getSourcePixel(subPixelPosX,
+								subPixelPosY,
+								direction,
+								i,
+								pixels,
+								width,
+								height,
+								distance,
+								sourcePixel))
 			{
 				continue;
 			}
 
 			const auto weight{ bicubicWeight(coeffB, coeffC, distance) };
 
-			// Accumulate bicubic weighted samples from the source.
-			totalSamples[0] += sourcePixel[0] * weight;
-			totalSamples[1] += sourcePixel[1] * weight;
-			totalSamples[2] += sourcePixel[2] * weight;
-
-			// Record the total weights of the sample for later normalization.
-			sampleCount += weight;
+			accumulateSamples(sourcePixel, weight, totalSamples, sampleCount);
 		}
 
 		// Normalize our bicubic sum back to the valid pixel range.
@@ -230,15 +190,15 @@ namespace tga
 		return true;
 	}
 
-	bool Resampler::bar(const int i,
-						const KernelDirection direction,
-						uint8_t* pixels,
-						const int32_t width,
-						const int32_t height,
-						const float subPixelPosX,
-						const float subPixelPosY,
-						float &distance,
-						uint8_t* &sourcePixel)
+	bool Resampler::getSourcePixel(const float subPixelPosX,
+								   const float subPixelPosY,
+								   const KernelDirection direction,
+								   const int i,
+								   uint8_t* pixels,
+								   const int32_t width,
+								   const int32_t height,
+								   float& distance,
+								   uint8_t*& sourcePixel)
 	{
 		int32_t samplePosX{};
 		int32_t samplePosY{};
@@ -271,6 +231,20 @@ namespace tga
 		sourcePixel = BLOCK_OFFSET_RGB32(pixels, width, samplePosX, samplePosY);
 
 		return true;
+	}
+
+	void Resampler::accumulateSamples(const uint8_t* sourcePixel,
+									  const float weight,
+									  float (&totalSamples)[3],
+									  float& sampleCount)
+	{
+		// Accumulate weighted samples from the source.
+		totalSamples[0] += sourcePixel[0] * weight;
+		totalSamples[1] += sourcePixel[1] * weight;
+		totalSamples[2] += sourcePixel[2] * weight;
+
+		// Record the total weights of the sample for later normalization.
+		sampleCount += weight;
 	}
 
 	/*
