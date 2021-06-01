@@ -45,8 +45,6 @@ namespace tga
 		const auto targetMappingHeight{ static_cast<float>(targetHeader.height - 1) };
 		const auto mappingRatioY = sourceMappingHeight / targetMappingHeight;
 
-		//auto bar = &Resampler::foo;
-
 		// Horizontal resampling.
 		for (int row = 0; row < sourceHeader.height; ++row)
 		{
@@ -164,6 +162,7 @@ namespace tga
 
 		for (int i = -2; i < 2; ++i)
 		{
+			/*
 			int32_t samplePosX{};
 			int32_t samplePosY{};
 			float delta{};
@@ -190,8 +189,28 @@ namespace tga
 			}
 
 			const auto distance{ fabs(delta) };
-			const auto weight{ bicubicWeight(coeffB, coeffC, distance) };
 			const auto sourcePixel = BLOCK_OFFSET_RGB32(pixels, width, samplePosX, samplePosY);
+			*/
+
+			//int32_t samplePosX{};
+			//int32_t samplePosY{};
+			float distance{};
+			uint8_t* sourcePixel{};
+
+			if (!bar(i,
+					 direction,
+					 pixels,
+					 width,
+					 height,
+					 subPixelPosX,
+					 subPixelPosY,
+					 distance,
+					 sourcePixel))
+			{
+				continue;
+			}
+
+			const auto weight{ bicubicWeight(coeffB, coeffC, distance) };
 
 			// Accumulate bicubic weighted samples from the source.
 			totalSamples[0] += sourcePixel[0] * weight;
@@ -207,6 +226,49 @@ namespace tga
 		output[0] = clipRange(scaleFactor * totalSamples[0], 0, 255);
 		output[1] = clipRange(scaleFactor * totalSamples[1], 0, 255);
 		output[2] = clipRange(scaleFactor * totalSamples[2], 0, 255);
+
+		return true;
+	}
+
+	bool Resampler::bar(const int i,
+						const KernelDirection direction,
+						uint8_t* pixels,
+						const int32_t width,
+						const int32_t height,
+						const float subPixelPosX,
+						const float subPixelPosY,
+						float &distance,
+						uint8_t* &sourcePixel)
+	{
+		int32_t samplePosX{};
+		int32_t samplePosY{};
+		float delta{};
+
+		if (direction == Horizontal)
+		{
+			samplePosX = static_cast<int32_t>(subPixelPosX + i);
+			samplePosY = static_cast<int32_t>(subPixelPosY);
+			delta = static_cast<float>(subPixelPosX - samplePosX);
+		}
+		else if (direction == Vertical)
+		{
+			samplePosX = static_cast<int32_t>(subPixelPosX);
+			samplePosY = static_cast<int32_t>(subPixelPosY + i);
+			delta = static_cast<float>(subPixelPosY - samplePosY);
+		}
+
+		const bool isValidSamplePos = (samplePosX >= 0
+									   && samplePosY >= 0
+									   && samplePosX < width
+									   && samplePosY < height);
+
+		if (!isValidSamplePos)
+		{
+			return false;
+		}
+
+		distance = fabs(delta);
+		sourcePixel = BLOCK_OFFSET_RGB32(pixels, width, samplePosX, samplePosY);
 
 		return true;
 	}

@@ -137,6 +137,16 @@ namespace tga
 				 float mappingRatioX,
 				 float mappingRatioY,
 				 uint8_t* output);
+
+		bool bar(const int i,
+				 const KernelDirection direction,
+				 uint8_t* pixels,
+				 const int32_t width,
+				 const int32_t height,
+				 const float subPixelPosX,
+				 const float subPixelPosY,
+				 float &distance,
+				 uint8_t* &sourcePixel);
 	};
 }
 
