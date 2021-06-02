@@ -3,7 +3,8 @@
 
 namespace tga
 {
-	enum KernelDirection {
+	enum KernelDirection
+	{
 		//Unknown,
 		Horizontal,
 		Vertical,

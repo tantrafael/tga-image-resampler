@@ -36,6 +36,7 @@ namespace tga
 		// smart way to allocate very large buffers without initialization.
 		const auto bufferSize{ targetImage.rowStride * sourceHeader.height };
 		std::unique_ptr<uint8_t[]> buffer(new uint8_t[bufferSize]);
+		auto bufferPixels{ buffer.get() };
 
 		const auto sourceMappingWidth{ static_cast<float>(sourceHeader.width - 1) };
 		const auto targetMappingWidth{ static_cast<float>(targetHeader.width - 1) };
@@ -45,94 +46,76 @@ namespace tga
 		const auto targetMappingHeight{ static_cast<float>(targetHeader.height - 1) };
 		const auto mappingRatioY = sourceMappingHeight / targetMappingHeight;
 
+		Foo foo{ 0.0f, 1.0f };
+
 		/*
-		// Horizontal resampling.
-		for (int row = 0; row < sourceHeader.height; ++row)
-		{
-			for (int col = 0; col < targetHeader.width; ++col)
-			{
-				uint8_t* output = BLOCK_OFFSET_RGB32(buffer.get(),
-													 targetHeader.width,
-													 col,
-													 row);
+		resampleDirection(Horizontal,
+						  sourceHeader.width,
+						  sourceHeader.height,
+						  sourceImage.pixels,
+						  targetHeader.width,
+						  sourceHeader.height,
+						  bufferPixels,
+						  mappingRatioX,
+						  mappingRatioY);
 
-				// Determine the sub-pixel location of our target (col, row)
-				// coordinate, in the space of our source image.
-				auto subPixelPosX = static_cast<float>(col * mappingRatioX);
-				auto subPixelPosY = static_cast<float>(row);
-
-				sampleKernel(Horizontal,
-							 sourceImage.pixels,
-							 sourceHeader.width,
-							 sourceHeader.height,
-							 subPixelPosX,
-							 subPixelPosY,
-							 mappingRatioX,
-							 mappingRatioY,
-							 output);
-			}
-		}
-
-		// Vertical resampling.
-		for (int row = 0; row < targetHeader.height; ++row)
-		{
-			for (int col = 0; col < targetHeader.width; col++)
-			{
-				uint8_t* output = BLOCK_OFFSET_RGB32(targetImage.pixels,
-													 targetHeader.width,
-													 col,
-													 row);
-
-				// Determine the sub-pixel location of our target (col, row)
-				// coordinate, in the space of our source image.
-				auto subPixelPosX = static_cast<float>(col);
-				auto subPixelPosY = static_cast<float>(row * mappingRatioY);
-
-				sampleKernel(Vertical,
-							 buffer.get(),
-							 targetHeader.width,
-							 sourceHeader.height,
-							 subPixelPosX,
-							 subPixelPosY,
-							 mappingRatioX,
-							 mappingRatioY,
-							 output);
-			}
-		}
+		resampleDirection(Vertical,
+						  targetHeader.width,
+						  sourceHeader.height,
+						  bufferPixels,
+						  targetHeader.width,
+						  targetHeader.height,
+						  targetImage.pixels,
+						  mappingRatioX,
+						  mappingRatioY);
 		*/
 
-		foo(Horizontal,
-			sourceHeader.width,
-			sourceHeader.height,
-			targetHeader.width,
-			sourceHeader.height,
-			sourceImage.pixels,
-			buffer.get(),
-			mappingRatioX,
-			mappingRatioY);
+		resampleDirection(foo,
+						  Horizontal,
+						  sourceHeader.width,
+						  sourceHeader.height,
+						  sourceImage.pixels,
+						  targetHeader.width,
+						  sourceHeader.height,
+						  bufferPixels,
+						  mappingRatioX,
+						  mappingRatioY);
 
-		foo(Vertical,
-			targetHeader.width,
-			sourceHeader.height,
-			targetHeader.width,
-			targetHeader.height,
-			buffer.get(),
-			targetImage.pixels,
-			mappingRatioX,
-			mappingRatioY);
+		resampleDirection(foo,
+						  Vertical,
+						  targetHeader.width,
+						  sourceHeader.height,
+						  bufferPixels,
+						  targetHeader.width,
+						  targetHeader.height,
+						  targetImage.pixels,
+						  mappingRatioX,
+						  mappingRatioY);
 
 		return true;
 	}
 
-	bool Resampler::foo(const KernelDirection direction,
-						const int inputWidth,
-						const int inputHeight,
-						const int outputWidth,
-						const int outputHeight,
-						uint8_t* inputPixels,
-						uint8_t* outputPixels,
-						float mappingRatioX,
-						float mappingRatioY)
+	/*
+	bool Resampler::resampleDirection(const KernelDirection direction,
+									  const int inputWidth,
+									  const int inputHeight,
+									  uint8_t* inputPixels,
+									  const int outputWidth,
+									  const int outputHeight,
+									  uint8_t* outputPixels,
+									  const float mappingRatioX,
+									  const float mappingRatioY)
+	*/
+	bool Resampler::resampleDirection(Foo& foo,
+									  const KernelDirection direction,
+									  const int inputWidth,
+									  const int inputHeight,
+									  uint8_t* inputPixels,
+									  const int outputWidth,
+									  const int outputHeight,
+									  uint8_t* outputPixels,
+									  const float mappingRatioX,
+									  const float mappingRatioY)
 	{
 		for (int row = 0; row < outputHeight; ++row)
 		{
@@ -156,7 +139,20 @@ namespace tga
 					subPixelPosY = static_cast<float>(row * mappingRatioY);
 				}
 
+				/*
 				sampleKernel(direction,
+							 inputPixels,
+							 inputWidth,
+							 inputHeight,
+							 subPixelPosX,
+							 subPixelPosY,
+							 mappingRatioX,
+							 mappingRatioY,
+							 output);
+				*/
+
+				sampleKernel(foo,
+							 direction,
 							 inputPixels,
 							 inputWidth,
 							 inputHeight,
@@ -171,7 +167,19 @@ namespace tga
 		return true;
 	}
 
+	/*
 	bool Resampler::sampleKernel(KernelDirection direction,
+								 uint8_t* pixels,
+								 uint32_t width,
+								 uint32_t height,
+								 float subPixelPosX,
+								 float subPixelPosY,
+								 float mappingRatioX,
+								 float mappingRatioY,
+								 uint8_t* output)
+	*/
+	bool Resampler::sampleKernel(Foo& foo,
+								 KernelDirection direction,
 								 uint8_t* pixels,
 								 uint32_t width,
 								 uint32_t height,
@@ -197,6 +205,7 @@ namespace tga
 		float sampleCount = 0;
 		float totalSamples[3] = {0};
 
+		/*
 		sampleKernelBicubic(subPixelPosX,
 							subPixelPosY,
 							direction,
@@ -205,6 +214,16 @@ namespace tga
 							height,
 							sampleCount,
 							totalSamples);
+		*/
+
+		foo(subPixelPosX,
+			subPixelPosY,
+			direction,
+			pixels,
+			width,
+			height,
+			sampleCount,
+			totalSamples);
 
 		// Normalize our sum back to the valid pixel range.
 		float scaleFactor = 1.0f / sampleCount;

@@ -7,16 +7,18 @@
 #include "image.hpp"
 #include "kernel_type.hpp"
 #include "kernel_direction.hpp"
+#include "foo.hpp"
 
 namespace tga
 {
-	#define BLOCK_OFFSET_RGB32(ptr, width, x, y) (ptr + (4 * width) * y + 4 * x)
+	//#define BLOCK_OFFSET_RGB32(ptr, width, x, y) (ptr + (4 * width) * y + 4 * x)
 
 	inline int32_t clipRange(int32_t input, int32_t low, int32_t high)
 	{
 		return (input < low) ? low : (input > high) ? high : input;
 	}
 
+	/*
 	inline float bicubicWeight(const float coeffB,
 							   const float coeffC,
 							   const float distance)
@@ -50,6 +52,7 @@ namespace tga
 
 		return result;
 	}
+	*/
 
 	inline float sinc(const float x)
 	{
@@ -82,25 +85,61 @@ namespace tga
 					  Image& targetImage,
 					  KernelType type);
 
-	private:
-		bool foo(const KernelDirection direction,
-				 const int inputWidth,
-				 const int inputHeight,
-				 const int outputWidth,
-				 const int outputHeight,
-				 uint8_t* inputPixels,
-				 uint8_t* outputPixels,
-				 float mappingRatioX,
-				 float mappingRatioY);
+		static bool getSourcePixel(const float subPixelPosX,
+								   const float subPixelPosY,
+								   const KernelDirection direction,
+								   const int offset,
+								   uint8_t* pixels,
+								   const int32_t width,
+								   const int32_t height,
+								   float& distance,
+								   uint8_t*& sourcePixel);
 
+	private:
+		/*
+		bool resampleDirection(const KernelDirection direction,
+							   const int inputWidth,
+							   const int inputHeight,
+							   uint8_t* inputPixels,
+							   const int outputWidth,
+							   const int outputHeight,
+							   uint8_t* outputPixels,
+							   const float mappingRatioX,
+							   const float mappingRatioY);
+		*/
+
+		bool resampleDirection(Foo& foo,
+							   const KernelDirection direction,
+							   const int inputWidth,
+							   const int inputHeight,
+							   uint8_t* inputPixels,
+							   const int outputWidth,
+							   const int outputHeight,
+							   uint8_t* outputPixels,
+							   const float mappingRatioX,
+							   const float mappingRatioY);
+
+		/*
 		bool sampleKernel(KernelDirection direction,
 						  uint8_t* pixels,
 						  uint32_t width,
 						  uint32_t height,
 						  float subPixelPosX,
 						  float subPixelPosY,
-						  float mappingRatioX,
-						  float mappingRatioY,
+						  const float mappingRatioX,
+						  const float mappingRatioY,
+						  uint8_t* output);
+		*/
+
+		bool sampleKernel(Foo& foo,
+						  KernelDirection direction,
+						  uint8_t* pixels,
+						  uint32_t width,
+						  uint32_t height,
+						  float subPixelPosX,
+						  float subPixelPosY,
+						  const float mappingRatioX,
+						  const float mappingRatioY,
 						  uint8_t* output);
 
 		bool sampleKernelBicubic(const float subPixelPosX,
@@ -112,6 +151,7 @@ namespace tga
 								 float& sampleCount,
 								 float (&totalSamples)[3]);
 
+		/*
 		bool getSourcePixel(const float subPixelPosX,
 							const float subPixelPosY,
 							const KernelDirection direction,
@@ -121,6 +161,7 @@ namespace tga
 							const int32_t height,
 							float& distance,
 							uint8_t*& sourcePixel);
+		*/
 
 		void accumulateSamples(const uint8_t* sourcePixel,
 							   const float weight,
