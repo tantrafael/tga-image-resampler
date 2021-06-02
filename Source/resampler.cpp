@@ -45,6 +45,7 @@ namespace tga
 		const auto targetMappingHeight{ static_cast<float>(targetHeader.height - 1) };
 		const auto mappingRatioY = sourceMappingHeight / targetMappingHeight;
 
+		/*
 		// Horizontal resampling.
 		for (int row = 0; row < sourceHeader.height; ++row)
 		{
@@ -60,30 +61,15 @@ namespace tga
 				auto subPixelPosX = static_cast<float>(col * mappingRatioX);
 				auto subPixelPosY = static_cast<float>(row);
 
-				/*
-				sampleKernel(sourceImage.pixels,
+				sampleKernel(Horizontal,
+							 sourceImage.pixels,
 							 sourceHeader.width,
 							 sourceHeader.height,
-							 Horizontal,
 							 subPixelPosX,
 							 subPixelPosY,
-							 type,
 							 mappingRatioX,
 							 mappingRatioY,
 							 output);
-				*/
-
-				//bar(subPixelPosX, subPixelPosY, output);
-
-				foo(Horizontal,
-					sourceImage.pixels,
-					sourceHeader.width,
-					sourceHeader.height,
-					subPixelPosX,
-					subPixelPosY,
-					mappingRatioX,
-					mappingRatioY,
-					output);
 			}
 		}
 
@@ -102,43 +88,98 @@ namespace tga
 				auto subPixelPosX = static_cast<float>(col);
 				auto subPixelPosY = static_cast<float>(row * mappingRatioY);
 
-				/*
-				sampleKernel(buffer.get(),
+				sampleKernel(Vertical,
+							 buffer.get(),
 							 targetHeader.width,
 							 sourceHeader.height,
-							 Vertical,
 							 subPixelPosX,
 							 subPixelPosY,
-							 type,
 							 mappingRatioX,
 							 mappingRatioY,
 							 output);
-				*/
+			}
+		}
+		*/
 
-				foo(Vertical,
-					buffer.get(),
-					targetHeader.width,
-					sourceHeader.height,
-					subPixelPosX,
-					subPixelPosY,
-					mappingRatioX,
-					mappingRatioY,
-					output);
+		foo(Horizontal,
+			sourceHeader.width,
+			sourceHeader.height,
+			targetHeader.width,
+			sourceHeader.height,
+			sourceImage.pixels,
+			buffer.get(),
+			mappingRatioX,
+			mappingRatioY);
+
+		foo(Vertical,
+			targetHeader.width,
+			sourceHeader.height,
+			targetHeader.width,
+			targetHeader.height,
+			buffer.get(),
+			targetImage.pixels,
+			mappingRatioX,
+			mappingRatioY);
+
+		return true;
+	}
+
+	bool Resampler::foo(const KernelDirection direction,
+						const int inputWidth,
+						const int inputHeight,
+						const int outputWidth,
+						const int outputHeight,
+						uint8_t* inputPixels,
+						uint8_t* outputPixels,
+						float mappingRatioX,
+						float mappingRatioY)
+	{
+		for (int row = 0; row < outputHeight; ++row)
+		{
+			for (int col = 0; col < outputWidth; ++col)
+			{
+				uint8_t* output = BLOCK_OFFSET_RGB32(outputPixels, outputWidth, col, row);
+
+				// Determine the sub-pixel location of our target (col, row)
+				// coordinate, in the space of our source image.
+				float subPixelPosX{};
+				float subPixelPosY{};
+
+				if (direction == Horizontal)
+				{
+					subPixelPosX = static_cast<float>(col * mappingRatioX);
+					subPixelPosY = static_cast<float>(row);
+				}
+				else if (direction == Vertical)
+				{
+					subPixelPosX = static_cast<float>(col);
+					subPixelPosY = static_cast<float>(row * mappingRatioY);
+				}
+
+				sampleKernel(direction,
+							 inputPixels,
+							 inputWidth,
+							 inputHeight,
+							 subPixelPosX,
+							 subPixelPosY,
+							 mappingRatioX,
+							 mappingRatioY,
+							 output);
 			}
 		}
 
 		return true;
 	}
 
-	bool Resampler::foo(KernelDirection direction,
-						uint8_t* pixels,
-						uint32_t width,
-						uint32_t height,
-						float subPixelPosX,
-						float subPixelPosY,
-						float mappingRatioX,
-						float mappingRatioY,
-						uint8_t* output)
+	bool Resampler::sampleKernel(KernelDirection direction,
+								 uint8_t* pixels,
+								 uint32_t width,
+								 uint32_t height,
+								 float subPixelPosX,
+								 float subPixelPosY,
+								 float mappingRatioX,
+								 float mappingRatioY,
+								 uint8_t* output)
 	{
 		const bool isValidInput = (pixels != nullptr
 								   && width >= 0
@@ -155,10 +196,38 @@ namespace tga
 		// TODO: List initialize.
 		float sampleCount = 0;
 		float totalSamples[3] = {0};
+
+		sampleKernelBicubic(subPixelPosX,
+							subPixelPosY,
+							direction,
+							pixels,
+							width,
+							height,
+							sampleCount,
+							totalSamples);
+
+		// Normalize our sum back to the valid pixel range.
+		float scaleFactor = 1.0f / sampleCount;
+		output[0] = clipRange(scaleFactor * totalSamples[0], 0, 255);
+		output[1] = clipRange(scaleFactor * totalSamples[1], 0, 255);
+		output[2] = clipRange(scaleFactor * totalSamples[2], 0, 255);
+
+		return true;
+	}
+
+	bool Resampler::sampleKernelBicubic(const float subPixelPosX,
+										const float subPixelPosY,
+										const KernelDirection direction,
+										uint8_t* pixels,
+										const int32_t width,
+										const int32_t height,
+										float& sampleCount,
+										float (&totalSamples)[3])
+	{
 		float coeffB{ 0.0f };
 		float coeffC{ 1.0f };
 
-		for (int i = -2; i < 2; ++i)
+		for (int offset = -2; offset < 2; ++offset)
 		{
 			float distance{};
 			uint8_t* sourcePixel{};
@@ -166,7 +235,7 @@ namespace tga
 			if (!getSourcePixel(subPixelPosX,
 								subPixelPosY,
 								direction,
-								i,
+								offset,
 								pixels,
 								width,
 								height,
@@ -177,15 +246,8 @@ namespace tga
 			}
 
 			const auto weight{ bicubicWeight(coeffB, coeffC, distance) };
-
 			accumulateSamples(sourcePixel, weight, totalSamples, sampleCount);
 		}
-
-		// Normalize our bicubic sum back to the valid pixel range.
-		float scaleFactor = 1.0f / sampleCount;
-		output[0] = clipRange(scaleFactor * totalSamples[0], 0, 255);
-		output[1] = clipRange(scaleFactor * totalSamples[1], 0, 255);
-		output[2] = clipRange(scaleFactor * totalSamples[2], 0, 255);
 
 		return true;
 	}
@@ -193,7 +255,7 @@ namespace tga
 	bool Resampler::getSourcePixel(const float subPixelPosX,
 								   const float subPixelPosY,
 								   const KernelDirection direction,
-								   const int i,
+								   const int offset,
 								   uint8_t* pixels,
 								   const int32_t width,
 								   const int32_t height,
@@ -206,14 +268,14 @@ namespace tga
 
 		if (direction == Horizontal)
 		{
-			samplePosX = static_cast<int32_t>(subPixelPosX + i);
+			samplePosX = static_cast<int32_t>(subPixelPosX + offset);
 			samplePosY = static_cast<int32_t>(subPixelPosY);
 			delta = static_cast<float>(subPixelPosX - samplePosX);
 		}
 		else if (direction == Vertical)
 		{
 			samplePosX = static_cast<int32_t>(subPixelPosX);
-			samplePosY = static_cast<int32_t>(subPixelPosY + i);
+			samplePosY = static_cast<int32_t>(subPixelPosY + offset);
 			delta = static_cast<float>(subPixelPosY - samplePosY);
 		}
 

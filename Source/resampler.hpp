@@ -83,20 +83,39 @@ namespace tga
 					  KernelType type);
 
 	private:
-		bool foo(KernelDirection direction,
-				 uint8_t* pixels,
-				 uint32_t width,
-				 uint32_t height,
-				 float subPixelPosX,
-				 float subPixelPosY,
+		bool foo(const KernelDirection direction,
+				 const int inputWidth,
+				 const int inputHeight,
+				 const int outputWidth,
+				 const int outputHeight,
+				 uint8_t* inputPixels,
+				 uint8_t* outputPixels,
 				 float mappingRatioX,
-				 float mappingRatioY,
-				 uint8_t* output);
+				 float mappingRatioY);
+
+		bool sampleKernel(KernelDirection direction,
+						  uint8_t* pixels,
+						  uint32_t width,
+						  uint32_t height,
+						  float subPixelPosX,
+						  float subPixelPosY,
+						  float mappingRatioX,
+						  float mappingRatioY,
+						  uint8_t* output);
+
+		bool sampleKernelBicubic(const float subPixelPosX,
+								 const float subPixelPosY,
+								 const KernelDirection direction,
+								 uint8_t* pixels,
+								 const int32_t width,
+								 const int32_t height,
+								 float& sampleCount,
+								 float (&totalSamples)[3]);
 
 		bool getSourcePixel(const float subPixelPosX,
 							const float subPixelPosY,
 							const KernelDirection direction,
-							const int i,
+							const int offset,
 							uint8_t* pixels,
 							const int32_t width,
 							const int32_t height,
