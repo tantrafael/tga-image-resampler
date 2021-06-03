@@ -1,6 +1,4 @@
 #include "resampler.hpp"
-#include <cmath>
-#include <unordered_map>
 
 namespace tga
 {
@@ -46,31 +44,10 @@ namespace tga
 		const auto targetMappingHeight{ static_cast<float>(targetHeader.height - 1) };
 		const auto mappingRatioY = sourceMappingHeight / targetMappingHeight;
 
-		Foo foo{ 0.0f, 1.0f };
+		//BicubicSampler sampleBicubic{ 0.0f, 1.0f };
+		LanczosSampler sampleLanczos{ 3.0f };
 
-		/*
-		resampleDirection(Horizontal,
-						  sourceHeader.width,
-						  sourceHeader.height,
-						  sourceImage.pixels,
-						  targetHeader.width,
-						  sourceHeader.height,
-						  bufferPixels,
-						  mappingRatioX,
-						  mappingRatioY);
-
-		resampleDirection(Vertical,
-						  targetHeader.width,
-						  sourceHeader.height,
-						  bufferPixels,
-						  targetHeader.width,
-						  targetHeader.height,
-						  targetImage.pixels,
-						  mappingRatioX,
-						  mappingRatioY);
-		*/
-
-		resampleDirection(foo,
+		resampleDirection(sampleLanczos,
 						  Horizontal,
 						  sourceHeader.width,
 						  sourceHeader.height,
@@ -81,7 +58,7 @@ namespace tga
 						  mappingRatioX,
 						  mappingRatioY);
 
-		resampleDirection(foo,
+		resampleDirection(sampleLanczos,
 						  Vertical,
 						  targetHeader.width,
 						  sourceHeader.height,
@@ -96,7 +73,8 @@ namespace tga
 	}
 
 	/*
-	bool Resampler::resampleDirection(const KernelDirection direction,
+	bool Resampler::resampleDirection(BicubicSampler& sample,
+									  const KernelDirection direction,
 									  const int inputWidth,
 									  const int inputHeight,
 									  uint8_t* inputPixels,
@@ -106,7 +84,9 @@ namespace tga
 									  const float mappingRatioX,
 									  const float mappingRatioY)
 	*/
-	bool Resampler::resampleDirection(Foo& foo,
+
+	template<typename T>
+	bool Resampler::resampleDirection(T& sample,
 									  const KernelDirection direction,
 									  const int inputWidth,
 									  const int inputHeight,
@@ -139,19 +119,7 @@ namespace tga
 					subPixelPosY = static_cast<float>(row * mappingRatioY);
 				}
 
-				/*
-				sampleKernel(direction,
-							 inputPixels,
-							 inputWidth,
-							 inputHeight,
-							 subPixelPosX,
-							 subPixelPosY,
-							 mappingRatioX,
-							 mappingRatioY,
-							 output);
-				*/
-
-				sampleKernel(foo,
+				sampleKernel(sample,
 							 direction,
 							 inputPixels,
 							 inputWidth,
@@ -167,18 +135,8 @@ namespace tga
 		return true;
 	}
 
-	/*
-	bool Resampler::sampleKernel(KernelDirection direction,
-								 uint8_t* pixels,
-								 uint32_t width,
-								 uint32_t height,
-								 float subPixelPosX,
-								 float subPixelPosY,
-								 float mappingRatioX,
-								 float mappingRatioY,
-								 uint8_t* output)
-	*/
-	bool Resampler::sampleKernel(Foo& foo,
+	template<typename T>
+	bool Resampler::sampleKernel(T& sample,
 								 KernelDirection direction,
 								 uint8_t* pixels,
 								 uint32_t width,
@@ -205,25 +163,14 @@ namespace tga
 		float sampleCount = 0;
 		float totalSamples[3] = {0};
 
-		/*
-		sampleKernelBicubic(subPixelPosX,
-							subPixelPosY,
-							direction,
-							pixels,
-							width,
-							height,
-							sampleCount,
-							totalSamples);
-		*/
-
-		foo(subPixelPosX,
-			subPixelPosY,
-			direction,
-			pixels,
-			width,
-			height,
-			sampleCount,
-			totalSamples);
+		sample(subPixelPosX,
+			   subPixelPosY,
+			   direction,
+			   pixels,
+			   width,
+			   height,
+			   sampleCount,
+			   totalSamples);
 
 		// Normalize our sum back to the valid pixel range.
 		float scaleFactor = 1.0f / sampleCount;
@@ -234,6 +181,7 @@ namespace tga
 		return true;
 	}
 
+	/*
 	bool Resampler::sampleKernelBicubic(const float subPixelPosX,
 										const float subPixelPosY,
 										const KernelDirection direction,
@@ -270,7 +218,9 @@ namespace tga
 
 		return true;
 	}
+	*/
 
+	/*
 	bool Resampler::getSourcePixel(const float subPixelPosX,
 								   const float subPixelPosY,
 								   const KernelDirection direction,
@@ -313,7 +263,9 @@ namespace tga
 
 		return true;
 	}
+	*/
 
+	/*
 	void Resampler::accumulateSamples(const uint8_t* sourcePixel,
 									  const float weight,
 									  float (&totalSamples)[3],
@@ -327,6 +279,7 @@ namespace tga
 		// Record the total weights of the sample for later normalization.
 		sampleCount += weight;
 	}
+	*/
 
 	/*
 	bool Resampler::sampleKernel(uint8_t* pixels,

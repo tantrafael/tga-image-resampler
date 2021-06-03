@@ -8,52 +8,12 @@
 #include "kernel_type.hpp"
 #include "kernel_direction.hpp"
 #include "foo.hpp"
+#include "baz.hpp"
 
 namespace tga
 {
-	//#define BLOCK_OFFSET_RGB32(ptr, width, x, y) (ptr + (4 * width) * y + 4 * x)
-
-	inline int32_t clipRange(int32_t input, int32_t low, int32_t high)
-	{
-		return (input < low) ? low : (input > high) ? high : input;
-	}
-
+	// TODO: Move to Lanczos implementation.
 	/*
-	inline float bicubicWeight(const float coeffB,
-							   const float coeffC,
-							   const float distance)
-	{
-		// Our bicubic function is designed to provide feedback over a radius
-		// of 2.0 pixels.
-		float distance2 = distance * distance;
-		float distance3 = distance * distance * distance;
-		float result = 0.0f;
-
-		if (distance < 1.0f)
-		{
-			float cubicTerm = (12.0f - 9.0f * coeffB - 6.0f * coeffC) * distance3;
-			float quadTerm = (-18.0f + 12.0f * coeffB + 6.0f * coeffC) * distance2;
-			float constTerm = (6.0f - 2.0f * coeffB);
-			result = (1.0f / 6.0f) * (cubicTerm + quadTerm + constTerm);
-		}
-		else if (distance >= 1.0f && distance < 2.0f)
-		{
-			float cubicTerm = (-coeffB - 6.0f * coeffC) * distance3;
-			float quadTerm = (6.0f * coeffB + 30.0f * coeffC) * distance2;
-			float linTerm = (-12.0f * coeffB - 48.0f * coeffC) * distance;
-			float constTerm = (8.0f * coeffB + 24.0f * coeffC);
-			result = (1.0f / 6.0f) * (cubicTerm + quadTerm + linTerm + constTerm);
-		}
-
-		if (result < 0.0f)
-		{
-			result = 0.0;
-		}
-
-		return result;
-	}
-	*/
-
 	inline float sinc(const float x)
 	{
 		if (x == 0.0f)
@@ -73,6 +33,7 @@ namespace tga
 
 		return 0.0f;
 	}
+	*/
 
 	class Resampler
 	{
@@ -97,7 +58,8 @@ namespace tga
 
 	private:
 		/*
-		bool resampleDirection(const KernelDirection direction,
+		bool resampleDirection(BicubicSampler& sampler,
+							   const KernelDirection direction,
 							   const int inputWidth,
 							   const int inputHeight,
 							   uint8_t* inputPixels,
@@ -108,7 +70,8 @@ namespace tga
 							   const float mappingRatioY);
 		*/
 
-		bool resampleDirection(Foo& foo,
+		template<typename T>
+		bool resampleDirection(T& sample,
 							   const KernelDirection direction,
 							   const int inputWidth,
 							   const int inputHeight,
@@ -119,19 +82,8 @@ namespace tga
 							   const float mappingRatioX,
 							   const float mappingRatioY);
 
-		/*
-		bool sampleKernel(KernelDirection direction,
-						  uint8_t* pixels,
-						  uint32_t width,
-						  uint32_t height,
-						  float subPixelPosX,
-						  float subPixelPosY,
-						  const float mappingRatioX,
-						  const float mappingRatioY,
-						  uint8_t* output);
-		*/
-
-		bool sampleKernel(Foo& foo,
+		template<typename T>
+		bool sampleKernel(T& sample,
 						  KernelDirection direction,
 						  uint8_t* pixels,
 						  uint32_t width,
@@ -142,6 +94,7 @@ namespace tga
 						  const float mappingRatioY,
 						  uint8_t* output);
 
+		/*
 		bool sampleKernelBicubic(const float subPixelPosX,
 								 const float subPixelPosY,
 								 const KernelDirection direction,
@@ -150,6 +103,7 @@ namespace tga
 								 const int32_t height,
 								 float& sampleCount,
 								 float (&totalSamples)[3]);
+		*/
 
 		/*
 		bool getSourcePixel(const float subPixelPosX,
@@ -163,11 +117,12 @@ namespace tga
 							uint8_t*& sourcePixel);
 		*/
 
+		/*
 		void accumulateSamples(const uint8_t* sourcePixel,
 							   const float weight,
 							   float (&totalSamples)[3],
 							   float& sampleCount);
-		};
+		*/
 
 		/*
 		bool sampleKernel(uint8_t* pixels,
@@ -213,6 +168,7 @@ namespace tga
 								 float coeffA,
 								 uint8_t* output);
 		*/
+	};
 }
 
 #endif /* resampler_hpp */

@@ -9,6 +9,11 @@ namespace tga
 {
 	#define BLOCK_OFFSET_RGB32(ptr, width, x, y) (ptr + (4 * width) * y + 4 * x)
 
+	inline int32_t clipRange(int32_t input, int32_t low, int32_t high)
+	{
+		return (input < low) ? low : (input > high) ? high : input;
+	}
+
 	class Bar
 	{
 	public:

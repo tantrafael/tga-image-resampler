@@ -1,7 +1,6 @@
 #ifndef foo_hpp
 #define foo_hpp
 
-//#include "resampler.hpp"
 #include "bar.hpp"
 
 namespace tga
@@ -40,10 +39,10 @@ namespace tga
 		return result;
 	}
 
-	class Foo
+	class BicubicSampler
 	{
 	public:
-		Foo(const float coeffB, const float coeffC)
+		BicubicSampler(const float coeffB, const float coeffC)
 			: m_coeffB{ coeffB }
 			, m_coeffC{ coeffC }
 		{}
@@ -57,6 +56,17 @@ namespace tga
 						float& sampleCount,
 						float (&totalSamples)[3])
 		{
+			const bool isValidInput = (subPixelPosX >= 0.0f
+									   && subPixelPosY >= 0.0f
+									   && pixels != nullptr
+									   && width >= 0
+									   && height >= 0);
+
+			if (!isValidInput)
+			{
+				return false;
+			}
+
 			for (int offset = -2; offset < 2; ++offset)
 			{
 				float distance{};
