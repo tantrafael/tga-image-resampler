@@ -7,34 +7,9 @@
 #include "image.hpp"
 #include "kernel_type.hpp"
 #include "kernel_direction.hpp"
-#include "foo.hpp"
-#include "baz.hpp"
 
 namespace tga
 {
-	// TODO: Move to Lanczos implementation.
-	/*
-	inline float sinc(const float x)
-	{
-		if (x == 0.0f)
-		{
-			return 1.0f;
-		}
-
-		return sin(M_PI * x) / (M_PI * x);
-	}
-
-	inline float lanczosWeight(const float coeffA, const float distance)
-	{
-		if (distance <= coeffA)
-		{
-			return sinc(distance) * sinc(distance / coeffA);
-		}
-
-		return 0.0f;
-	}
-	*/
-
 	class Resampler
 	{
 	public:

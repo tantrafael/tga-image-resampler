@@ -1,5 +1,5 @@
-#ifndef bar_hpp
-#define bar_hpp
+#ifndef helper_hpp
+#define helper_hpp
 
 #include <cmath>
 
@@ -14,7 +14,7 @@ namespace tga
 		return (input < low) ? low : (input > high) ? high : input;
 	}
 
-	class Bar
+	class Helper
 	{
 	public:
 		static bool getSourcePixel(const float subPixelPosX,
@@ -76,4 +76,4 @@ namespace tga
 	};
 }
 
-#endif /* bar_hpp */
+#endif /* helper_hpp */

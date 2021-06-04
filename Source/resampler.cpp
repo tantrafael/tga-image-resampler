@@ -1,5 +1,13 @@
 #include "resampler.hpp"
 
+//#include <unordered_map>
+#include <map>
+
+#include "helper.hpp"
+//#include "foo.hpp"
+#include "bicubic.hpp"
+#include "lanczos.hpp"
+
 namespace tga
 {
 	Resampler::Resampler()
@@ -44,10 +52,38 @@ namespace tga
 		const auto targetMappingHeight{ static_cast<float>(targetHeader.height - 1) };
 		const auto mappingRatioY = sourceMappingHeight / targetMappingHeight;
 
-		//BicubicSampler sampleBicubic{ 0.0f, 1.0f };
-		LanczosSampler sampleLanczos{ 3.0f };
+		//std::unordered_map<int, int> table;
+		//std::map<KernelType, int> table;
+		//std::unordered_map<KernelType, BicubicSampler*> table;
+		//std::unordered_map<KernelType, BicubicSampler> table
+		std::map<KernelType, BicubicSampler*> table
+		{
+			{ Bicubic, new BicubicSampler{ 0.0f, 1.0f } },
+			//{ Catmull, BicubicSampler{ 0.0f, 0.5f } },
+			//{ Mitchell, BicubicSampler{ 1.0f / 3.0f, 1.0f / 3.0f } },
+			//{ Cardinal, BicubicSampler{ 0.0f, 0.75f } },
+			//{ BSpline, BicubicSampler{ 1.0f, 0.0f } }
+		};
+		//std::map<KernelType, BicubicSampler*> table;
+		//table[Bicubic] = BicubicSampler{0.0f, 1.0f};
+		//table[0] = BicubicSampler{ 0.0f, 1.0f };
+		//BicubicSampler{ 0.0f, 1.0f };
 
-		resampleDirection(sampleLanczos,
+		//BicubicSampler sampleBicubic{ 0.0f, 1.0f };
+		//table[Bicubic] = &sampleBicubic;
+		//Foo* f = &sampleBicubic;
+		//LanczosSampler sampleLanczos{ 2 };
+		//BicubicSampler* sampleBicubic = new BicubicSampler(0.0f, 1.0f);
+		//Foo* sampleBicubic{ new BicubicSampler(0.0f, 1.0f) };
+		//BicubicSampler sampleBicubic{ 0.0f, 1.0f };
+		//table[0] = sampleBicubic;
+		//table[Bicubic] = 100;
+
+		//BicubicSampler* sampleBicubic = &table[0];
+		//&table[Catmull];
+		BicubicSampler sampleBicubic = *table[type];
+
+		resampleDirection(sampleBicubic,
 						  Horizontal,
 						  sourceHeader.width,
 						  sourceHeader.height,
@@ -58,7 +94,7 @@ namespace tga
 						  mappingRatioX,
 						  mappingRatioY);
 
-		resampleDirection(sampleLanczos,
+		resampleDirection(sampleBicubic,
 						  Vertical,
 						  targetHeader.width,
 						  sourceHeader.height,
@@ -71,19 +107,6 @@ namespace tga
 
 		return true;
 	}
-
-	/*
-	bool Resampler::resampleDirection(BicubicSampler& sample,
-									  const KernelDirection direction,
-									  const int inputWidth,
-									  const int inputHeight,
-									  uint8_t* inputPixels,
-									  const int outputWidth,
-									  const int outputHeight,
-									  uint8_t* outputPixels,
-									  const float mappingRatioX,
-									  const float mappingRatioY)
-	*/
 
 	template<typename T>
 	bool Resampler::resampleDirection(T& sample,

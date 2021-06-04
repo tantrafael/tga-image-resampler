@@ -1,7 +1,7 @@
 #ifndef baz_hpp
 #define baz_hpp
 
-#include "bar.hpp"
+#include "helper.hpp"
 
 namespace tga
 {
@@ -32,14 +32,14 @@ namespace tga
 			: m_coeffA{ coeffA }
 		{}
 
-		int operator() (const float subPixelPosX,
-						const float subPixelPosY,
-						const KernelDirection direction,
-						uint8_t* pixels,
-						const int32_t width,
-						const int32_t height,
-						float& sampleCount,
-						float (&totalSamples)[3])
+		bool operator() (const float subPixelPosX,
+						 const float subPixelPosY,
+						 const KernelDirection direction,
+						 uint8_t* pixels,
+						 const int32_t width,
+						 const int32_t height,
+						 float& sampleCount,
+						 float (&totalSamples)[3])
 		{
 			const bool isValidInput = (subPixelPosX >= 0.0f
 									   && subPixelPosY >= 0.0f
@@ -59,7 +59,7 @@ namespace tga
 				float distance{};
 				uint8_t* sourcePixel{};
 
-				if (!Bar::getSourcePixel(subPixelPosX,
+				if (!Helper::getSourcePixel(subPixelPosX,
 										 subPixelPosY,
 										 direction,
 										 offset,
@@ -73,7 +73,7 @@ namespace tga
 				}
 
 				const auto weight{ lanczosWeight(m_coeffA, distance) };
-				Bar::accumulateSamples(sourcePixel, weight, totalSamples, sampleCount);
+				Helper::accumulateSamples(sourcePixel, weight, totalSamples, sampleCount);
 			}
 
 			return true;
