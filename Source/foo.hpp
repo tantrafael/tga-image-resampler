@@ -15,6 +15,17 @@ namespace tga
 								 float& sampleCount,
 								 float (&totalSamples)[3]) = 0;
 	};
+
+	/*
+	class Factory
+	{
+	public:
+		static Foo create()
+		{
+			return ();
+		}
+	};
+	*/
 }
 
 #endif /* foo_hpp */

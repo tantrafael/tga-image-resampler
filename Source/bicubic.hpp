@@ -40,7 +40,7 @@ namespace tga
 		return result;
 	}
 
-	class BicubicSampler
+	class BicubicSampler : public Foo
 	{
 	public:
 		BicubicSampler(const float coeffB, const float coeffC)

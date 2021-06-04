@@ -56,9 +56,10 @@ namespace tga
 		//std::map<KernelType, int> table;
 		//std::unordered_map<KernelType, BicubicSampler*> table;
 		//std::unordered_map<KernelType, BicubicSampler> table
-		std::map<KernelType, BicubicSampler*> table
+		std::map<KernelType, std::function<BicubicSampler*()>> table
 		{
-			{ Bicubic, new BicubicSampler{ 0.0f, 1.0f } },
+			//{ Bicubic, new BicubicSampler{ 0.0f, 1.0f } },
+			{ Bicubic, []() { return new BicubicSampler{ 0.0f, 0.5f }; } },
 			//{ Catmull, BicubicSampler{ 0.0f, 0.5f } },
 			//{ Mitchell, BicubicSampler{ 1.0f / 3.0f, 1.0f / 3.0f } },
 			//{ Cardinal, BicubicSampler{ 0.0f, 0.75f } },
@@ -81,9 +82,15 @@ namespace tga
 
 		//BicubicSampler* sampleBicubic = &table[0];
 		//&table[Catmull];
-		BicubicSampler sampleBicubic = *table[type];
 
-		resampleDirection(sampleBicubic,
+		//BicubicSampler sampleBicubic = *table[type];
+
+		std::function<BicubicSampler*()> lambda = table[type];
+		BicubicSampler foo = *lambda();
+
+		//Foo foo = Factory::create(type);
+
+		resampleDirection(foo,
 						  Horizontal,
 						  sourceHeader.width,
 						  sourceHeader.height,
@@ -94,7 +101,7 @@ namespace tga
 						  mappingRatioX,
 						  mappingRatioY);
 
-		resampleDirection(sampleBicubic,
+		resampleDirection(foo,
 						  Vertical,
 						  targetHeader.width,
 						  sourceHeader.height,
