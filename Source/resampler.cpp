@@ -10,6 +10,23 @@
 
 namespace tga
 {
+	/*
+	template<typename T>
+	struct Wrapper
+	{
+		typedef std::map<KernelType, std::function<T()>> map_type;
+	};
+	*/
+
+	class Bar
+	{
+	public:
+		Bar()
+		{
+			
+		}
+	};
+
 	Resampler::Resampler()
 	{}
 
@@ -56,15 +73,33 @@ namespace tga
 		//std::map<KernelType, int> table;
 		//std::unordered_map<KernelType, BicubicSampler*> table;
 		//std::unordered_map<KernelType, BicubicSampler> table
-		std::map<KernelType, std::function<BicubicSampler*()>> table
+		//std::map<KernelType, std::function<BicubicSampler*()>> table
+		//std::map<KernelType, std::function<BicubicSampler()>> table
+		//template<typename T>
+		//std::map<KernelType, std::function<T()>> table
+		std::map<KernelType, std::function<Foo*()>> table
 		{
 			//{ Bicubic, new BicubicSampler{ 0.0f, 1.0f } },
+			//{ Bicubic, []() { return new BicubicSampler{ 0.0f, 0.5f }; } },
+			//{ Bicubic, []() { return BicubicSampler{ 0.0f, 0.5f }; } },
+			//{ Bicubic, []() { return new BicubicSampler{ 0.0f, 0.5f }; } },
 			{ Bicubic, []() { return new BicubicSampler{ 0.0f, 0.5f }; } },
 			//{ Catmull, BicubicSampler{ 0.0f, 0.5f } },
 			//{ Mitchell, BicubicSampler{ 1.0f / 3.0f, 1.0f / 3.0f } },
 			//{ Cardinal, BicubicSampler{ 0.0f, 0.75f } },
 			//{ BSpline, BicubicSampler{ 1.0f, 0.0f } }
 		};
+
+		/*
+		std::map<KernelType, Foo> table
+		{
+			//{ Bicubic, (BicubicSampler, 0.0f, 1.0f) },
+			//{ Catmull, (BicubicSampler, 0.0f, 0.5f) },
+			//{ Lanczos, (LanczosSampler, 1.0f) },
+			//{ Lanczos2, (LanczosSampler, 2.0f) }
+		};
+		*/
+
 		//std::map<KernelType, BicubicSampler*> table;
 		//table[Bicubic] = BicubicSampler{0.0f, 1.0f};
 		//table[0] = BicubicSampler{ 0.0f, 1.0f };
@@ -85,12 +120,20 @@ namespace tga
 
 		//BicubicSampler sampleBicubic = *table[type];
 
-		std::function<BicubicSampler*()> lambda = table[type];
-		BicubicSampler foo = *lambda();
+		//std::function<BicubicSampler*()> lambda = table[type];
+		//BicubicSampler foo = *lambda();
+
+		//std::function<BicubicSampler()> lambda = table[type];
+		//BicubicSampler foo = lambda();
+
+		std::function<Foo*()> lambda = table[type];
+		Foo* sampler = lambda();
+		//BicubicSampler foo = &bar;
+		//Foo* foo = &(lambda());
 
 		//Foo foo = Factory::create(type);
 
-		resampleDirection(foo,
+		resampleDirection(sampler,
 						  Horizontal,
 						  sourceHeader.width,
 						  sourceHeader.height,
@@ -101,7 +144,7 @@ namespace tga
 						  mappingRatioX,
 						  mappingRatioY);
 
-		resampleDirection(foo,
+		resampleDirection(sampler,
 						  Vertical,
 						  targetHeader.width,
 						  sourceHeader.height,
@@ -115,8 +158,9 @@ namespace tga
 		return true;
 	}
 
-	template<typename T>
-	bool Resampler::resampleDirection(T& sample,
+	//template<typename T>
+	//bool Resampler::resampleDirection(T& sample,
+	bool Resampler::resampleDirection(Foo* sampler,
 									  const KernelDirection direction,
 									  const int inputWidth,
 									  const int inputHeight,
@@ -149,7 +193,8 @@ namespace tga
 					subPixelPosY = static_cast<float>(row * mappingRatioY);
 				}
 
-				sampleKernel(sample,
+				//sampleKernel(sample,
+				sampleKernel(sampler,
 							 direction,
 							 inputPixels,
 							 inputWidth,
@@ -165,8 +210,9 @@ namespace tga
 		return true;
 	}
 
-	template<typename T>
-	bool Resampler::sampleKernel(T& sample,
+	//template<typename T>
+	//bool Resampler::sampleKernel(T& sample,
+	bool Resampler::sampleKernel(Foo* sampler,
 								 KernelDirection direction,
 								 uint8_t* pixels,
 								 uint32_t width,
@@ -193,7 +239,8 @@ namespace tga
 		float sampleCount = 0;
 		float totalSamples[3] = {0};
 
-		sample(subPixelPosX,
+		//sample(subPixelPosX,
+		sampler->sample(subPixelPosX,
 			   subPixelPosY,
 			   direction,
 			   pixels,

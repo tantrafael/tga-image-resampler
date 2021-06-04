@@ -7,6 +7,7 @@
 #include "image.hpp"
 #include "kernel_type.hpp"
 #include "kernel_direction.hpp"
+#include "foo.hpp"
 
 namespace tga
 {
@@ -45,8 +46,9 @@ namespace tga
 							   const float mappingRatioY);
 		*/
 
-		template<typename T>
-		bool resampleDirection(T& sample,
+		//template<typename T>
+		//bool resampleDirection(T& sample,
+		bool resampleDirection(Foo* sampler,
 							   const KernelDirection direction,
 							   const int inputWidth,
 							   const int inputHeight,
@@ -57,8 +59,9 @@ namespace tga
 							   const float mappingRatioX,
 							   const float mappingRatioY);
 
-		template<typename T>
-		bool sampleKernel(T& sample,
+		//template<typename T>
+		//bool sampleKernel(T& sample,
+		bool sampleKernel(Foo* sampler,
 						  KernelDirection direction,
 						  uint8_t* pixels,
 						  uint32_t width,

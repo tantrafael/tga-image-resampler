@@ -48,7 +48,8 @@ namespace tga
 			, m_coeffC{ coeffC }
 		{}
 
-		bool operator() (const float subPixelPosX,
+		//bool operator() (const float subPixelPosX,
+		bool sample(const float subPixelPosX,
 						 const float subPixelPosY,
 						 const KernelDirection direction,
 						 uint8_t* pixels,
