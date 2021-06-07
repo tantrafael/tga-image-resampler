@@ -12,10 +12,10 @@ namespace tga
 	class KernelSampler
 	{
 		// Bicubic:  BicubicSampler; 0.0f, 1.0f
-		// Catmull:  BicubicSampler; 0.0f, 1.0f
-		// Mitchell: BicubicSampler; 0.0f, 1.0f
-		// Cardinal: BicubicSampler; 0.0f, 1.0f
-		// BSpline:  BicubicSampler; 0.0f, 1.0f
+		// Catmull:  BicubicSampler; 0.0f, 0.5f
+		// Mitchell: BicubicSampler; 1.0f / 3.0f, 1.0f / 3.0f
+		// Cardinal: BicubicSampler; 0.0f, 0.75f
+		// BSpline:  BicubicSampler; 1.0f, 0.0f
 		// Lanczos:  LanczosSampler; 1.0f,
 		// Lanczos2: LanczosSampler; 2.0f
 		// Lanczos3: LanczosSampler; 3.0f
