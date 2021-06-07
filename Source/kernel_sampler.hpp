@@ -1,10 +1,12 @@
-#ifndef foo_hpp
-#define foo_hpp
+#ifndef kernel_sampler_hpp
+#define kernel_sampler_hpp
+
+#include "kernel_direction.hpp"
 
 namespace tga
 {
 	// TODO: Add virtual destructor.
-	class Foo
+	class KernelSampler
 	{
 	public:
 		/*
@@ -27,17 +29,6 @@ namespace tga
 							float& sampleCount,
 							float (&totalSamples)[3]) = 0;
 	};
-
-	class Factory
-	{
-	public:
-		/*
-		static Foo create()
-		{
-			return ();
-		}
-		*/
-	};
 }
 
-#endif /* foo_hpp */
+#endif /* kernel_sampler_hpp */

@@ -7,7 +7,7 @@
 #include "image.hpp"
 #include "kernel_type.hpp"
 #include "kernel_direction.hpp"
-#include "foo.hpp"
+#include "kernel_sampler.hpp"
 
 namespace tga
 {
@@ -48,7 +48,7 @@ namespace tga
 
 		//template<typename T>
 		//bool resampleDirection(T& sample,
-		bool resampleDirection(Foo* sampler,
+		bool resampleDirection(KernelSampler* sampler,
 							   const KernelDirection direction,
 							   const int inputWidth,
 							   const int inputHeight,
@@ -61,7 +61,7 @@ namespace tga
 
 		//template<typename T>
 		//bool sampleKernel(T& sample,
-		bool sampleKernel(Foo* sampler,
+		bool sampleKernel(KernelSampler* sampler,
 						  KernelDirection direction,
 						  uint8_t* pixels,
 						  uint32_t width,

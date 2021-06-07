@@ -1,7 +1,7 @@
 #ifndef bicubic_hpp
 #define bicubic_hpp
 
-#include "foo.hpp"
+#include "kernel_sampler.hpp"
 #include "helper.hpp"
 
 namespace tga
@@ -40,7 +40,8 @@ namespace tga
 		return result;
 	}
 
-	class BicubicSampler : public Foo
+	//class BicubicSampler
+	class BicubicSampler : public KernelSampler
 	{
 	public:
 		BicubicSampler(const float coeffB, const float coeffC)

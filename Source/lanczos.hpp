@@ -1,6 +1,7 @@
-#ifndef baz_hpp
-#define baz_hpp
+#ifndef lanczos_hpp
+#define lanczos_hpp
 
+#include "kernel_sampler.hpp"
 #include "helper.hpp"
 
 namespace tga
@@ -25,14 +26,16 @@ namespace tga
 		return 0.0f;
 	}
 
-	class LanczosSampler
+	//class LanczosSampler
+	class LanczosSampler : public KernelSampler
 	{
 	public:
 		LanczosSampler(const float coeffA)
 			: m_coeffA{ coeffA }
 		{}
 
-		bool operator() (const float subPixelPosX,
+		//bool operator() (const float subPixelPosX,
+		bool sample(const float subPixelPosX,
 						 const float subPixelPosY,
 						 const KernelDirection direction,
 						 uint8_t* pixels,
@@ -84,4 +87,4 @@ namespace tga
 	};
 }
 
-#endif /* baz_hpp */
+#endif /* lanczos_hpp */

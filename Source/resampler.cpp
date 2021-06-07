@@ -4,9 +4,11 @@
 #include <map>
 
 #include "helper.hpp"
-//#include "foo.hpp"
+#include "kernel_sampler_factory.hpp"
+/*
 #include "bicubic.hpp"
 #include "lanczos.hpp"
+*/
 
 namespace tga
 {
@@ -17,15 +19,6 @@ namespace tga
 		typedef std::map<KernelType, std::function<T()>> map_type;
 	};
 	*/
-
-	class Bar
-	{
-	public:
-		Bar()
-		{
-			
-		}
-	};
 
 	Resampler::Resampler()
 	{}
@@ -69,27 +62,6 @@ namespace tga
 		const auto targetMappingHeight{ static_cast<float>(targetHeader.height - 1) };
 		const auto mappingRatioY = sourceMappingHeight / targetMappingHeight;
 
-		//std::unordered_map<int, int> table;
-		//std::map<KernelType, int> table;
-		//std::unordered_map<KernelType, BicubicSampler*> table;
-		//std::unordered_map<KernelType, BicubicSampler> table
-		//std::map<KernelType, std::function<BicubicSampler*()>> table
-		//std::map<KernelType, std::function<BicubicSampler()>> table
-		//template<typename T>
-		//std::map<KernelType, std::function<T()>> table
-		std::map<KernelType, std::function<Foo*()>> table
-		{
-			//{ Bicubic, new BicubicSampler{ 0.0f, 1.0f } },
-			//{ Bicubic, []() { return new BicubicSampler{ 0.0f, 0.5f }; } },
-			//{ Bicubic, []() { return BicubicSampler{ 0.0f, 0.5f }; } },
-			//{ Bicubic, []() { return new BicubicSampler{ 0.0f, 0.5f }; } },
-			{ Bicubic, []() { return new BicubicSampler{ 0.0f, 0.5f }; } },
-			//{ Catmull, BicubicSampler{ 0.0f, 0.5f } },
-			//{ Mitchell, BicubicSampler{ 1.0f / 3.0f, 1.0f / 3.0f } },
-			//{ Cardinal, BicubicSampler{ 0.0f, 0.75f } },
-			//{ BSpline, BicubicSampler{ 1.0f, 0.0f } }
-		};
-
 		/*
 		std::map<KernelType, Foo> table
 		{
@@ -100,38 +72,21 @@ namespace tga
 		};
 		*/
 
-		//std::map<KernelType, BicubicSampler*> table;
-		//table[Bicubic] = BicubicSampler{0.0f, 1.0f};
-		//table[0] = BicubicSampler{ 0.0f, 1.0f };
-		//BicubicSampler{ 0.0f, 1.0f };
+		/*
+		//template<typename T>
+		//std::map<KernelType, std::function<T()>> table
+		std::map<KernelType, std::function<KernelSampler*()>> table
+		{
+			{ Bicubic, []() { return new BicubicSampler{ 0.0f, 1.0f }; } },
+			{ Lanczos, []() { return new LanczosSampler{ 1.0f }; } }
+		};
 
-		//BicubicSampler sampleBicubic{ 0.0f, 1.0f };
-		//table[Bicubic] = &sampleBicubic;
-		//Foo* f = &sampleBicubic;
-		//LanczosSampler sampleLanczos{ 2 };
-		//BicubicSampler* sampleBicubic = new BicubicSampler(0.0f, 1.0f);
-		//Foo* sampleBicubic{ new BicubicSampler(0.0f, 1.0f) };
-		//BicubicSampler sampleBicubic{ 0.0f, 1.0f };
-		//table[0] = sampleBicubic;
-		//table[Bicubic] = 100;
-
-		//BicubicSampler* sampleBicubic = &table[0];
-		//&table[Catmull];
-
-		//BicubicSampler sampleBicubic = *table[type];
-
-		//std::function<BicubicSampler*()> lambda = table[type];
-		//BicubicSampler foo = *lambda();
-
-		//std::function<BicubicSampler()> lambda = table[type];
-		//BicubicSampler foo = lambda();
-
-		std::function<Foo*()> lambda = table[type];
-		Foo* sampler = lambda();
-		//BicubicSampler foo = &bar;
-		//Foo* foo = &(lambda());
+		std::function<KernelSampler*()> lambda = table[type];
+		KernelSampler* sampler = lambda();
+		*/
 
 		//Foo foo = Factory::create(type);
+		KernelSampler* sampler = KernelSamplerFactory::create(type);
 
 		resampleDirection(sampler,
 						  Horizontal,
@@ -160,7 +115,7 @@ namespace tga
 
 	//template<typename T>
 	//bool Resampler::resampleDirection(T& sample,
-	bool Resampler::resampleDirection(Foo* sampler,
+	bool Resampler::resampleDirection(KernelSampler* sampler,
 									  const KernelDirection direction,
 									  const int inputWidth,
 									  const int inputHeight,
@@ -212,7 +167,7 @@ namespace tga
 
 	//template<typename T>
 	//bool Resampler::sampleKernel(T& sample,
-	bool Resampler::sampleKernel(Foo* sampler,
+	bool Resampler::sampleKernel(KernelSampler* sampler,
 								 KernelDirection direction,
 								 uint8_t* pixels,
 								 uint32_t width,
@@ -239,8 +194,8 @@ namespace tga
 		float sampleCount = 0;
 		float totalSamples[3] = {0};
 
-		//sample(subPixelPosX,
-		sampler->sample(subPixelPosX,
+		/*
+		sample(subPixelPosX,
 			   subPixelPosY,
 			   direction,
 			   pixels,
@@ -248,6 +203,16 @@ namespace tga
 			   height,
 			   sampleCount,
 			   totalSamples);
+		*/
+
+		sampler->sample(subPixelPosX,
+						subPixelPosY,
+						direction,
+						pixels,
+						width,
+						height,
+						sampleCount,
+						totalSamples);
 
 		// Normalize our sum back to the valid pixel range.
 		float scaleFactor = 1.0f / sampleCount;
@@ -257,418 +222,4 @@ namespace tga
 
 		return true;
 	}
-
-	/*
-	bool Resampler::sampleKernelBicubic(const float subPixelPosX,
-										const float subPixelPosY,
-										const KernelDirection direction,
-										uint8_t* pixels,
-										const int32_t width,
-										const int32_t height,
-										float& sampleCount,
-										float (&totalSamples)[3])
-	{
-		float coeffB{ 0.0f };
-		float coeffC{ 1.0f };
-
-		for (int offset = -2; offset < 2; ++offset)
-		{
-			float distance{};
-			uint8_t* sourcePixel{};
-
-			if (!getSourcePixel(subPixelPosX,
-								subPixelPosY,
-								direction,
-								offset,
-								pixels,
-								width,
-								height,
-								distance,
-								sourcePixel))
-			{
-				continue;
-			}
-
-			const auto weight{ bicubicWeight(coeffB, coeffC, distance) };
-			accumulateSamples(sourcePixel, weight, totalSamples, sampleCount);
-		}
-
-		return true;
-	}
-	*/
-
-	/*
-	bool Resampler::getSourcePixel(const float subPixelPosX,
-								   const float subPixelPosY,
-								   const KernelDirection direction,
-								   const int offset,
-								   uint8_t* pixels,
-								   const int32_t width,
-								   const int32_t height,
-								   float& distance,
-								   uint8_t*& sourcePixel)
-	{
-		int32_t samplePosX{};
-		int32_t samplePosY{};
-		float delta{};
-
-		if (direction == Horizontal)
-		{
-			samplePosX = static_cast<int32_t>(subPixelPosX + offset);
-			samplePosY = static_cast<int32_t>(subPixelPosY);
-			delta = static_cast<float>(subPixelPosX - samplePosX);
-		}
-		else if (direction == Vertical)
-		{
-			samplePosX = static_cast<int32_t>(subPixelPosX);
-			samplePosY = static_cast<int32_t>(subPixelPosY + offset);
-			delta = static_cast<float>(subPixelPosY - samplePosY);
-		}
-
-		const bool isValidSamplePos = (samplePosX >= 0
-									   && samplePosY >= 0
-									   && samplePosX < width
-									   && samplePosY < height);
-
-		if (!isValidSamplePos)
-		{
-			return false;
-		}
-
-		distance = fabs(delta);
-		sourcePixel = BLOCK_OFFSET_RGB32(pixels, width, samplePosX, samplePosY);
-
-		return true;
-	}
-	*/
-
-	/*
-	void Resampler::accumulateSamples(const uint8_t* sourcePixel,
-									  const float weight,
-									  float (&totalSamples)[3],
-									  float& sampleCount)
-	{
-		// Accumulate weighted samples from the source.
-		totalSamples[0] += sourcePixel[0] * weight;
-		totalSamples[1] += sourcePixel[1] * weight;
-		totalSamples[2] += sourcePixel[2] * weight;
-
-		// Record the total weights of the sample for later normalization.
-		sampleCount += weight;
-	}
-	*/
-
-	/*
-	bool Resampler::sampleKernel(uint8_t* pixels,
-								 uint32_t width,
-								 uint32_t height,
-								 KernelDirection direction,
-								 float subPixelPosX,
-								 float subPixelPosY,
-								 KernelType type,
-								 float mappingRatioX,
-								 float mappingRatioY,
-								 uint8_t* output)
-	{
-		switch (type)
-		{
-			case Bicubic:
-				return sampleKernelBicubic(pixels,
-										   width,
-										   height,
-										   direction,
-										   subPixelPosX,
-										   subPixelPosY,
-										   0.0f,
-										   1.0f,
-										   output);
-			case Catmull:
-				return sampleKernelBicubic(pixels,
-										   width,
-										   height,
-										   direction,
-										   subPixelPosX,
-										   subPixelPosY,
-										   0.0f,
-										   0.5f,
-										   output);
-			case Mitchell:
-				return sampleKernelBicubic(pixels,
-										   width,
-										   height,
-										   direction,
-										   subPixelPosX,
-										   subPixelPosY,
-										   1.0f / 3.0f,
-										   1.0f / 3.0f,
-										   output);
-			case Cardinal:
-				return sampleKernelBicubic(pixels,
-										   width,
-										   height,
-										   direction,
-										   subPixelPosX,
-										   subPixelPosY,
-										   0.0f,
-										   0.75f,
-										   output);
-			case BSpline:
-				return sampleKernelBicubic(pixels,
-										   width,
-										   height,
-										   direction,
-										   subPixelPosX,
-										   subPixelPosY,
-										   1.0f,
-										   0.0f,
-										   output);
-
-			case Lanczos:
-				return sampleKernelLanczos(pixels,
-										   width,
-										   height,
-										   direction,
-										   subPixelPosX,
-										   subPixelPosY,
-										   1,
-										   output);
-
-			case Lanczos2:
-				return sampleKernelLanczos(pixels,
-										   width,
-										   height,
-										   direction,
-										   subPixelPosX,
-										   subPixelPosY,
-										   2,
-										   output);
-
-			case Lanczos3:
-				return sampleKernelLanczos(pixels,
-										   width,
-										   height,
-										   direction,
-										   subPixelPosX,
-										   subPixelPosY,
-										   3,
-										   output);
-
-			case Lanczos4:
-				return sampleKernelLanczos(pixels,
-										   width,
-										   height,
-										   direction,
-										   subPixelPosX,
-										   subPixelPosY,
-										   4,
-										   output);
-
-			case Lanczos5:
-				return sampleKernelLanczos(pixels,
-										   width,
-										   height,
-										   direction,
-										   subPixelPosX,
-										   subPixelPosY,
-										   5,
-										   output);
-		}
-
-		return false;
-	}
-	*/
-
-	/*
-	bool Resampler::sampleKernel(uint8_t* pixels,
-								 uint32_t width,
-								 uint32_t height,
-								 KernelDirection direction,
-								 float subPixelPosX,
-								 float subPixelPosY,
-								 KernelType type,
-								 float mappingRatioX,
-								 float mappingRatioY,
-								 uint8_t* output)
-	{
-		std::unordered_map<KernelType, float> u =
-		{
-			{Bicubic, 0.0f},
-			{Catmull, 0.0f},
-			{Mitchell, 0.0f},
-			{Cardinal, 0.0f},
-			{BSpline, 0.0f}
-		};
-
-		if (type == Bicubic || type == Catmull || type == Mitchell || type == Cardinal || type == BSpline)
-		{
-			float coeffB{ u[Bicubic] };
-			float coeffC{ 1.0f };
-
-			sampleKernelBicubic(pixels,
-								width,
-								height,
-								direction,
-								subPixelPosX,
-								subPixelPosY,
-								coeffB,
-								coeffC,
-								output);
-		}
-
-		return true;
-	}
-	*/
-
-	/*
-	bool Resampler::sampleKernelBicubic(uint8_t* pixels,
-										uint32_t width,
-										uint32_t height,
-										KernelDirection direction,
-										float subPixelPosX,
-										float subPixelPosY,
-										float coeffB,
-										float coeffC,
-										uint8_t* output)
-	{
-		const bool isValidInput = (pixels != nullptr
-								   && width >= 0
-								   && height >= 0
-								   && subPixelPosX >= 0.0f
-								   && subPixelPosY >= 0.0f
-								   && coeffB >= 0.0f
-								   && coeffC >= 0.0f
-								   && output != nullptr);
-
-		if (!isValidInput)
-		{
-			return false;
-		}
-
-		float sampleCount = 0;
-		float totalSamples[3] = {0};
-
-		for (int i = -2; i < 2; ++i)
-		{
-			int32_t samplePosX{};
-			int32_t samplePosY{};
-			float delta{};
-
-			if (direction == Horizontal)
-			{
-				samplePosX = static_cast<int32_t>(subPixelPosX + i);
-				samplePosY = static_cast<int32_t>(subPixelPosY);
-				delta = static_cast<float>(subPixelPosX - samplePosX);
-			}
-			else if (direction == Vertical)
-			{
-				samplePosX = static_cast<int32_t>(subPixelPosX);
-				samplePosY = static_cast<int32_t>(subPixelPosY + i);
-				delta = static_cast<float>(subPixelPosY - samplePosY);
-			}
-
-			if (samplePosX < 0
-				|| samplePosY < 0
-				|| samplePosX > width - 1
-				|| samplePosY > height - 1)
-			{
-				continue;
-			}
-
-			const auto distance{ fabs(delta) };
-			const auto weight{ bicubicWeight(coeffB, coeffC, distance) };
-			const auto sourcePixel = BLOCK_OFFSET_RGB32(pixels, width, samplePosX, samplePosY);
-
-			// Accumulate bicubic weighted samples from the source.
-			totalSamples[0] += sourcePixel[0] * weight;
-			totalSamples[1] += sourcePixel[1] * weight;
-			totalSamples[2] += sourcePixel[2] * weight;
-
-			// Record the total weights of the sample for later normalization.
-			sampleCount += weight;
-		}
-
-		// Normalize our bicubic sum back to the valid pixel range.
-		float scaleFactor = 1.0f / sampleCount;
-		output[0] = clipRange(scaleFactor * totalSamples[0], 0, 255);
-		output[1] = clipRange(scaleFactor * totalSamples[1], 0, 255);
-		output[2] = clipRange(scaleFactor * totalSamples[2], 0, 255);
-
-		return true;
-	}
-
-	bool Resampler::sampleKernelLanczos(uint8_t* pixels,
-										uint32_t width,
-										uint32_t height,
-										KernelDirection direction,
-										float subPixelPosX,
-										float subPixelPosY,
-										float coeffA,
-										uint8_t* output)
-	{
-		const bool isValidInput = (pixels != nullptr
-								   && width >= 0
-								   && height >= 0
-								   && subPixelPosX >= 0.0f
-								   && subPixelPosY >= 0.0f
-								   && coeffA >= 0.0f
-								   && output != nullptr);
-
-		if (!isValidInput)
-		{
-			return false;
-		}
-
-		int32_t radius = coeffA;
-		float sampleCount = 0;
-		float totalSamples[3] = {0};
-
-		for (int i = -radius; i < radius; ++i)
-		{
-			int32_t samplePosX{};
-			int32_t samplePosY{};
-			float delta{};
-
-			if (direction == Horizontal)
-			{
-				samplePosX = static_cast<int32_t>(subPixelPosX + i);
-				samplePosY = static_cast<int32_t>(subPixelPosY);
-				delta = static_cast<float>(subPixelPosX - samplePosX);
-			}
-			else if (direction == Vertical)
-			{
-				samplePosX = static_cast<int32_t>(subPixelPosX);
-				samplePosY = static_cast<int32_t>(subPixelPosY + i);
-				delta = static_cast<float>(subPixelPosY - samplePosY);
-			}
-
-			if (samplePosX < 0
-				|| samplePosY < 0
-				|| samplePosX > width - 1
-				|| samplePosY > height - 1)
-			{
-				continue;
-			}
-
-			const auto distance{ fabs(delta) };
-			const auto weight{ lanczosWeight(coeffA, distance) };
-			const auto sourcePixel = BLOCK_OFFSET_RGB32(pixels, width, samplePosX, samplePosY);
-
-			// Accumulate bicubic weighted samples from the source.
-			totalSamples[0] += sourcePixel[0] * weight;
-			totalSamples[1] += sourcePixel[1] * weight;
-			totalSamples[2] += sourcePixel[2] * weight;
-
-			// Record the total weights of the sample for later normalization.
-			sampleCount += weight;
-		}
-
-		// Normalize our bicubic sum back to the valid pixel range.
-		float scaleFactor = 1.0f / sampleCount;
-		output[0] = clipRange(scaleFactor * totalSamples[0], 0, 255);
-		output[1] = clipRange(scaleFactor * totalSamples[1], 0, 255);
-		output[2] = clipRange(scaleFactor * totalSamples[2], 0, 255);
-
-		return true;
-	}
-	*/
 }
