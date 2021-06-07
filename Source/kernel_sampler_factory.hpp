@@ -10,6 +10,8 @@
 
 namespace tga
 {
+	// TODO: Remove.
+	
 	class KernelSamplerFactory
 	{
 	// Bicubic:  BicubicSampler; 0.0f, 1.0f

@@ -62,10 +62,11 @@ namespace tga
 		const auto targetMappingHeight{ static_cast<float>(targetHeader.height - 1) };
 		const auto mappingRatioY = sourceMappingHeight / targetMappingHeight;
 
+		//KernelSampler* sampler = new BicubicSampler{ 0.0f, 1.0f };
 		//KernelSampler* sampler = KernelSamplerFactory::create(type);
 		//KernelSampler* sampler = KernelSampler(type);
-		KernelSampler* sampler = KernelSampler::create(type);
-		//KernelSampler* sampler = new BicubicSampler{ 0.0f, 1.0f };
+		//KernelSampler* sampler = KernelSampler::create(type);
+		std::shared_ptr<KernelSampler> sampler = KernelSampler::create(type);
 
 		resampleDirection(sampler,
 						  Horizontal,
@@ -94,7 +95,8 @@ namespace tga
 
 	//template<typename T>
 	//bool Resampler::resampleDirection(T& sample,
-	bool Resampler::resampleDirection(KernelSampler* sampler,
+	//bool Resampler::resampleDirection(KernelSampler* sampler,
+	bool Resampler::resampleDirection(std::shared_ptr<KernelSampler> sampler,
 									  const KernelDirection direction,
 									  const int inputWidth,
 									  const int inputHeight,
@@ -146,7 +148,8 @@ namespace tga
 
 	//template<typename T>
 	//bool Resampler::sampleKernel(T& sample,
-	bool Resampler::sampleKernel(KernelSampler* sampler,
+	//bool Resampler::sampleKernel(KernelSampler* sampler,
+	bool Resampler::sampleKernel(std::shared_ptr<KernelSampler> sampler,
 								 KernelDirection direction,
 								 uint8_t* pixels,
 								 uint32_t width,

@@ -33,7 +33,8 @@ namespace tga
 		*/
 
 	public:
-		static KernelSampler* create(const KernelType type);
+		//static KernelSampler* create(const KernelType type);
+		static std::shared_ptr<KernelSampler> create(const KernelType type);
 
 		/*
 		virtual bool operator() (const float subPixelPosX,
