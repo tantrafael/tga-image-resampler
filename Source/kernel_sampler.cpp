@@ -12,6 +12,15 @@ namespace tga
 
 	typedef std::shared_ptr<KernelSampler> bar;
 
+	template<typename T, typename... Args>
+	class Foo
+	{
+		Foo()
+		{
+			
+		}
+	};
+
 	//KernelSampler* KernelSampler::create(const KernelType type)
 	std::shared_ptr<KernelSampler> KernelSampler::create(const KernelType type)
 	{
