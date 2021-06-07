@@ -62,31 +62,10 @@ namespace tga
 		const auto targetMappingHeight{ static_cast<float>(targetHeader.height - 1) };
 		const auto mappingRatioY = sourceMappingHeight / targetMappingHeight;
 
-		/*
-		std::map<KernelType, Foo> table
-		{
-			//{ Bicubic, (BicubicSampler, 0.0f, 1.0f) },
-			//{ Catmull, (BicubicSampler, 0.0f, 0.5f) },
-			//{ Lanczos, (LanczosSampler, 1.0f) },
-			//{ Lanczos2, (LanczosSampler, 2.0f) }
-		};
-		*/
-
-		/*
-		//template<typename T>
-		//std::map<KernelType, std::function<T()>> table
-		std::map<KernelType, std::function<KernelSampler*()>> table
-		{
-			{ Bicubic, []() { return new BicubicSampler{ 0.0f, 1.0f }; } },
-			{ Lanczos, []() { return new LanczosSampler{ 1.0f }; } }
-		};
-
-		std::function<KernelSampler*()> lambda = table[type];
-		KernelSampler* sampler = lambda();
-		*/
-
-		//Foo foo = Factory::create(type);
-		KernelSampler* sampler = KernelSamplerFactory::create(type);
+		//KernelSampler* sampler = KernelSamplerFactory::create(type);
+		//KernelSampler* sampler = KernelSampler(type);
+		KernelSampler* sampler = KernelSampler::create(type);
+		//KernelSampler* sampler = new BicubicSampler{ 0.0f, 1.0f };
 
 		resampleDirection(sampler,
 						  Horizontal,

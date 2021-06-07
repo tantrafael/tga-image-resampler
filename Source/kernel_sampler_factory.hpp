@@ -23,6 +23,16 @@ namespace tga
 	// Lanczos4: LanczosSampler; 4.0f
 	// Lanczos5: LanczosSampler; 5.0f
 
+	/*
+	std::map<KernelType, Foo> table
+	{
+		//{ Bicubic, (BicubicSampler, 0.0f, 1.0f) },
+		//{ Catmull, (BicubicSampler, 0.0f, 0.5f) },
+		//{ Lanczos, (LanczosSampler, 1.0f) },
+		//{ Lanczos2, (LanczosSampler, 2.0f) }
+	};
+	*/
+
 	public:
 		static KernelSampler* create(const KernelType type)
 		{
