@@ -1,7 +1,8 @@
 #ifndef kernel_sampler_hpp
 #define kernel_sampler_hpp
 
-#include <map>
+//#include <map>
+#include <unordered_map>
 
 #include "kernel_type.hpp"
 #include "kernel_direction.hpp"
