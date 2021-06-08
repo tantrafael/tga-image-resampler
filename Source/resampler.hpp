@@ -33,9 +33,6 @@ namespace tga
 								   uint8_t*& sourcePixel);
 
 	private:
-		//template<typename T>
-		//bool resampleDirection(T& sample,
-		//bool resampleDirection(KernelSampler* sampler,
 		bool resampleDirection(std::shared_ptr<KernelSampler> sampler,
 							   const KernelDirection direction,
 							   const int inputWidth,
@@ -47,9 +44,6 @@ namespace tga
 							   const float mappingRatioX,
 							   const float mappingRatioY);
 
-		//template<typename T>
-		//bool sampleKernel(T& sample,
-		//bool sampleKernel(KernelSampler* sampler,
 		bool sampleKernel(std::shared_ptr<KernelSampler> sampler,
 						  KernelDirection direction,
 						  uint8_t* pixels,

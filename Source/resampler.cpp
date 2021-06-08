@@ -4,22 +4,9 @@
 #include <map>
 
 #include "helper.hpp"
-#include "kernel_sampler_factory.hpp"
-/*
-#include "bicubic.hpp"
-#include "lanczos.hpp"
-*/
 
 namespace tga
 {
-	/*
-	template<typename T>
-	struct Wrapper
-	{
-		typedef std::map<KernelType, std::function<T()>> map_type;
-	};
-	*/
-
 	Resampler::Resampler()
 	{}
 
@@ -93,9 +80,6 @@ namespace tga
 		return true;
 	}
 
-	//template<typename T>
-	//bool Resampler::resampleDirection(T& sample,
-	//bool Resampler::resampleDirection(KernelSampler* sampler,
 	bool Resampler::resampleDirection(std::shared_ptr<KernelSampler> sampler,
 									  const KernelDirection direction,
 									  const int inputWidth,
@@ -146,9 +130,6 @@ namespace tga
 		return true;
 	}
 
-	//template<typename T>
-	//bool Resampler::sampleKernel(T& sample,
-	//bool Resampler::sampleKernel(KernelSampler* sampler,
 	bool Resampler::sampleKernel(std::shared_ptr<KernelSampler> sampler,
 								 KernelDirection direction,
 								 uint8_t* pixels,
@@ -160,7 +141,8 @@ namespace tga
 								 float mappingRatioY,
 								 uint8_t* output)
 	{
-		const bool isValidInput = (pixels != nullptr
+		const bool isValidInput = (sampler != nullptr
+								   && pixels != nullptr
 								   && width >= 0
 								   && height >= 0
 								   && subPixelPosX >= 0.0f
@@ -175,17 +157,6 @@ namespace tga
 		// TODO: List initialize.
 		float sampleCount = 0;
 		float totalSamples[3] = {0};
-
-		/*
-		sample(subPixelPosX,
-			   subPixelPosY,
-			   direction,
-			   pixels,
-			   width,
-			   height,
-			   sampleCount,
-			   totalSamples);
-		*/
 
 		sampler->sample(subPixelPosX,
 						subPixelPosY,
