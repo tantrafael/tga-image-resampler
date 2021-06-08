@@ -27,17 +27,6 @@ int main(int argc, const char * argv[]) {
 	tga::Image targetImage{};
 	tga::Resampler resampler{};
 
-	/*
-	targetHeader.width = 800;
-	targetHeader.height = 600;
-	targetImage.pixelByteDepth = sourceImage.pixelByteDepth;
-	targetImage.rowStride = targetHeader.width * targetImage.pixelByteDepth;
-	const unsigned int targetBufferSize{ targetImage.rowStride * targetHeader.height };
-	std::vector<uint8_t> targetBuffer(targetBufferSize);
-	targetImage.pixels = targetBuffer.data();
-	resampler.resample(sourceHeader, sourceImage, targetHeader, targetImage, tga::Bicubic);
-	*/
-
 	resampler.resample(sourceHeader,
 					   sourceImage,
 					   800,
@@ -54,6 +43,7 @@ int main(int argc, const char * argv[]) {
 	tga::Encoder encoder{ &targetFile };
 	encoder.writeHeader(targetHeader);
 	encoder.writeImage(targetHeader, targetImage);
+	//encoder.encode(targetHeader, targetImage);
 
 	std::fclose(f1);
 

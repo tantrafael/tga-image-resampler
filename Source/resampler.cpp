@@ -1,82 +1,11 @@
 #include "resampler.hpp"
 
-//#include <unordered_map>
-#include <map>
-
 #include "helper.hpp"
 
 namespace tga
 {
 	Resampler::Resampler()
 	{}
-
-	/*
-	bool Resampler::resample(const Header& sourceHeader,
-							 const Image& sourceImage,
-							 Header& targetHeader,
-							 Image& targetImage,
-							 KernelType type)
-	{
-		// Header
-		targetHeader.idLength = sourceHeader.idLength;
-		targetHeader.colorMapType = sourceHeader.colorMapType;
-		targetHeader.imageType = sourceHeader.imageType;
-		targetHeader.colorMapOrigin = sourceHeader.colorMapOrigin;
-		targetHeader.colorMapLength = sourceHeader.colorMapLength;
-		targetHeader.colorMapBitDepth = sourceHeader.colorMapBitDepth;
-		targetHeader.xOrigin = sourceHeader.xOrigin;
-		targetHeader.yOrigin = sourceHeader.yOrigin;
-		targetHeader.pixelBitDepth = sourceHeader.pixelBitDepth;
-		targetHeader.imageDescriptor = sourceHeader.imageDescriptor;
-		targetHeader.imageId = sourceHeader.imageId;
-		targetHeader.colorMap = sourceHeader.colorMap;
-
-		// Image
-		targetImage.pixelByteDepth = sourceImage.pixelByteDepth;
-		//targetImage.rowStride = targetHeader.width * targetImage.pixelByteDepth;
-
-		// Allocate a temporary buffer to hold our horizontal pass output.
-		// We're using unique_ptr rather than vector because we want a fast and
-		// smart way to allocate very large buffers without initialization.
-		const auto bufferSize{ targetImage.rowStride * sourceHeader.height };
-		std::unique_ptr<uint8_t[]> buffer(new uint8_t[bufferSize]);
-		auto bufferPixels{ buffer.get() };
-
-		const auto sourceMappingWidth{ static_cast<float>(sourceHeader.width - 1) };
-		const auto targetMappingWidth{ static_cast<float>(targetHeader.width - 1) };
-		const auto mappingRatioX = sourceMappingWidth / targetMappingWidth;
-
-		const auto sourceMappingHeight{ static_cast<float>(sourceHeader.height - 1) };
-		const auto targetMappingHeight{ static_cast<float>(targetHeader.height - 1) };
-		const auto mappingRatioY = sourceMappingHeight / targetMappingHeight;
-
-		std::shared_ptr<KernelSampler> sampler = KernelSampler::create(type);
-
-		resampleDirection(sampler,
-						  Horizontal,
-						  mappingRatioX,
-						  mappingRatioY,
-						  sourceHeader.width,
-						  sourceHeader.height,
-						  sourceImage.pixels,
-						  targetHeader.width,
-						  sourceHeader.height,
-						  bufferPixels);
-
-		resampleDirection(sampler,
-						  Vertical,
-						  mappingRatioX,
-						  mappingRatioY,
-						  targetHeader.width,
-						  sourceHeader.height,
-						  bufferPixels,
-						  targetHeader.width,
-						  targetHeader.height,
-						  targetImage.pixels);
-
-		return true;
-	}
-	*/
 
 	bool Resampler::resample(const Header& sourceHeader,
 							 const Image& sourceImage,
@@ -107,13 +36,22 @@ namespace tga
 		targetImage.rowStride = targetHeader.width * targetImage.pixelByteDepth;
 
 		const auto targetBufferSize{ targetImage.rowStride * targetHeader.height };
+		/*
 		std::vector<uint8_t> targetBuffer(targetBufferSize);
 		targetImage.pixels = targetBuffer.data();
+		*/
+		std::unique_ptr<uint8_t[]> targetBuffer(new uint8_t[targetBufferSize]);
+		targetImage.pixels = targetBuffer.get();
 
+		// TODO: Use buffers consistently.
 		// Allocate a temporary buffer to hold our horizontal pass output.
 		// We're using unique_ptr rather than vector because we want a fast and
 		// smart way to allocate very large buffers without initialization.
 		const auto tempBufferSize{ targetImage.rowStride * sourceHeader.height };
+		/*
+		std::vector<uint8_t> tempBuffer(tempBufferSize);
+		auto tempBufferPixels = tempBuffer.data();
+		*/
 		std::unique_ptr<uint8_t[]> tempBuffer(new uint8_t[tempBufferSize]);
 		auto tempBufferPixels{ tempBuffer.get() };
 
@@ -125,7 +63,7 @@ namespace tga
 		const auto targetMappingHeight{ static_cast<float>(targetHeader.height - 1) };
 		const auto mappingRatioY = sourceMappingHeight / targetMappingHeight;
 
-		std::shared_ptr<KernelSampler> sampler = KernelSampler::create(type);
+		const auto sampler = KernelSampler::create(type);
 
 		resampleDirection(sampler,
 						  Horizontal,
@@ -152,7 +90,7 @@ namespace tga
 		return true;
 	}
 
-	bool Resampler::resampleDirection(std::shared_ptr<KernelSampler> sampler,
+	bool Resampler::resampleDirection(const std::shared_ptr<KernelSampler> sampler,
 									  const KernelDirection direction,
 									  const float mappingRatioX,
 									  const float mappingRatioY,
@@ -184,7 +122,7 @@ namespace tga
 		return true;
 	}
 
-	bool Resampler::resamplePosition(std::shared_ptr<KernelSampler> sampler,
+	bool Resampler::resamplePosition(const std::shared_ptr<KernelSampler> sampler,
 									 const KernelDirection direction,
 									 const float mappingRatioX,
 									 const float mappingRatioY,

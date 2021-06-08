@@ -17,9 +17,13 @@ namespace tga
 
 		image.pixelByteDepth = header.pixelByteDepth();
 		image.rowStride = header.width * header.pixelByteDepth();
-		const unsigned int sourceBufferSize{ image.rowStride * header.height };
-		std::vector<uint8_t> buffer(sourceBufferSize);
+		const unsigned int bufferSize{ image.rowStride * header.height };
+		/*
+		std::vector<uint8_t> buffer(bufferSize);
 		image.pixels = buffer.data();
+		*/
+		std::unique_ptr<uint8_t[]> buffer(new uint8_t[bufferSize]);
+		image.pixels = buffer.get();
 
 		readImage(header, image);
 
@@ -28,8 +32,7 @@ namespace tga
 
 	bool Decoder::readHeader(Header& header)
 	{
-		//m_file->seekg(0);
-
+		// TODO: Make sure to start at beginning of file.
 		header.idLength = read8();
 		header.colorMapType = read8();
 		header.imageType = static_cast<ImageType>(read8());

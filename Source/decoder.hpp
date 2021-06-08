@@ -24,11 +24,11 @@ namespace tga
 		Decoder(FileInterface* file);
 
 		bool decode(Header& header, Image& image);
+
+	private:
 		bool readHeader(Header& header);
 		//bool readImage(const Header& header, Image& image, Delegate* delegate = nullptr);
 		bool readImage(const Header& header, Image& image);
-
-	private:
 		void readColorMap(Header& header);
 
 		template<typename T>
