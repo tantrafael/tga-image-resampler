@@ -11,6 +11,21 @@ namespace tga
 		, m_iterator{}
 	{}
 
+	bool Decoder::decode(Header& header, Image& image)
+	{
+		readHeader(header);
+
+		image.pixelByteDepth = header.pixelByteDepth();
+		image.rowStride = header.width * header.pixelByteDepth();
+		const unsigned int sourceBufferSize{ image.rowStride * header.height };
+		std::vector<uint8_t> buffer(sourceBufferSize);
+		image.pixels = buffer.data();
+
+		readImage(header, image);
+
+		return true;
+	}
+
 	bool Decoder::readHeader(Header& header)
 	{
 		//m_file->seekg(0);

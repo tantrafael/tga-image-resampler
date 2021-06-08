@@ -18,13 +18,7 @@ int main(int argc, const char * argv[]) {
 	tga::Image sourceImage{};
 	tga::Decoder decoder{ &sourceFile };
 
-	decoder.readHeader(sourceHeader);
-	sourceImage.pixelByteDepth = sourceHeader.pixelByteDepth();
-	sourceImage.rowStride = sourceHeader.width * sourceHeader.pixelByteDepth();
-	const unsigned int sourceBufferSize{ sourceImage.rowStride * sourceHeader.height };
-	std::vector<uint8_t> sourceBuffer(sourceBufferSize);
-	sourceImage.pixels = sourceBuffer.data();
-	decoder.readImage(sourceHeader, sourceImage);
+	decoder.decode(sourceHeader, sourceImage);
 
 	std::fclose(f0);
 
@@ -40,8 +34,7 @@ int main(int argc, const char * argv[]) {
 	const unsigned int targetBufferSize{ targetImage.rowStride * targetHeader.height };
 	std::vector<uint8_t> targetBuffer(targetBufferSize);
 	targetImage.pixels = targetBuffer.data();
-	//resampler.resample(sourceHeader, sourceImage, targetHeader, targetImage, tga::Bicubic);
-	resampler.resample(sourceHeader, sourceImage, targetHeader, targetImage, tga::Mitchell);
+	resampler.resample(sourceHeader, sourceImage, targetHeader, targetImage, tga::Bicubic);
 
 	// Write target image file.
 	auto targetFilePath{ "/Users/raffa/Work/Star Stable/resample.tga" };

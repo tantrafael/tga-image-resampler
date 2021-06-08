@@ -23,6 +23,7 @@ namespace tga
 	public:
 		Decoder(FileInterface* file);
 
+		bool decode(Header& header, Image& image);
 		bool readHeader(Header& header);
 		//bool readImage(const Header& header, Image& image, Delegate* delegate = nullptr);
 		bool readImage(const Header& header, Image& image);

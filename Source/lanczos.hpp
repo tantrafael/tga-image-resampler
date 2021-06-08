@@ -26,7 +26,6 @@ namespace tga
 		return 0.0f;
 	}
 
-	//class LanczosSampler
 	class LanczosSampler : public KernelSampler
 	{
 	public:
@@ -34,7 +33,6 @@ namespace tga
 			: m_coeffA{ coeffA }
 		{}
 
-		//bool operator() (const float subPixelPosX,
 		bool sample(const float subPixelPosX,
 						 const float subPixelPosY,
 						 const KernelDirection direction,
