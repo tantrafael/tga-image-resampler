@@ -21,7 +21,7 @@ namespace tga
 								   const float subPixelPosY,
 								   const KernelDirection direction,
 								   const int offset,
-								   uint8_t* pixels,
+								   uint8_t* const pixels,
 								   const int32_t width,
 								   const int32_t height,
 								   float& distance,
@@ -60,7 +60,7 @@ namespace tga
 			return true;
 		}
 
-		static void accumulateSamples(const uint8_t* sourcePixel,
+		static void accumulateSamples(const uint8_t* const sourcePixel,
 									  const float weight,
 									  float (&totalSamples)[3],
 									  float& sampleCount)

@@ -63,14 +63,14 @@ namespace tga
 				uint8_t* sourcePixel{};
 
 				if (!Helper::getSourcePixel(subPixelPosX,
-										 subPixelPosY,
-										 direction,
-										 offset,
-										 pixels,
-										 width,
-										 height,
-										 distance,
-										 sourcePixel))
+											subPixelPosY,
+											direction,
+											offset,
+											pixels,
+											width,
+											height,
+											distance,
+											sourcePixel))
 				{
 					continue;
 				}

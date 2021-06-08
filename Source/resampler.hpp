@@ -35,39 +35,26 @@ namespace tga
 	private:
 		bool resampleDirection(std::shared_ptr<KernelSampler> sampler,
 							   const KernelDirection direction,
+							   const float mappingRatioX,
+							   const float mappingRatioY,
 							   const int inputWidth,
 							   const int inputHeight,
-							   uint8_t* inputPixels,
+							   uint8_t* const inputPixels,
 							   const int outputWidth,
 							   const int outputHeight,
-							   uint8_t* outputPixels,
-							   const float mappingRatioX,
-							   const float mappingRatioY);
+							   uint8_t* const outputPixels);
 
-		/*
 		bool resamplePosition(std::shared_ptr<KernelSampler> sampler,
-							  KernelDirection direction,
-							  uint8_t* pixels,
-							  uint32_t width,
-							  uint32_t height,
-							  float subPixelPosX,
-							  float subPixelPosY,
+							  const KernelDirection direction,
 							  const float mappingRatioX,
 							  const float mappingRatioY,
-							  uint8_t* output);
-		*/
-
-		bool resamplePosition(std::shared_ptr<KernelSampler> sampler,
-				 const KernelDirection direction,
-				 const int outputRow,
-				 const int outputCol,
-				 const float mappingRatioX,
-				 const float mappingRatioY,
-				 uint8_t* inputPixels,
-				 const int inputWidth,
-				 const int inputHeight,
-				 const int outputWidth,
-				 uint8_t* outputPixels);
+							  const int outputRow,
+							  const int outputCol,
+							  uint8_t* const inputPixels,
+							  const int inputWidth,
+							  const int inputHeight,
+							  const int outputWidth,
+							  uint8_t* const outputPixels);
 	};
 }
 

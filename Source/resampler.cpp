@@ -53,81 +53,50 @@ namespace tga
 
 		resampleDirection(sampler,
 						  Horizontal,
+						  mappingRatioX,
+						  mappingRatioY,
 						  sourceHeader.width,
 						  sourceHeader.height,
 						  sourceImage.pixels,
 						  targetHeader.width,
 						  sourceHeader.height,
-						  bufferPixels,
-						  mappingRatioX,
-						  mappingRatioY);
+						  bufferPixels);
 
 		resampleDirection(sampler,
 						  Vertical,
+						  mappingRatioX,
+						  mappingRatioY,
 						  targetHeader.width,
 						  sourceHeader.height,
 						  bufferPixels,
 						  targetHeader.width,
 						  targetHeader.height,
-						  targetImage.pixels,
-						  mappingRatioX,
-						  mappingRatioY);
+						  targetImage.pixels);
 
 		return true;
 	}
 
 	bool Resampler::resampleDirection(std::shared_ptr<KernelSampler> sampler,
 									  const KernelDirection direction,
+									  const float mappingRatioX,
+									  const float mappingRatioY,
 									  const int inputWidth,
 									  const int inputHeight,
-									  uint8_t* inputPixels,
+									  uint8_t* const inputPixels,
 									  const int outputWidth,
 									  const int outputHeight,
-									  uint8_t* outputPixels,
-									  const float mappingRatioX,
-									  const float mappingRatioY)
+									  uint8_t* const outputPixels)
 	{
-		for (int row = 0; row < outputHeight; ++row)
+		for (int outputRow = 0; outputRow < outputHeight; ++outputRow)
 		{
-			for (int col = 0; col < outputWidth; ++col)
+			for (int outputCol = 0; outputCol < outputWidth; ++outputCol)
 			{
-				/*
-				// Determine the sub-pixel location of our target (col, row)
-				// coordinate, in the space of our source image.
-				float subPixelPosX{};
-				float subPixelPosY{};
-
-				if (direction == Horizontal)
-				{
-					subPixelPosX = static_cast<float>(col * mappingRatioX);
-					subPixelPosY = static_cast<float>(row);
-				}
-				else if (direction == Vertical)
-				{
-					subPixelPosX = static_cast<float>(col);
-					subPixelPosY = static_cast<float>(row * mappingRatioY);
-				}
-
-				uint8_t* output = BLOCK_OFFSET_RGB32(outputPixels, outputWidth, col, row);
-
-				sampleKernel(sampler,
-							 direction,
-							 inputPixels,
-							 inputWidth,
-							 inputHeight,
-							 subPixelPosX,
-							 subPixelPosY,
-							 mappingRatioX,
-							 mappingRatioY,
-							 output);
-				*/
-
 				resamplePosition(sampler,
 								 direction,
-								 row,
-								 col,
 								 mappingRatioX,
 								 mappingRatioY,
+								 outputRow,
+								 outputCol,
 								 inputPixels,
 								 inputWidth,
 								 inputHeight,
@@ -139,64 +108,17 @@ namespace tga
 		return true;
 	}
 
-	/*
 	bool Resampler::resamplePosition(std::shared_ptr<KernelSampler> sampler,
-									 KernelDirection direction,
-									 uint8_t* pixels,
-									 uint32_t width,
-									 uint32_t height,
-									 float subPixelPosX,
-									 float subPixelPosY,
-									 float mappingRatioX,
-									 float mappingRatioY,
-									 uint8_t* output)
-	{
-		const bool isValidInput = (sampler != nullptr
-								   && pixels != nullptr
-								   && width >= 0
-								   && height >= 0
-								   && subPixelPosX >= 0.0f
-								   && subPixelPosY >= 0.0f
-								   && output != nullptr);
-
-		if (!isValidInput)
-		{
-			return false;
-		}
-
-		float sampleCount{ 0 };
-		float totalSamples[3]{0, 0, 0};
-
-		sampler->sample(subPixelPosX,
-						subPixelPosY,
-						direction,
-						pixels,
-						width,
-						height,
-						sampleCount,
-						totalSamples);
-
-		// Normalize our sum back to the valid pixel range.
-		float scaleFactor = 1.0f / sampleCount;
-		output[0] = clipRange(scaleFactor * totalSamples[0], 0, 255);
-		output[1] = clipRange(scaleFactor * totalSamples[1], 0, 255);
-		output[2] = clipRange(scaleFactor * totalSamples[2], 0, 255);
-
-		return true;
-	}
-	*/
-
-	bool Resampler::resamplePosition(std::shared_ptr<KernelSampler> sampler,
-						const KernelDirection direction,
-						const int outputRow,
-						const int outputCol,
-						const float mappingRatioX,
-						const float mappingRatioY,
-						uint8_t* inputPixels,
-						const int inputWidth,
-						const int inputHeight,
-						const int outputWidth,
-						uint8_t* outputPixels)
+									 const KernelDirection direction,
+									 const float mappingRatioX,
+									 const float mappingRatioY,
+									 const int outputRow,
+									 const int outputCol,
+									 uint8_t* const inputPixels,
+									 const int inputWidth,
+									 const int inputHeight,
+									 const int outputWidth,
+									 uint8_t* const outputPixels)
 	{
 		// Determine the sub-pixel location of our target (col, row)
 		// coordinate, in the space of our source image.
@@ -214,6 +136,8 @@ namespace tga
 			subPixelPosY = static_cast<float>(outputRow * mappingRatioY);
 		}
 
+		// Sample the source image at the sub-pixel location, using the
+		// specified algorithm in the the current direction.
 		float sampleCount{ 0 };
 		float totalSamples[3]{0, 0, 0};
 
