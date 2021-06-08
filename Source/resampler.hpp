@@ -44,17 +44,30 @@ namespace tga
 							   const float mappingRatioX,
 							   const float mappingRatioY);
 
-		bool sampleKernel(std::shared_ptr<KernelSampler> sampler,
-						  KernelDirection direction,
-						  uint8_t* pixels,
-						  uint32_t width,
-						  uint32_t height,
-						  float subPixelPosX,
-						  float subPixelPosY,
-						  const float mappingRatioX,
-						  const float mappingRatioY,
-						  uint8_t* output);
+		/*
+		bool resamplePosition(std::shared_ptr<KernelSampler> sampler,
+							  KernelDirection direction,
+							  uint8_t* pixels,
+							  uint32_t width,
+							  uint32_t height,
+							  float subPixelPosX,
+							  float subPixelPosY,
+							  const float mappingRatioX,
+							  const float mappingRatioY,
+							  uint8_t* output);
+		*/
 
+		bool resamplePosition(std::shared_ptr<KernelSampler> sampler,
+				 const KernelDirection direction,
+				 const int outputRow,
+				 const int outputCol,
+				 const float mappingRatioX,
+				 const float mappingRatioY,
+				 uint8_t* inputPixels,
+				 const int inputWidth,
+				 const int inputHeight,
+				 const int outputWidth,
+				 uint8_t* outputPixels);
 	};
 }
 
