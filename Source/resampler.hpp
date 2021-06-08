@@ -16,12 +16,23 @@ namespace tga
 	public:
 		Resampler();
 
+		/*
 		bool resample(const Header& sourceHeader,
 					  const Image& sourceImage,
 					  Header& targetHeader,
 					  Image& targetImage,
 					  KernelType type);
+		*/
 
+		bool resample(const Header& sourceHeader,
+					  const Image& sourceImage,
+					  const int width,
+					  const int height,
+					  const KernelType type,
+					  Header& targetHeader,
+					  Image& targetImage);
+
+		/*
 		static bool getSourcePixel(const float subPixelPosX,
 								   const float subPixelPosY,
 								   const KernelDirection direction,
@@ -31,6 +42,7 @@ namespace tga
 								   const int32_t height,
 								   float& distance,
 								   uint8_t*& sourcePixel);
+		*/
 
 	private:
 		bool resampleDirection(std::shared_ptr<KernelSampler> sampler,
