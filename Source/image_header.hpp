@@ -1,5 +1,5 @@
-#ifndef header_hpp
-#define header_hpp
+#ifndef image_header_hpp
+#define image_header_hpp
 
 #include <string>
 
@@ -8,7 +8,7 @@
 
 namespace tga
 {
-	struct Header
+	struct ImageHeader
 	{
 		uint8_t idLength;
 		uint8_t colorMapType;
@@ -16,8 +16,8 @@ namespace tga
 		uint16_t colorMapOrigin;
 		uint16_t colorMapLength;
 		uint8_t colorMapBitDepth;
-		uint16_t xOrigin;
-		uint16_t yOrigin;
+		uint16_t originX;
+		uint16_t originY;
 		uint16_t width;
 		uint16_t height;
 		uint8_t pixelBitDepth;
@@ -55,4 +55,4 @@ namespace tga
 	};
 }
 
-#endif /* header_hpp */
+#endif /* image_header_hpp */

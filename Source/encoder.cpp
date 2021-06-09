@@ -8,7 +8,18 @@ namespace tga
 		: m_file{ file }
 	{}
 
-	void Encoder::writeHeader(const Header &header)
+	//void Encoder::encode(const ImageHeader& header, const ImageBody& image)
+	void Encoder::encode(const Image& image)
+	{
+		/*
+		writeHeader(header);
+		writeImage(header, image);
+		*/
+		writeHeader(image.header);
+		writeBody(image.header, image.body);
+	}
+
+	void Encoder::writeHeader(const ImageHeader &header)
 	{
 		write8(header.idLength);
 		write8(header.colorMapType);
@@ -16,8 +27,8 @@ namespace tga
 		write16(header.colorMapOrigin);
 		write16(header.colorMapLength);
 		write8(header.colorMapBitDepth);
-		write16(header.xOrigin);
-		write16(header.yOrigin);
+		write16(header.originX);
+		write16(header.originY);
 		write16(header.width);
 		write16(header.height);
 		write8(header.pixelBitDepth);
@@ -26,9 +37,9 @@ namespace tga
 		assert(header.colorMapLength == 0);
 	}
 
-	void Encoder::writeImage(const Header &header, const Image &image)
+	void Encoder::writeBody(const ImageHeader &header, const ImageBody &body)
 	{
-		m_iterator = ImageIterator{ header, const_cast<Image&>(image) };
+		m_iterator = ImageIterator{ header, const_cast<ImageBody&>(body) };
 
 		const auto width{ header.width };
 		const auto height{ header.height };

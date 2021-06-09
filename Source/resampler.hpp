@@ -3,7 +3,10 @@
 
 #include <math.h>
 
-#include "header.hpp"
+/*
+#include "image_header.hpp"
+#include "image_body.hpp"
+*/
 #include "image.hpp"
 #include "kernel_type.hpp"
 #include "kernel_direction.hpp"
@@ -16,12 +19,20 @@ namespace tga
 	public:
 		Resampler();
 
-		bool resample(const Header& sourceHeader,
-					  const Image& sourceImage,
+		/*
+		bool resample(const ImageHeader& sourceHeader,
+					  const ImageBody& sourceImage,
 					  const int targetWidth,
 					  const int targetHeight,
 					  const KernelType type,
-					  Header& targetHeader,
+					  ImageHeader& targetHeader,
+					  ImageBody& targetImage);
+		*/
+
+		bool resample(const Image& sourceImage,
+					  const int targetWidth,
+					  const int targetHeight,
+					  const KernelType type,
 					  Image& targetImage);
 
 	private:

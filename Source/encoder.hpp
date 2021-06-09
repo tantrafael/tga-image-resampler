@@ -2,7 +2,10 @@
 #define encoder_hpp
 
 #include "file_interface.hpp"
-#include "header.hpp"
+/*
+#include "image_header.hpp"
+#include "image_body.hpp"
+*/
 #include "image.hpp"
 #include "color.hpp"
 #include "image_iterator.hpp"
@@ -14,10 +17,13 @@ namespace tga
 	public:
 		Encoder(FileInterface* file);
 
-		void writeHeader(const Header& header);
-		void writeImage(const Header& header, const Image& image);
+		//void encode(const ImageHeader& header, const ImageBody& image);
+		void encode(const Image& image);
 
 	private:
+		void writeHeader(const ImageHeader& header);
+		void writeBody(const ImageHeader& header, const ImageBody& image);
+
 		template<typename T>
 		bool writeImageUncompressed(const int width,
 									const int height,

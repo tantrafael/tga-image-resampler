@@ -3,11 +3,11 @@
 namespace tga
 {
 	ImageIterator::ImageIterator()
-		: m_image{ nullptr }
+		: m_body{ nullptr }
 	{}
 
-	ImageIterator::ImageIterator(const Header& header, Image& image)
-		: m_image{ &image }
+	ImageIterator::ImageIterator(const ImageHeader& header, ImageBody& body)
+		: m_body{ &body }
 		, m_x{ header.isLeftToRight() ? 0 : header.width - 1 }
 		, m_y{ header.isTopToBottom() ? 0 : header.height - 1 }
 		, m_w{ header.width }
@@ -21,7 +21,7 @@ namespace tga
 	bool ImageIterator::advance()
 	{
 		m_x += m_dx;
-		m_ptr += m_dx * m_image->pixelByteDepth;
+		m_ptr += m_dx * m_body->pixelByteDepth;
 
 		if ((m_dx < 0 && m_x < 0) || (m_dx > 0 && m_x == m_w))
 		{
@@ -41,8 +41,8 @@ namespace tga
 
 	void ImageIterator::calcPtr()
 	{
-		m_ptr = m_image->pixels
-				+ m_image->rowStride * m_y
-				+ m_image->pixelByteDepth * m_x;
+		m_ptr = m_body->pixels
+				+ m_body->rowStride * m_y
+				+ m_body->pixelByteDepth * m_x;
 	}
 }

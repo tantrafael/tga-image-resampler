@@ -1,8 +1,8 @@
 #ifndef image_iterator_hpp
 #define image_iterator_hpp
 
-#include "header.hpp"
-#include "image.hpp"
+#include "image_header.hpp"
+#include "image_body.hpp"
 
 namespace tga
 {
@@ -10,8 +10,8 @@ namespace tga
 	{
 	public:
 		ImageIterator();
-		ImageIterator(const Header& header, Image& image);
-		// TODO: Consider constructor with const image for encoding.
+		ImageIterator(const ImageHeader& header, ImageBody& body);
+		// TODO: Consider constructor with const body for encoding.
 
 		// Put one pixel value into the image and advance the iterator.
 		template<typename T>
@@ -38,12 +38,11 @@ namespace tga
 		bool advance();
 		void calcPtr();
 
-		Image* m_image;
+		ImageBody* m_body;
 		int m_x, m_y;
 		int m_w, m_h;
 		int m_dx, m_dy;
 		uint8_t* m_ptr;
-		//unsigned int * m_ptr;
 	};
 }
 

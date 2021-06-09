@@ -5,14 +5,17 @@
 #include <fstream>
 
 #include "file_interface.hpp"
-#include "header.hpp"
+/*
+#include "image_header.hpp"
+#include "image_body.hpp"
+*/
 #include "image.hpp"
 #include "color.hpp"
 #include "image_iterator.hpp"
 
 namespace tga
 {
-	static inline uint8_t scale_5bits_to_8bits(uint8_t v)
+	static inline uint8_t scale5BitsTo8Bits(uint8_t v)
 	{
 		assert(v >= 0 && v < 32);
 		return (v << 3) | (v >> 2);
@@ -23,13 +26,17 @@ namespace tga
 	public:
 		Decoder(FileInterface* file);
 
+		/*
 		bool decode(Header& header, Image& image);
+		*/
+		bool decode(Image& image);
 
 	private:
-		bool readHeader(Header& header);
+		bool readHeader(ImageHeader& header);
+		//bool readHeader(Image& image);
 		//bool readImage(const Header& header, Image& image, Delegate* delegate = nullptr);
-		bool readImage(const Header& header, Image& image);
-		void readColorMap(Header& header);
+		bool readBody(const ImageHeader& header, ImageBody& image);
+		void readColorMap(ImageHeader& header);
 
 		template<typename T>
 		bool readImageUncompressed(const int width,

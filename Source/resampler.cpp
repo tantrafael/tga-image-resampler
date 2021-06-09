@@ -7,60 +7,59 @@ namespace tga
 	Resampler::Resampler()
 	{}
 
-	bool Resampler::resample(const Header& sourceHeader,
-							 const Image& sourceImage,
+	/*
+	bool Resampler::resample(const ImageHeader& sourceHeader,
+							 const ImageBody& sourceImage,
 							 const int targetWidth,
 							 const int targetHeight,
 							 const KernelType type,
-							 Header& targetHeader,
+							 ImageHeader& targetHeader,
+							 ImageBody& targetImage)
+	*/
+
+	bool Resampler::resample(const Image& sourceImage,
+							 const int targetWidth,
+							 const int targetHeight,
+							 const KernelType type,
 							 Image& targetImage)
 	{
 		// Header
-		targetHeader.idLength = sourceHeader.idLength;
-		targetHeader.colorMapType = sourceHeader.colorMapType;
-		targetHeader.imageType = sourceHeader.imageType;
-		targetHeader.colorMapOrigin = sourceHeader.colorMapOrigin;
-		targetHeader.colorMapLength = sourceHeader.colorMapLength;
-		targetHeader.colorMapBitDepth = sourceHeader.colorMapBitDepth;
-		targetHeader.xOrigin = sourceHeader.xOrigin;
-		targetHeader.yOrigin = sourceHeader.yOrigin;
-		targetHeader.width = targetWidth;
-		targetHeader.height = targetHeight;
-		targetHeader.pixelBitDepth = sourceHeader.pixelBitDepth;
-		targetHeader.imageDescriptor = sourceHeader.imageDescriptor;
-		targetHeader.imageId = sourceHeader.imageId;
-		targetHeader.colorMap = sourceHeader.colorMap;
+		targetImage.header.idLength = sourceImage.header.idLength;
+		targetImage.header.colorMapType = sourceImage.header.colorMapType;
+		targetImage.header.imageType = sourceImage.header.imageType;
+		targetImage.header.colorMapOrigin = sourceImage.header.colorMapOrigin;
+		targetImage.header.colorMapLength = sourceImage.header.colorMapLength;
+		targetImage.header.colorMapBitDepth = sourceImage.header.colorMapBitDepth;
+		targetImage.header.originX = sourceImage.header.originX;
+		targetImage.header.originY = sourceImage.header.originY;
+		targetImage.header.width = targetWidth;
+		targetImage.header.height = targetHeight;
+		targetImage.header.pixelBitDepth = sourceImage.header.pixelBitDepth;
+		targetImage.header.imageDescriptor = sourceImage.header.imageDescriptor;
+		targetImage.header.imageId = sourceImage.header.imageId;
+		targetImage.header.colorMap = sourceImage.header.colorMap;
 
-		// Image
-		targetImage.pixelByteDepth = sourceImage.pixelByteDepth;
-		targetImage.rowStride = targetHeader.width * targetImage.pixelByteDepth;
+		// Body
+		targetImage.body.pixelByteDepth = sourceImage.header.pixelByteDepth();
+		targetImage.body.rowStride = targetImage.header.width * targetImage.header.pixelByteDepth();
 
-		const auto targetBufferSize{ targetImage.rowStride * targetHeader.height };
-		/*
-		std::vector<uint8_t> targetBuffer(targetBufferSize);
-		targetImage.pixels = targetBuffer.data();
-		*/
+		const auto targetBufferSize{ targetImage.body.rowStride * targetImage.header.height };
 		std::unique_ptr<uint8_t[]> targetBuffer(new uint8_t[targetBufferSize]);
-		targetImage.pixels = targetBuffer.get();
+		targetImage.body.pixels = targetBuffer.get();
 
-		// TODO: Use buffers consistently.
 		// Allocate a temporary buffer to hold our horizontal pass output.
 		// We're using unique_ptr rather than vector because we want a fast and
 		// smart way to allocate very large buffers without initialization.
-		const auto tempBufferSize{ targetImage.rowStride * sourceHeader.height };
-		/*
-		std::vector<uint8_t> tempBuffer(tempBufferSize);
-		auto tempBufferPixels = tempBuffer.data();
-		*/
+		const auto tempBufferSize{ targetImage.body.rowStride * sourceImage.header.height };
 		std::unique_ptr<uint8_t[]> tempBuffer(new uint8_t[tempBufferSize]);
 		auto tempBufferPixels{ tempBuffer.get() };
 
-		const auto sourceMappingWidth{ static_cast<float>(sourceHeader.width - 1) };
-		const auto targetMappingWidth{ static_cast<float>(targetHeader.width - 1) };
+		const auto sourceMappingWidth{ static_cast<float>(sourceImage.header.width - 1) };
+		const auto targetMappingWidth{ static_cast<float>(targetImage.header.width - 1) };
 		const auto mappingRatioX = sourceMappingWidth / targetMappingWidth;
 
-		const auto sourceMappingHeight{ static_cast<float>(sourceHeader.height - 1) };
-		const auto targetMappingHeight{ static_cast<float>(targetHeader.height - 1) };
+		const auto sourceMappingHeight{ static_cast<float>(sourceImage.header.height - 1) };
+		const auto targetMappingHeight{ static_cast<float>(targetImage.header.height - 1) };
 		const auto mappingRatioY = sourceMappingHeight / targetMappingHeight;
 
 		const auto sampler = KernelSampler::create(type);
@@ -69,23 +68,23 @@ namespace tga
 						  Horizontal,
 						  mappingRatioX,
 						  mappingRatioY,
-						  sourceHeader.width,
-						  sourceHeader.height,
-						  sourceImage.pixels,
-						  targetHeader.width,
-						  sourceHeader.height,
+						  sourceImage.header.width,
+						  sourceImage.header.height,
+						  sourceImage.body.pixels,
+						  targetImage.header.width,
+						  sourceImage.header.height,
 						  tempBufferPixels);
 
 		resampleDirection(sampler,
 						  Vertical,
 						  mappingRatioX,
 						  mappingRatioY,
-						  targetHeader.width,
-						  sourceHeader.height,
+						  targetImage.header.width,
+						  sourceImage.header.height,
 						  tempBufferPixels,
-						  targetHeader.width,
-						  targetHeader.height,
-						  targetImage.pixels);
+						  targetImage.header.width,
+						  targetImage.header.height,
+						  targetImage.body.pixels);
 
 		return true;
 	}
