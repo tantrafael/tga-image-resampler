@@ -7,23 +7,23 @@ namespace tga
 	Resampler::Resampler()
 	{}
 
-	/*
-	bool Resampler::resample(const ImageHeader& sourceHeader,
-							 const ImageBody& sourceImage,
-							 const int targetWidth,
-							 const int targetHeight,
-							 const KernelType type,
-							 ImageHeader& targetHeader,
-							 ImageBody& targetImage)
-	*/
-
 	bool Resampler::resample(const Image& sourceImage,
 							 const int targetWidth,
 							 const int targetHeight,
 							 const KernelType type,
 							 Image& targetImage)
 	{
-		// Header
+		resampleHeader(sourceImage, targetWidth, targetHeight, targetImage);
+		resampleBody(sourceImage, type, targetImage);
+
+		return true;
+	}
+
+	void Resampler::resampleHeader(const Image& sourceImage,
+								   const int targetWidth,
+								   const int targetHeight,
+								   Image& targetImage)
+	{
 		targetImage.header.idLength = sourceImage.header.idLength;
 		targetImage.header.colorMapType = sourceImage.header.colorMapType;
 		targetImage.header.imageType = sourceImage.header.imageType;
@@ -38,8 +38,12 @@ namespace tga
 		targetImage.header.imageDescriptor = sourceImage.header.imageDescriptor;
 		targetImage.header.imageId = sourceImage.header.imageId;
 		targetImage.header.colorMap = sourceImage.header.colorMap;
+	}
 
-		// Body
+	void Resampler::resampleBody(const Image& sourceImage,
+								 const KernelType type,
+								 Image& targetImage)
+	{
 		targetImage.body.pixelByteDepth = sourceImage.header.pixelByteDepth();
 		targetImage.body.rowStride = targetImage.header.width * targetImage.header.pixelByteDepth();
 
@@ -85,8 +89,6 @@ namespace tga
 						  targetImage.header.width,
 						  targetImage.header.height,
 						  targetImage.body.pixels);
-
-		return true;
 	}
 
 	bool Resampler::resampleDirection(const std::shared_ptr<KernelSampler> sampler,
@@ -165,7 +167,11 @@ namespace tga
 
 		// Normalize our sum back to the valid pixel range.
 		const float scaleFactor = 1.0f / sampleCount;
-		uint8_t* output = BLOCK_OFFSET_RGB32(outputPixels, outputWidth, outputCol, outputRow);
+
+		uint8_t* output = BLOCK_OFFSET_RGB32(outputPixels,
+											 outputWidth,
+											 outputCol,
+											 outputRow);
 
 		output[0] = clipRange(scaleFactor * totalSamples[0], 0, 255);
 		output[1] = clipRange(scaleFactor * totalSamples[1], 0, 255);

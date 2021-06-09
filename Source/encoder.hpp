@@ -17,12 +17,13 @@ namespace tga
 	public:
 		Encoder(FileInterface* file);
 
-		//void encode(const ImageHeader& header, const ImageBody& image);
-		void encode(const Image& image);
+		void write(const Image& image);
 
 	private:
-		void writeHeader(const ImageHeader& header);
-		void writeBody(const ImageHeader& header, const ImageBody& image);
+		//void writeHeader(const ImageHeader& header);
+		void writeHeader(const Image& image);
+		//void writeBody(const ImageHeader& header, const ImageBody& image);
+		void writeBody(const Image& image);
 
 		template<typename T>
 		bool writeImageUncompressed(const int width,

@@ -9,43 +9,48 @@ namespace tga
 	{}
 
 	//void Encoder::encode(const ImageHeader& header, const ImageBody& image)
-	void Encoder::encode(const Image& image)
+	void Encoder::write(const Image& image)
 	{
-		/*
-		writeHeader(header);
-		writeImage(header, image);
-		*/
-		writeHeader(image.header);
-		writeBody(image.header, image.body);
+		//writeHeader(image.header);
+		writeHeader(image);
+		//writeBody(image.header, image.body);
+		writeBody(image);
 	}
 
-	void Encoder::writeHeader(const ImageHeader &header)
+	//void Encoder::writeHeader(const ImageHeader &header)
+	void Encoder::writeHeader(const Image &image)
 	{
-		write8(header.idLength);
-		write8(header.colorMapType);
-		write8(header.imageType);
-		write16(header.colorMapOrigin);
-		write16(header.colorMapLength);
-		write8(header.colorMapBitDepth);
-		write16(header.originX);
-		write16(header.originY);
-		write16(header.width);
-		write16(header.height);
-		write8(header.pixelBitDepth);
-		write8(header.imageDescriptor);
+		const ImageHeader* header = &image.header;
 
-		assert(header.colorMapLength == 0);
+		write8(header->idLength);
+		write8(header->colorMapType);
+		write8(header->imageType);
+		write16(header->colorMapOrigin);
+		write16(header->colorMapLength);
+		write8(header->colorMapBitDepth);
+		write16(header->originX);
+		write16(header->originY);
+		write16(header->width);
+		write16(header->height);
+		write8(header->pixelBitDepth);
+		write8(header->imageDescriptor);
+
+		assert(header->colorMapLength == 0);
 	}
 
-	void Encoder::writeBody(const ImageHeader &header, const ImageBody &body)
+	//void Encoder::writeBody(const ImageHeader &header, const ImageBody &body)
+	void Encoder::writeBody(const Image &image)
 	{
-		m_iterator = ImageIterator{ header, const_cast<ImageBody&>(body) };
+		//m_iterator = ImageIterator{ image.header, const_cast<ImageBody&>(image.body) };
+		m_iterator = ImageIterator{ const_cast<Image&>(image) };
 
-		const auto width{ header.width };
-		const auto height{ header.height };
+		const ImageHeader* header = &image.header;
+
+		const auto width{ header->width };
+		const auto height{ header->height };
 		void (Encoder::*writePixel)(color){};
 
-		switch (header.pixelBitDepth)
+		switch (header->pixelBitDepth)
 		{
 			case 8:
 				//writePixel = &Encoder::read8color;
@@ -62,7 +67,7 @@ namespace tga
 				break;
 		}
 
-		switch (header.imageType)
+		switch (header->imageType)
 		{
 			case NoImageData:
 				break;

@@ -6,14 +6,15 @@ namespace tga
 		: m_body{ nullptr }
 	{}
 
-	ImageIterator::ImageIterator(const ImageHeader& header, ImageBody& body)
-		: m_body{ &body }
-		, m_x{ header.isLeftToRight() ? 0 : header.width - 1 }
-		, m_y{ header.isTopToBottom() ? 0 : header.height - 1 }
-		, m_w{ header.width }
-		, m_h{ header.height }
-		, m_dx{ header.isLeftToRight() ? 1 : -1 }
-		, m_dy{ header.isTopToBottom() ? 1 : -1 }
+	//ImageIterator::ImageIterator(const ImageHeader& header, ImageBody& body)
+	ImageIterator::ImageIterator(Image& image)
+		: m_body{ &image.body }
+		, m_x{ image.header.isLeftToRight() ? 0 : image.header.width - 1 }
+		, m_y{ image.header.isTopToBottom() ? 0 : image.header.height - 1 }
+		, m_w{ image.header.width }
+		, m_h{ image.header.height }
+		, m_dx{ image.header.isLeftToRight() ? 1 : -1 }
+		, m_dy{ image.header.isTopToBottom() ? 1 : -1 }
 	{
 		calcPtr();
 	}

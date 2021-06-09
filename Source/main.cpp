@@ -16,38 +16,15 @@ int main(int argc, const char * argv[]) {
 	FILE* f0 = std::fopen(sourceFilePath, "rb");
 	tga::StdioFileInterface sourceFile{ f0 };
 
-	/*
-	tga::Header sourceHeader{};
-	tga::Image sourceImage{};
-	*/
 	tga::Image sourceImage{};
 	tga::Decoder decoder{ &sourceFile };
-
-	/*
-	decoder.decode(sourceHeader, sourceImage);
-	*/
-	decoder.decode(sourceImage);
+	decoder.read(sourceImage);
 
 	std::fclose(f0);
 
 	// Resample image.
-	/*
-	tga::Header targetHeader{};
-	tga::Image targetImage{};
-	*/
 	tga::Image targetImage{};
 	tga::Resampler resampler{};
-
-	/*
-	resampler.resample(sourceHeader,
-					   sourceImage,
-					   400,
-					   300,
-					   tga::BSpline,
-					   targetHeader,
-					   targetImage);
-	*/
-
 	resampler.resample(sourceImage, 400, 300, tga::BSpline, targetImage);
 
 	// Write target image file.
@@ -56,11 +33,7 @@ int main(int argc, const char * argv[]) {
 	tga::StdioFileInterface targetFile{ f1 };
 
 	tga::Encoder encoder{ &targetFile };
-
-	/*
-	encoder.encode(targetHeader, targetImage);
-	*/
-	encoder.encode(targetImage);
+	encoder.write(targetImage);
 
 	std::fclose(f1);
 

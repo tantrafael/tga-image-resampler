@@ -11,50 +11,57 @@ namespace tga
 		, m_iterator{}
 	{}
 
-	//bool Decoder::decode(Header& header, Image& image)
-	bool Decoder::decode(Image& image)
+	//bool Decoder::read(Header& header, Image& image)
+	bool Decoder::read(Image& image)
 	{
 		//readHeader(header);
-		readHeader(image.header);
+		//readHeader(image.header);
+		readHeader(image);
 
-		image.body.pixelByteDepth = image.header.pixelByteDepth();
-		image.body.rowStride = image.header.width * image.header.pixelByteDepth();
-		const unsigned int bufferSize{ image.body.rowStride * image.header.height };
+		ImageHeader* header = &image.header;
+		ImageBody* body = &image.body;
+
+		body->pixelByteDepth = header->pixelByteDepth();
+		body->rowStride = header->width * header->pixelByteDepth();
+		const unsigned int bufferSize{ body->rowStride * header->height };
 		std::unique_ptr<uint8_t[]> buffer(new uint8_t[bufferSize]);
-		image.body.pixels = buffer.get();
+		body->pixels = buffer.get();
 
 		//readImage(header, image);
-		readBody(image.header, image.body);
+		//readBody(image.header, image.body);
+		readBody(image);
 
 		return true;
 	}
 
-	bool Decoder::readHeader(ImageHeader& header)
-	//bool Decoder::readHeader(Image& image)
+	//bool Decoder::readHeader(ImageHeader& header)
+	bool Decoder::readHeader(Image& image)
 	{
+		ImageHeader* header = &image.header;
+
 		// TODO: Make sure to start at beginning of file.
-		header.idLength = read8();
-		header.colorMapType = read8();
-		header.imageType = static_cast<ImageType>(read8());
-		header.colorMapOrigin = read16();
-		header.colorMapLength = read16();
-		header.colorMapBitDepth = read8();
-		header.originX = read16();
-		header.originY = read16();
-		header.width = read16();
-		header.height = read16();
-		header.pixelBitDepth = read8();
-		header.imageDescriptor = read8();
+		header->idLength = read8();
+		header->colorMapType = read8();
+		header->imageType = static_cast<ImageType>(read8());
+		header->colorMapOrigin = read16();
+		header->colorMapLength = read16();
+		header->colorMapBitDepth = read8();
+		header->originX = read16();
+		header->originY = read16();
+		header->width = read16();
+		header->height = read16();
+		header->pixelBitDepth = read8();
+		header->imageDescriptor = read8();
 
 		// Read ID string.
-		if (header.idLength > 0)
+		if (header->idLength > 0)
 		{
 			uint8_t byte{};
 
-			for (int i = 0; i < header.idLength; ++i)
+			for (int i = 0; i < header->idLength; ++i)
 			{
 				byte = m_file->read8();
-				header.imageId.push_back(byte);
+				header->imageId.push_back(byte);
 			}
 		}
 
@@ -67,18 +74,18 @@ namespace tga
 		*/
 
 		// TODO: Clean up type cast.
-		std::cout << "ID length: " << (int) header.idLength << '\n';
-		std::cout << "Color map type: " << (int) header.colorMapType << '\n';
-		std::cout << "Image type: " << (int) header.imageType << '\n';
-		std::cout << "Color map origin: " << (int) header.colorMapOrigin << '\n';
-		std::cout << "Color map length: " << (int) header.colorMapLength << '\n';
-		std::cout << "Color map depth: " << (int) header.colorMapBitDepth << '\n';
-		std::cout << "X-origin: " << (int) header.originX << '\n';
-		std::cout << "Y-origin: " << (int) header.originY << '\n';
-		std::cout << "Image width: " << (int) header.width << '\n';
-		std::cout << "Image height: " << (int) header.height << '\n';
-		std::cout << "Pixel bit depth: " << (int) header.pixelBitDepth << '\n';
-		std::cout << "Image descriptor: " << (int) header.imageDescriptor << '\n';
+		std::cout << "ID length: " << (int) header->idLength << '\n';
+		std::cout << "Color map type: " << (int) header->colorMapType << '\n';
+		std::cout << "Image type: " << (int) header->imageType << '\n';
+		std::cout << "Color map origin: " << (int) header->colorMapOrigin << '\n';
+		std::cout << "Color map length: " << (int) header->colorMapLength << '\n';
+		std::cout << "Color map depth: " << (int) header->colorMapBitDepth << '\n';
+		std::cout << "X-origin: " << (int) header->originX << '\n';
+		std::cout << "Y-origin: " << (int) header->originY << '\n';
+		std::cout << "Image width: " << (int) header->width << '\n';
+		std::cout << "Image height: " << (int) header->height << '\n';
+		std::cout << "Pixel bit depth: " << (int) header->pixelBitDepth << '\n';
+		std::cout << "Image descriptor: " << (int) header->imageDescriptor << '\n';
 
 		return true;
 	}
@@ -103,15 +110,19 @@ namespace tga
 	}
 	*/
 
-	bool Decoder::readBody(const ImageHeader& header, ImageBody& body)
+	//bool Decoder::readBody(const ImageHeader& header, ImageBody& body)
+	bool Decoder::readBody(Image& image)
 	{
-		m_iterator = ImageIterator{ header, body };
+		//m_iterator = ImageIterator{ image.header, image.body };
+		m_iterator = ImageIterator{ image };
 
-		const auto width{ header.width };
-		const auto height{ header.height };
+		ImageHeader* header = &image.header;
+
+		const auto width{ header->width };
+		const auto height{ header->height };
 		color (Decoder::*readPixel)(){};
 
-		switch (header.pixelBitDepth)
+		switch (header->pixelBitDepth)
 		{
 			case 8:
 				readPixel = &Decoder::read8color;
@@ -128,7 +139,7 @@ namespace tga
 				break;
 		}
 
-		switch (header.imageType)
+		switch (header->imageType)
 		{
 			case NoImageData:
 				break;

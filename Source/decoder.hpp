@@ -5,10 +5,6 @@
 #include <fstream>
 
 #include "file_interface.hpp"
-/*
-#include "image_header.hpp"
-#include "image_body.hpp"
-*/
 #include "image.hpp"
 #include "color.hpp"
 #include "image_iterator.hpp"
@@ -27,15 +23,16 @@ namespace tga
 		Decoder(FileInterface* file);
 
 		/*
-		bool decode(Header& header, Image& image);
+		bool read(Header& header, Image& image);
 		*/
-		bool decode(Image& image);
+		bool read(Image& image);
 
 	private:
-		bool readHeader(ImageHeader& header);
-		//bool readHeader(Image& image);
+		//bool readHeader(ImageHeader& header);
+		bool readHeader(Image& image);
 		//bool readImage(const Header& header, Image& image, Delegate* delegate = nullptr);
-		bool readBody(const ImageHeader& header, ImageBody& image);
+		//bool readBody(const ImageHeader& header, ImageBody& image);
+		bool readBody(Image& image);
 		void readColorMap(ImageHeader& header);
 
 		template<typename T>
