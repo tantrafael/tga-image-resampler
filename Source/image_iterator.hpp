@@ -1,10 +1,6 @@
 #ifndef image_iterator_hpp
 #define image_iterator_hpp
 
-/*
-#include "image_header.hpp"
-#include "image_body.hpp"
-*/
 #include "image.hpp"
 
 namespace tga
@@ -13,7 +9,6 @@ namespace tga
 	{
 	public:
 		ImageIterator();
-		//ImageIterator(const ImageHeader& header, ImageBody& body);
 		ImageIterator(Image& image);
 		// TODO: Consider constructor with const image for encoding.
 

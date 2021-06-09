@@ -6,7 +6,6 @@ namespace tga
 		: m_body{ nullptr }
 	{}
 
-	//ImageIterator::ImageIterator(const ImageHeader& header, ImageBody& body)
 	ImageIterator::ImageIterator(Image& image)
 		: m_body{ &image.body }
 		, m_x{ image.header.isLeftToRight() ? 0 : image.header.width - 1 }

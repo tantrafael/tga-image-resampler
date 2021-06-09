@@ -3,10 +3,6 @@
 
 #include <math.h>
 
-/*
-#include "image_header.hpp"
-#include "image_body.hpp"
-*/
 #include "image.hpp"
 #include "kernel_type.hpp"
 #include "kernel_direction.hpp"
@@ -22,7 +18,7 @@ namespace tga
 		bool resample(const Image& sourceImage,
 					  const int targetWidth,
 					  const int targetHeight,
-					  const KernelType type,
+					  const KernelType kernelType,
 					  Image& targetImage);
 
 	private:
@@ -32,7 +28,7 @@ namespace tga
 							Image& targetImage);
 
 		void resampleBody(const Image& sourceImage,
-						  const KernelType type,
+						  const KernelType kernelType,
 						  Image& targetImage);
 
 		bool resampleDirection(const std::shared_ptr<KernelSampler> sampler,

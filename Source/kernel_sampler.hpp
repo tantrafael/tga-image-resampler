@@ -13,7 +13,7 @@ namespace tga
 	class KernelSampler
 	{
 	public:
-		static std::shared_ptr<KernelSampler> create(const KernelType type);
+		static std::shared_ptr<KernelSampler> create(const KernelType kernelType);
 
 		virtual bool sample(const float subPixelPosX,
 							const float subPixelPosY,

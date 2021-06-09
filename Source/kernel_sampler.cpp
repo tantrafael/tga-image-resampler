@@ -10,7 +10,7 @@ namespace tga
 {
 	typedef std::shared_ptr<KernelSampler> sampler_ptr;
 
-	sampler_ptr KernelSampler::create(const KernelType type)
+	sampler_ptr KernelSampler::create(const KernelType kernelType)
 	{
 		std::unordered_map<KernelType, sampler_ptr> samplerTable
 		{
@@ -26,7 +26,7 @@ namespace tga
 			{ Lanczos5, sampler_ptr(new LanczosSampler{ 5.0f }) },
 		};
 
-		sampler_ptr sampler = samplerTable[type];
+		sampler_ptr sampler = samplerTable[kernelType];
 
 		return sampler;
 	}

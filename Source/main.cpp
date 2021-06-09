@@ -5,10 +5,6 @@
 #include "resampler.hpp"
 #include "encoder.hpp"
 #include "image.hpp"
-/*
-#include "image_header.hpp"
-#include "image_body.hpp"
-*/
 
 int main(int argc, const char * argv[]) {
 	// Read source image file.

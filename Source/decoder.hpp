@@ -22,16 +22,10 @@ namespace tga
 	public:
 		Decoder(FileInterface* file);
 
-		/*
-		bool read(Header& header, Image& image);
-		*/
 		bool read(Image& image);
 
 	private:
-		//bool readHeader(ImageHeader& header);
 		bool readHeader(Image& image);
-		//bool readImage(const Header& header, Image& image, Delegate* delegate = nullptr);
-		//bool readBody(const ImageHeader& header, ImageBody& image);
 		bool readBody(Image& image);
 		void readColorMap(ImageHeader& header);
 
