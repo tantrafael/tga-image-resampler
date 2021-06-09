@@ -76,6 +76,7 @@ namespace tga
 
 		const auto sampler = KernelSampler::create(kernelType);
 
+		// Horizontal pass, from source image to temporary buffer.
 		resampleDirection(sampler,
 						  Horizontal,
 						  mappingRatioX,
@@ -87,6 +88,7 @@ namespace tga
 						  sourceHeader.height,
 						  tempBufferPixels);
 
+		// Vertical pass, from temporary buffer to target image.
 		resampleDirection(sampler,
 						  Vertical,
 						  mappingRatioX,

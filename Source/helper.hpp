@@ -1,8 +1,6 @@
 #ifndef helper_hpp
 #define helper_hpp
 
-#include <cmath>
-
 #include "kernel_direction.hpp"
 
 namespace tga

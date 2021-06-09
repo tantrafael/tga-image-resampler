@@ -1,6 +1,8 @@
 #ifndef color_hpp
 #define color_hpp
 
+#include <cstdint>
+
 namespace tga
 {
 	typedef uint32_t color;

@@ -1,8 +1,5 @@
 #include "decoder.hpp"
 
-#include <cassert>
-#include <functional>
-
 namespace tga
 {
 	Decoder::Decoder(FileInterface* file)

@@ -9,7 +9,6 @@
 
 namespace tga
 {
-	// TODO: Add virtual destructor.
 	class KernelSampler
 	{
 	public:

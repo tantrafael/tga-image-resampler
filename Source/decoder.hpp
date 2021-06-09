@@ -2,12 +2,11 @@
 #define decoder_hpp
 
 #include <iostream>
-#include <fstream>
 
-#include "file_interface.hpp"
-#include "image.hpp"
 #include "color.hpp"
+#include "image.hpp"
 #include "image_iterator.hpp"
+#include "file_interface.hpp"
 
 namespace tga
 {
