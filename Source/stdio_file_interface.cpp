@@ -6,9 +6,9 @@
 
 namespace tga
 {
-	StdioFileInterface::StdioFileInterface(const std::string filePath,
+	StdioFileInterface::StdioFileInterface(const std::string filename,
 										   const FileAccessMode mode)
-		: FileInterface(filePath, mode)
+		: FileInterface(filename, mode)
 	{
 		std::unordered_map<FileAccessMode, std::string> modeStringTable
 		{
@@ -18,7 +18,7 @@ namespace tga
 
 		const auto modeString{ modeStringTable[mode] };
 
-		m_file = std::fopen(filePath.data(), modeString.data());
+		m_file = std::fopen(filename.data(), modeString.data());
 		m_ok = true;
 	}
 

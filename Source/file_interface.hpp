@@ -16,7 +16,7 @@ namespace tga
 	{
 	public:
 		// Opens the file in specified access mode.
-		FileInterface(const std::string filePath, const FileAccessMode mode) {}
+		FileInterface(const std::string filename, const FileAccessMode mode) {}
 
 		virtual ~FileInterface() {}
 

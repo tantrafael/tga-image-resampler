@@ -112,8 +112,8 @@ namespace tga
 
 	void Encoder::write24AsRgb(color c)
 	{
-		write8(getb(c));
-		write8(getg(c));
-		write8(getr(c));
+		write8(getB(c));
+		write8(getG(c));
+		write8(getR(c));
 	}
 }

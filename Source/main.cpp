@@ -7,11 +7,11 @@
 
 void printUsage(const char* programName) {
 	printf("Usage: %s [options]\n", programName);
-	printf("  --src [source filename] \t\tSource image to load.\n");
+	printf("  --src [source filename] \tSource image to load.\n");
 	printf("  --dst [destination filename] \tDestination image to save.\n");
-	printf("  --width [integer] \t\t\tSets the width of the output image.\n");
-	printf("  --height [integer] \t\t\tSets the height of the output image.\n");
-	printf("  --kernel [integer] \t\t\tSpecifies the kernel type.\n");
+	printf("  --width [integer] \t\tSets the width of the output image.\n");
+	printf("  --height [integer] \t\tSets the height of the output image.\n");
+	printf("  --kernel [integer] \t\tSpecifies the kernel type.\n");
 	printf("      1: Bicubic\n");
 	printf("      2: Catmull-Rom\n");
 	printf("      3: Mitchell-Netravali\n");
@@ -26,11 +26,11 @@ void printUsage(const char* programName) {
 
 int main(int argc, const char* argv[])
 {
-	std::string src_filename{};
-	std::string dst_filename{};
-	uint32_t output_width{};
-	uint32_t output_height{};
-	tga::KernelType kernel{ tga::Bicubic };
+	std::string sourceFileName{};
+	std::string destinationFileName{};
+	uint32_t outputWidth{};
+	uint32_t outputHeight{};
+	tga::KernelType kernel{ tga::Lanczos };
 
 	if (argc <= 1)
 	{
@@ -50,16 +50,16 @@ int main(int argc, const char* argv[])
 		switch (optBegin[0])
 		{
 			case 's':
-				src_filename = argv[++i];
+				sourceFileName = argv[++i];
 				break;
 			case 'd':
-				dst_filename = argv[++i];
+				destinationFileName = argv[++i];
 				break;
 			case 'w':
-				output_width = atoi(argv[++i]);
+				outputWidth = atoi(argv[++i]);
 				break;
 			case 'h':
-				output_height = atoi(argv[++i]);
+				outputHeight = atoi(argv[++i]);
 				break;
 			case 'k':
 				kernel = static_cast<tga::KernelType>(atoi(argv[++i]));
@@ -68,27 +68,22 @@ int main(int argc, const char* argv[])
 	}
 
 	// Read source image file.
-	//const std::string sourceFilePath{ "/Users/raffa/Work/Star Stable/Sample images/sample_5184×3456.tga" };
-	//tga::StdioFileInterface sourceFile{ sourceFilePath, tga::ReadBinary };
-	tga::StdioFileInterface sourceFile{ src_filename, tga::ReadBinary };
+	tga::StdioFileInterface sourceFile{ sourceFileName, tga::ReadBinary };
 	tga::Image sourceImage{};
 	tga::Decoder decoder{ &sourceFile };
 	decoder.read(sourceImage);
 	sourceFile.close();
 
 	// Resample image.
-	tga::Image targetImage{};
+	tga::Image destinationImage{};
 	tga::Resampler resampler{};
-	//resampler.resample(sourceImage, 800, 600, tga::BSpline, targetImage);
-	resampler.resample(sourceImage, output_width, output_height, kernel, targetImage);
+	resampler.resample(sourceImage, outputWidth, outputHeight, kernel, destinationImage);
 
-	// Write target image file.
-	//const std::string targetFilePath{ "/Users/raffa/Work/Star Stable/resample.tga" };
-	//tga::StdioFileInterface targetFile{ targetFilePath, tga::WriteBinary };
-	tga::StdioFileInterface targetFile{ dst_filename, tga::WriteBinary };
-	tga::Encoder encoder{ &targetFile };
-	encoder.write(targetImage);
-	targetFile.close();
+	// Write destination image file.
+	tga::StdioFileInterface destinationFile{ destinationFileName, tga::WriteBinary };
+	tga::Encoder encoder{ &destinationFile };
+	encoder.write(destinationImage);
+	destinationFile.close();
 
 	return 0;
 }

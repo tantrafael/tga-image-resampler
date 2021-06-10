@@ -16,20 +16,20 @@ namespace tga
 		Resampler();
 
 		bool resample(const Image& sourceImage,
-					  const int targetWidth,
-					  const int targetHeight,
+					  const int destinationWidth,
+					  const int destinationHeight,
 					  const KernelType kernelType,
-					  Image& targetImage);
+					  Image& destinationImage);
 
 	private:
 		void resampleHeader(const Image& sourceImage,
-							const int targetWidth,
-							const int targetHeight,
-							Image& targetImage);
+							const int destinationWidth,
+							const int destinationHeight,
+							Image& destinationImage);
 
 		void resampleBody(const Image& sourceImage,
 						  const KernelType kernelType,
-						  Image& targetImage);
+						  Image& destinationImage);
 
 		bool resampleDirection(const std::shared_ptr<KernelSampler> sampler,
 							   const KernelDirection direction,

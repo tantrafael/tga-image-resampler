@@ -66,18 +66,10 @@ namespace tga
 		*/
 
 		// TODO: Clean up type cast.
-		std::cout << "ID length: " << (int) header.idLength << '\n';
-		std::cout << "Color map type: " << (int) header.colorMapType << '\n';
 		std::cout << "Image type: " << (int) header.imageType << '\n';
-		std::cout << "Color map origin: " << (int) header.colorMapOrigin << '\n';
-		std::cout << "Color map length: " << (int) header.colorMapLength << '\n';
-		std::cout << "Color map depth: " << (int) header.colorMapBitDepth << '\n';
-		std::cout << "X-origin: " << (int) header.originX << '\n';
-		std::cout << "Y-origin: " << (int) header.originY << '\n';
 		std::cout << "Image width: " << (int) header.width << '\n';
 		std::cout << "Image height: " << (int) header.height << '\n';
 		std::cout << "Pixel bit depth: " << (int) header.pixelBitDepth << '\n';
-		std::cout << "Image descriptor: " << (int) header.imageDescriptor << '\n';
 
 		return true;
 	}
