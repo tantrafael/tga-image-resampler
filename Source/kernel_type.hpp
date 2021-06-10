@@ -6,7 +6,7 @@ namespace tga
 	enum KernelType {
 		//Unknown,
 		Bicubic,
-		Catmull,
+		Catrom,
 		Mitchell,
 		Cardinal,
 		BSpline,

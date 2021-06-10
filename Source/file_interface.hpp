@@ -15,10 +15,10 @@ namespace tga
 	class FileInterface
 	{
 	public:
+		// Opens the file in specified access mode.
 		FileInterface(const std::string filePath, const FileAccessMode mode) {}
-		virtual ~FileInterface() {}
 
-		//virtual void open(const std::string filePath, const FileAccessMode mode) = 0;
+		virtual ~FileInterface() {}
 
 		// Returns true if we can read/write bytes from/into the file.
 		virtual bool ok() const = 0;
@@ -35,6 +35,7 @@ namespace tga
 		// Writes one byte in the file (or do nothing if ok() = false).
 		virtual void write8(uint8_t value) = 0;
 
+		// Closes the file.
 		virtual void close() = 0;
 	};
 }

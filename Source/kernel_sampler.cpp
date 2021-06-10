@@ -35,7 +35,7 @@ namespace tga
 		std::unordered_map<KernelType, sampler_ptr> samplerTable
 		{
 			{ Bicubic,  sampler_ptr(new BicubicSampler{ 0.0f, 1.0f }) },
-			{ Catmull,  sampler_ptr(new BicubicSampler{ 0.0f, 0.5f }) },
+			{ Catrom,   sampler_ptr(new BicubicSampler{ 0.0f, 0.5f }) },
 			{ Mitchell, sampler_ptr(new BicubicSampler{ 1.0f / 3.0f, 1.0f / 3.0f }) },
 			{ Cardinal, sampler_ptr(new BicubicSampler{ 0.0f, 0.75f }) },
 			{ BSpline,  sampler_ptr(new BicubicSampler{ 1.0f, 0.0f }) },
