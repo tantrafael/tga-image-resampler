@@ -7,21 +7,18 @@
 namespace tga
 {
 	/*
-	StdioFileInterface::StdioFileInterface(const char* const filePath, const FileAccessMode mode)
-		: m_file{ std::fopen(filePath, "rb") }
-		, m_ok{ true }
-	{}
-	*/
-
 	StdioFileInterface::StdioFileInterface()
 		: m_file{}
 		, m_ok{ false }
 	{}
+	*/
 
-	//void StdioFileInterface::open(const char* const filePath, const FileAccessMode mode)
-	void StdioFileInterface::open(const std::string filePath, const FileAccessMode mode)
+	StdioFileInterface::StdioFileInterface(const std::string filePath,
+										   const FileAccessMode mode)
+		: FileInterface(filePath, mode)
+		//: m_file{ std::fopen(filePath, "rb") }
+		//: m_ok{ true }
 	{
-		//std::unordered_map<FileAccessMode, char const*> modeStringTable
 		std::unordered_map<FileAccessMode, std::string> modeStringTable
 		{
 			{ ReadBinary,  "rb" },
@@ -30,10 +27,26 @@ namespace tga
 
 		const auto modeString{ modeStringTable[mode] };
 
-		//m_file = std::fopen(filePath, modeString);
 		m_file = std::fopen(filePath.data(), modeString.data());
 		m_ok = true;
 	}
+
+	/*
+	//void StdioFileInterface::open(const char* const filePath, const FileAccessMode mode)
+	void StdioFileInterface::open(const std::string filePath, const FileAccessMode mode)
+	{
+		std::unordered_map<FileAccessMode, std::string> modeStringTable
+		{
+			{ ReadBinary,  "rb" },
+			{ WriteBinary, "wb" }
+		};
+
+		const auto modeString{ modeStringTable[mode] };
+
+		m_file = std::fopen(filePath.data(), modeString.data());
+		m_ok = true;
+	}
+	*/
 
 	bool StdioFileInterface::ok() const
 	{

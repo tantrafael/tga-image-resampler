@@ -15,10 +15,10 @@ namespace tga
 	class FileInterface
 	{
 	public:
+		FileInterface(const std::string filePath, const FileAccessMode mode) {}
 		virtual ~FileInterface() {}
 
-		//virtual void open(const char* const filePath, const FileAccessMode mode) = 0;
-		virtual void open(const std::string filePath, const FileAccessMode mode) = 0;
+		//virtual void open(const std::string filePath, const FileAccessMode mode) = 0;
 
 		// Returns true if we can read/write bytes from/into the file.
 		virtual bool ok() const = 0;

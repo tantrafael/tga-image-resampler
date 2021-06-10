@@ -10,10 +10,9 @@ namespace tga
 	class StdioFileInterface : public tga::FileInterface
 	{
 	public:
-		//StdioFileInterface(const char* const filePath, const FileAccessMode mode);
-		StdioFileInterface();
-		//void open(const char* const filePath, const FileAccessMode mode) override;
-		void open(const std::string filePath, const FileAccessMode mode) override;
+		//StdioFileInterface();
+		StdioFileInterface(const std::string filePath, const FileAccessMode mode);
+		//void open(const std::string filePath, const FileAccessMode mode) override;
 		bool ok() const override;
 		size_t tell() override;
 		void seek(size_t absPos) override;
