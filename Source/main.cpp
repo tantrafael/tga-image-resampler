@@ -8,9 +8,8 @@
 
 int main(int argc, const char * argv[]) {
 	// Read source image file.
-	auto sourceFilePath{ "/Users/raffa/Work/Star Stable/Sample images/sample_5184×3456.tga" };
+	const std::string sourceFilePath{ "/Users/raffa/Work/Star Stable/Sample images/sample_5184×3456.tga" };
 
-	//tga::StdioFileInterface sourceFile{ sourceFilePath, 0 };
 	tga::StdioFileInterface sourceFile{};
 	sourceFile.open(sourceFilePath, tga::ReadBinary);
 
@@ -26,7 +25,7 @@ int main(int argc, const char * argv[]) {
 	resampler.resample(sourceImage, 800, 600, tga::BSpline, targetImage);
 
 	// Write target image file.
-	auto targetFilePath{ "/Users/raffa/Work/Star Stable/resample.tga" };
+	const std::string targetFilePath{ "/Users/raffa/Work/Star Stable/resample.tga" };
 
 	tga::StdioFileInterface targetFile{};
 	targetFile.open(targetFilePath, tga::WriteBinary);
