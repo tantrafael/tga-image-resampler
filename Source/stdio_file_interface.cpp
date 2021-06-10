@@ -1,22 +1,16 @@
 #include "stdio_file_interface.hpp"
 
+#include <unordered_map>
 #include <cassert>
 #include <limits>
 
 namespace tga
 {
 	/*
-	StdioFileInterface::StdioFileInterface(FILE* file)
-		: m_file{ file }
-		, m_ok{ true }
-	{}
-	*/
-
-	/*
-	//StdioFileInterface::StdioFileInterface(const char* const filePath, const bool mode)
+	//StdioFileInterface::StdioFileInterface(const char* const filePath, const FileAccessMode mode)
 	StdioFileInterface::StdioFileInterface()
-		//: m_file{ std::fopen(filePath, "rb") }
-		: m_ok{ true }
+		: m_file{ std::fopen(filePath, "rb") }
+		, m_ok{ true }
 	{}
 	*/
 
@@ -25,10 +19,17 @@ namespace tga
 		, m_ok{ false }
 	{}
 
-	void StdioFileInterface::open(const char* const filePath, const bool mode)
+	void StdioFileInterface::open(const char* const filePath, const FileAccessMode mode)
 	{
-		//m_file = std::fopen(filePath, "rb");
-		m_file = std::fopen(filePath, mode ? "rb" : "wb");
+		std::unordered_map<FileAccessMode, char const*> modeStringTable
+		{
+			{ ReadBinary,  "rb" },
+			{ WriteBinary, "wb" }
+		};
+
+		const auto modeString{ modeStringTable[mode] };
+
+		m_file = std::fopen(filePath, modeString);
 		m_ok = true;
 	}
 
