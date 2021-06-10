@@ -5,10 +5,12 @@
 
 namespace tga
 {
+	/*
 	StdioFileInterface::StdioFileInterface(FILE* file)
 		: m_file{ file }
 		, m_ok{ true }
 	{}
+	*/
 
 	/*
 	//StdioFileInterface::StdioFileInterface(const char* const filePath, const bool mode)
@@ -18,21 +20,17 @@ namespace tga
 	{}
 	*/
 
-	/*
 	StdioFileInterface::StdioFileInterface()
 		: m_file{}
 		, m_ok{ false }
 	{}
-	*/
 
-	/*
 	void StdioFileInterface::open(const char* const filePath, const bool mode)
 	{
-		m_file = std::fopen(filePath, "rb");
-		//m_file = std::fopen(filePath, mode ? "rb" : "wb");
+		//m_file = std::fopen(filePath, "rb");
+		m_file = std::fopen(filePath, mode ? "rb" : "wb");
 		m_ok = true;
 	}
-	*/
 
 	bool StdioFileInterface::ok() const
 	{
@@ -49,8 +47,7 @@ namespace tga
 		// To detect surprises with the size_t -> long cast.
 		assert(absPos <= std::numeric_limits<long>::max());
 
-		fseek(m_file, (long) absPos, SEEK_SET);
-		//fseek(m_file, static_cast<long>(absPos), SEEK_SET);
+		fseek(m_file, static_cast<long>(absPos), SEEK_SET);
 	}
 
 	uint8_t StdioFileInterface::read8()
@@ -60,8 +57,7 @@ namespace tga
 		if (value != EOF) {
 			// We can safely cast to uint8_t, as EOF is the only special
 			// non-uint8 value that fgetc() should return.
-			return (uint8_t) value;
-			//return static_cast<uint8_t>(value);
+			return static_cast<uint8_t>(value);
 		}
 		else
 		{
@@ -75,11 +71,9 @@ namespace tga
 		fputc(value, m_file);
 	}
 
-	/*
 	void StdioFileInterface::close()
 	{
 		std::fclose(m_file);
 		m_ok = false;
 	}
-	*/
 }

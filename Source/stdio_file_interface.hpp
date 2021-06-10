@@ -10,16 +10,16 @@ namespace tga
 	class StdioFileInterface : public tga::FileInterface
 	{
 	public:
-		StdioFileInterface(FILE* file);
+		//StdioFileInterface(FILE* file);
 		//StdioFileInterface(const char* const filePath, const bool mode);
-		//StdioFileInterface();
-		//void open(const char* const filePath, const bool mode) override;
+		StdioFileInterface();
+		void open(const char* const filePath, const bool mode) override;
 		bool ok() const override;
 		size_t tell() override;
 		void seek(size_t absPos) override;
 		uint8_t read8() override;
 		void write8(uint8_t value) override;
-		//void close() override;
+		void close() override;
 
 	private:
 		FILE* m_file;
