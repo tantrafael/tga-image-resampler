@@ -28,7 +28,7 @@ namespace tga
 
 	bool LanczosSampler::sample(const float subPixelPosX,
 								const float subPixelPosY,
-								const KernelDirection direction,
+								const ResamplingDirection direction,
 								uint8_t* pixels,
 								const unsigned int width,
 								const unsigned int height,

@@ -146,7 +146,7 @@ namespace tga
 	}
 
 	bool Resampler::resampleDirection(const std::shared_ptr<KernelSampler> sampler,
-									  const KernelDirection direction,
+									  const ResamplingDirection direction,
 									  const float mappingRatioX,
 									  const float mappingRatioY,
 									  const unsigned int inputWidth,
@@ -196,7 +196,7 @@ namespace tga
 	}
 
 	bool Resampler::resamplePosition(const std::shared_ptr<KernelSampler> sampler,
-									 const KernelDirection direction,
+									 const ResamplingDirection direction,
 									 const float mappingRatioX,
 									 const float mappingRatioY,
 									 const unsigned int outputRow,

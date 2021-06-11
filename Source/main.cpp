@@ -38,6 +38,7 @@ int main(int argc, const char* argv[])
 		return 0;
 	}
 
+	// Read user input.
 	for (int i = 1; i < argc; i++)
 	{
 		auto optBegin = argv[i];

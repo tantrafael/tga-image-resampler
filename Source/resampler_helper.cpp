@@ -3,14 +3,14 @@
 namespace tga
 {
 	bool ResamplerHelper::getSourcePixel(const float subPixelPosX,
-							   const float subPixelPosY,
-							   const KernelDirection direction,
-							   const int offset,
-							   uint8_t* const pixels,
-							   const int32_t width,
-							   const int32_t height,
-							   float& distance,
-							   uint8_t*& sourcePixel)
+										 const float subPixelPosY,
+										 const ResamplingDirection direction,
+										 const int offset,
+										 uint8_t* const pixels,
+										 const int32_t width,
+										 const int32_t height,
+										 float& distance,
+										 uint8_t*& sourcePixel)
 	{
 		int32_t samplePosX{};
 		int32_t samplePosY{};

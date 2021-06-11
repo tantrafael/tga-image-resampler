@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-#include "kernel_direction.hpp"
+#include "resampling_direction.hpp"
 
 namespace tga
 {
@@ -19,7 +19,7 @@ namespace tga
 	public:
 		static bool getSourcePixel(const float subPixelPosX,
 								   const float subPixelPosY,
-								   const KernelDirection direction,
+								   const ResamplingDirection direction,
 								   const int offset,
 								   uint8_t* const pixels,
 								   const int32_t width,

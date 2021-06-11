@@ -3,7 +3,7 @@
 
 #include "image.hpp"
 #include "kernel_type.hpp"
-#include "kernel_direction.hpp"
+#include "resampling_direction.hpp"
 #include "kernel_sampler.hpp"
 
 namespace tga
@@ -30,7 +30,7 @@ namespace tga
 						  Image& destinationImage);
 
 		bool resampleDirection(const std::shared_ptr<KernelSampler> sampler,
-							   const KernelDirection direction,
+							   const ResamplingDirection direction,
 							   const float mappingRatioX,
 							   const float mappingRatioY,
 							   const unsigned int inputWidth,
@@ -41,7 +41,7 @@ namespace tga
 							   uint8_t* const outputPixels);
 
 		bool resamplePosition(const std::shared_ptr<KernelSampler> sampler,
-							  const KernelDirection direction,
+							  const ResamplingDirection direction,
 							  const float mappingRatioX,
 							  const float mappingRatioY,
 							  const unsigned int outputRow,

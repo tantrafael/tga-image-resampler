@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "kernel_type.hpp"
-#include "kernel_direction.hpp"
+#include "resampling_direction.hpp"
 
 namespace tga
 {
@@ -15,7 +15,7 @@ namespace tga
 
 		virtual bool sample(const float subPixelPosX,
 							const float subPixelPosY,
-							const KernelDirection direction,
+							const ResamplingDirection direction,
 							uint8_t* pixels,
 							const unsigned int width,
 							const unsigned int height,
