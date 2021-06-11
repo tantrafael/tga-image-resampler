@@ -7,8 +7,8 @@
 
 void printUsage(const char* programName) {
 	printf("Usage: %s [options]\n", programName);
-	printf("  --src [source filename] \tSource image to load.\n");
-	printf("  --dst [destination filename] \tDestination image to save.\n");
+	printf("  --src [source filename] \tSource TGA image to load.\n");
+	printf("  --dst [destination filename] \tDestination TGA image to save.\n");
 	printf("  --width [integer] \t\tSets the width of the output image.\n");
 	printf("  --height [integer] \t\tSets the height of the output image.\n");
 	printf("  --kernel [integer] \t\tSpecifies the kernel type.\n");
@@ -67,19 +67,45 @@ int main(int argc, const char* argv[])
 		}
 	}
 
-	// Read source image file.
+	// Read source file.
+	printf("Reading source file.\n");
+
 	tga::StdioFileInterface sourceFile{ sourceFileName, tga::ReadBinary };
 	tga::Image sourceImage{};
 	tga::Decoder decoder{ &sourceFile };
-	decoder.read(sourceImage);
+
+	if (!decoder.read(sourceImage))
+	{
+		printf("Error reading source file.\n");
+		return 0;
+	}
+
 	sourceFile.close();
 
+	printf("TGA image type: %i.\n", sourceImage.header.imageType);
+	printf("Dimensions: %ix%i px.\n", sourceImage.header.width, sourceImage.header.height);
+	printf("Pixel bit depth: %i.\n", sourceImage.header.pixelBitDepth);
+
 	// Resample image.
+	printf("Resampling image using kernel %i, destination dimensions %ix%i px.\n",
+		   kernel, outputWidth, outputHeight);
+
 	tga::Image destinationImage{};
 	tga::Resampler resampler{};
-	resampler.resample(sourceImage, outputWidth, outputHeight, kernel, destinationImage);
 
-	// Write destination image file.
+	if (!resampler.resample(sourceImage,
+							outputWidth,
+							outputHeight,
+							kernel,
+							destinationImage))
+	{
+		printf("Error resampling image.\n");
+		return 0;
+	}
+
+	// Write destination file.
+	printf("Writing destination file.\n");
+
 	tga::StdioFileInterface destinationFile{ destinationFileName, tga::WriteBinary };
 	tga::Encoder encoder{ &destinationFile };
 	encoder.write(destinationImage);

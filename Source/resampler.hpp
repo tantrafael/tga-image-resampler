@@ -16,42 +16,42 @@ namespace tga
 		Resampler();
 
 		bool resample(const Image& sourceImage,
-					  const int destinationWidth,
-					  const int destinationHeight,
-					  const KernelType kernelType,
+					  const unsigned int destinationWidth,
+					  const unsigned int destinationHeight,
+					  const KernelType kernel,
 					  Image& destinationImage);
 
 	private:
 		void resampleHeader(const Image& sourceImage,
-							const int destinationWidth,
-							const int destinationHeight,
+							const unsigned int destinationWidth,
+							const unsigned int destinationHeight,
 							Image& destinationImage);
 
 		void resampleBody(const Image& sourceImage,
-						  const KernelType kernelType,
+						  const KernelType kernel,
 						  Image& destinationImage);
 
 		bool resampleDirection(const std::shared_ptr<KernelSampler> sampler,
 							   const KernelDirection direction,
 							   const float mappingRatioX,
 							   const float mappingRatioY,
-							   const int inputWidth,
-							   const int inputHeight,
+							   const unsigned int inputWidth,
+							   const unsigned int inputHeight,
 							   uint8_t* const inputPixels,
-							   const int outputWidth,
-							   const int outputHeight,
+							   const unsigned int outputWidth,
+							   const unsigned int outputHeight,
 							   uint8_t* const outputPixels);
 
 		bool resamplePosition(const std::shared_ptr<KernelSampler> sampler,
 							  const KernelDirection direction,
 							  const float mappingRatioX,
 							  const float mappingRatioY,
-							  const int outputRow,
-							  const int outputCol,
+							  const unsigned int outputRow,
+							  const unsigned int outputCol,
 							  uint8_t* const inputPixels,
-							  const int inputWidth,
-							  const int inputHeight,
-							  const int outputWidth,
+							  const unsigned int inputWidth,
+							  const unsigned int inputHeight,
+							  const unsigned int outputWidth,
 							  uint8_t* const outputPixels);
 	};
 }

@@ -10,16 +10,15 @@ namespace tga
 	public:
 		ImageIterator();
 		ImageIterator(Image& image);
-		// TODO: Consider constructor with const image for encoding.
 
 		// Put one pixel value into the image and advance the iterator.
 		template<typename T>
-		bool putPixel(const T value)
+		void putPixel(const T value)
 		{
 			// TODO: Clean up type cast.
 			*((T*)m_ptr) = value;
 			//*static_cast<T*>(m_ptr) = value;
-			return advance();
+			advance();
 		}
 
 		// Get one pixel value from the image and advance the iterator.

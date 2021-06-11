@@ -10,7 +10,10 @@ namespace tga
 
 	bool Decoder::read(Image& image)
 	{
-		readHeader(image);
+		if (!readHeader(image))
+		{
+			return false;
+		}
 
 		const auto& header{ image.header };
 		auto& body{ image.body };
@@ -22,7 +25,10 @@ namespace tga
 		std::unique_ptr<uint8_t[]> buffer(new uint8_t[bufferSize]);
 		body.pixels = buffer.get();
 
-		readBody(image);
+		if (!readBody(image))
+		{
+			return false;
+		}
 
 		return true;
 	}
@@ -58,41 +64,19 @@ namespace tga
 		}
 
 		// Read color map.
-		/*
 		if (header.colorMapType == 1)
 		{
 			readColorMap(header);
 		}
-		*/
 
-		// TODO: Clean up type cast.
-		std::cout << "Image type: " << (int) header.imageType << '\n';
-		std::cout << "Image width: " << (int) header.width << '\n';
-		std::cout << "Image height: " << (int) header.height << '\n';
-		std::cout << "Pixel bit depth: " << (int) header.pixelBitDepth << '\n';
-
-		return true;
+		return header.validate();
 	}
 
-	/*
-	void Decoder::readColorMap(Header& header)
+	void Decoder::readColorMap(ImageHeader& header)
 	{
 		header.colorMap = ColorMap{ header.colorMapLength };
-		
-		for (int i = 0; i < header.colorMapLength; ++i)
-		{
-			switch (header.colorMapDepth)
-			{
-				case 15:
-				case 16:
-				case 24:
-					break;
-				case 32:
-					break;
-			}
-		}
+		// TODO: Read color map.
 	}
-	*/
 
 	bool Decoder::readBody(Image& image)
 	{
@@ -123,7 +107,7 @@ namespace tga
 		switch (header.imageType)
 		{
 			case NoImageData:
-				break;
+				return false;
 			case UncompressedColorMapped:
 			case UncompressedGrayscale:
 				readImageUncompressed<uint8_t>(width, height, readPixel);
@@ -144,8 +128,8 @@ namespace tga
 	}
 
 	template<typename T>
-	bool Decoder::readImageUncompressed(const int width,
-										const int height,
+	void Decoder::readImageUncompressed(const unsigned int width,
+										const unsigned int height,
 										color (Decoder::*readPixel)())
 	{
 		for (int y = 0; y < height; ++y)
@@ -153,15 +137,9 @@ namespace tga
 			for (int x = 0; x < width; ++x)
 			{
 				T value = static_cast<T>((this->*readPixel)());
-
-				if (!m_iterator.putPixel<T>(value))
-				{
-					return false;
-				}
+				m_iterator.putPixel<T>(value);
 			}
 		}
-
-		return true;
 	}
 
 	uint8_t Decoder::read8()
@@ -169,7 +147,7 @@ namespace tga
 		return m_file->read8();
 	}
 
-	// Read 16 bits using in little-endian byte ordering.
+	// Read 16 bits using little-endian byte ordering.
 	uint16_t Decoder::read16()
 	{
 		// TODO: List initialize.

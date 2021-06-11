@@ -52,6 +52,29 @@ namespace tga
 				return 5;
 			}
 		}
+
+		bool validate() const
+		{
+			switch (imageType)
+			{
+				case NoImageData:
+					return false;
+				case UncompressedColorMapped:
+				case RunLengthEncodedColorMapped:
+					return (pixelBitDepth == 8);
+				case UncompressedTrueColor:
+				case RunLengthEncodedTrueColor:
+					return (pixelBitDepth == 15
+							|| pixelBitDepth == 16
+							|| pixelBitDepth == 24
+							|| pixelBitDepth == 32);
+				case UncompressedGrayscale:
+				case RunLengthEncodedGrayscale:
+					return (pixelBitDepth == 8);
+			}
+
+			return false;
+		}
 	};
 }
 

@@ -10,28 +10,8 @@ namespace tga
 {
 	typedef std::shared_ptr<KernelSampler> sampler_ptr;
 
-	// TODO: Store some kind of allocator.
-	/*
-	template<typename T>
-	class Foo
+	sampler_ptr KernelSampler::create(const KernelType kernel)
 	{
-		sampler_ptr operator() ()
-		{
-			return sampler_ptr(new T{ 0.0f, 1.0f });
-		}
-	};
-	*/
-
-	sampler_ptr KernelSampler::create(const KernelType kernelType)
-	{
-		/*
-		std::unordered_map<KernelType, Foo<T>> samplerTable
-		{
-			//{ Bicubic, Foo<BicubicSampler>{0.0f, 1.0f} },
-			//{ Lanczos, Foo<LanczosSampler>{1.0f} }
-		};
-		*/
-
 		std::unordered_map<KernelType, sampler_ptr> samplerTable
 		{
 			{ Bicubic,  sampler_ptr(new BicubicSampler{ 0.0f, 1.0f }) },
@@ -46,7 +26,7 @@ namespace tga
 			{ Lanczos5, sampler_ptr(new LanczosSampler{ 5.0f }) }
 		};
 
-		sampler_ptr sampler = samplerTable[kernelType];
+		sampler_ptr sampler = samplerTable[kernel];
 
 		return sampler;
 	}

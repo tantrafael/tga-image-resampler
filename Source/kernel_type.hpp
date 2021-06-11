@@ -3,8 +3,9 @@
 
 namespace tga
 {
-	enum KernelType {
-		//Unknown,
+	enum KernelType
+	{
+		Unknown,
 		Bicubic,
 		Catrom,
 		Mitchell,

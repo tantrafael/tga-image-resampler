@@ -8,20 +8,29 @@ namespace tga
 	{}
 
 	bool Resampler::resample(const Image& sourceImage,
-							 const int destinationWidth,
-							 const int destinationHeight,
-							 const KernelType kernelType,
+							 const unsigned int destinationWidth,
+							 const unsigned int destinationHeight,
+							 const KernelType kernel,
 							 Image& destinationImage)
 	{
+		const bool isValidInput = (destinationWidth > 0
+								   && destinationHeight > 0
+								   && kernel != Unknown);
+
+		if (!isValidInput)
+		{
+			return false;
+		}
+
 		resampleHeader(sourceImage, destinationWidth, destinationHeight, destinationImage);
-		resampleBody(sourceImage, kernelType, destinationImage);
+		resampleBody(sourceImage, kernel, destinationImage);
 
 		return true;
 	}
 
 	void Resampler::resampleHeader(const Image& sourceImage,
-								   const int destinationWidth,
-								   const int destinationHeight,
+								   const unsigned int destinationWidth,
+								   const unsigned int destinationHeight,
 								   Image& destinationImage)
 	{
 		const auto& sourceHeader{ sourceImage.header };
@@ -44,7 +53,7 @@ namespace tga
 	}
 
 	void Resampler::resampleBody(const Image& sourceImage,
-								 const KernelType kernelType,
+								 const KernelType kernel,
 								 Image& destinationImage)
 	{
 		const auto& sourceHeader{ sourceImage.header };
@@ -74,7 +83,7 @@ namespace tga
 		const auto destinationMappingHeight{ static_cast<float>(destinationHeader.height - 1) };
 		const auto mappingRatioY = sourceMappingHeight / destinationMappingHeight;
 
-		const auto sampler = KernelSampler::create(kernelType);
+		const auto sampler = KernelSampler::create(kernel);
 
 		// Horizontal pass, from source image to temporary buffer.
 		resampleDirection(sampler,
@@ -105,11 +114,11 @@ namespace tga
 									  const KernelDirection direction,
 									  const float mappingRatioX,
 									  const float mappingRatioY,
-									  const int inputWidth,
-									  const int inputHeight,
+									  const unsigned int inputWidth,
+									  const unsigned int inputHeight,
 									  uint8_t* const inputPixels,
-									  const int outputWidth,
-									  const int outputHeight,
+									  const unsigned int outputWidth,
+									  const unsigned int outputHeight,
 									  uint8_t* const outputPixels)
 	{
 		for (int outputRow = 0; outputRow < outputHeight; ++outputRow)
@@ -137,12 +146,12 @@ namespace tga
 									 const KernelDirection direction,
 									 const float mappingRatioX,
 									 const float mappingRatioY,
-									 const int outputRow,
-									 const int outputCol,
+									 const unsigned int outputRow,
+									 const unsigned int outputCol,
 									 uint8_t* const inputPixels,
-									 const int inputWidth,
-									 const int inputHeight,
-									 const int outputWidth,
+									 const unsigned int inputWidth,
+									 const unsigned int inputHeight,
+									 const unsigned int outputWidth,
 									 uint8_t* const outputPixels)
 	{
 		// Determine the sub-pixel location of our destination (col, row)
