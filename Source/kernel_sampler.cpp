@@ -3,8 +3,8 @@
 #include <unordered_map>
 
 #include "kernel_type.hpp"
-#include "bicubic.hpp"
-#include "lanczos.hpp"
+#include "bicubic_sampler.hpp"
+#include "lanczos_sampler.hpp"
 
 namespace tga
 {

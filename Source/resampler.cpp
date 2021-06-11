@@ -1,6 +1,6 @@
 #include "resampler.hpp"
 
-#include "helper.hpp"
+#include "resampler_helper.hpp"
 
 namespace tga
 {
@@ -28,11 +28,19 @@ namespace tga
 		return true;
 	}
 
-	void Resampler::resampleHeader(const Image& sourceImage,
+	bool Resampler::resampleHeader(const Image& sourceImage,
 								   const unsigned int destinationWidth,
 								   const unsigned int destinationHeight,
 								   Image& destinationImage)
 	{
+		const bool isValidInput = (destinationWidth > 0
+								   && destinationHeight > 0);
+
+		if (!isValidInput)
+		{
+			return false;
+		}
+
 		const auto& sourceHeader{ sourceImage.header };
 		auto& destinationHeader{ destinationImage.header };
 
@@ -50,12 +58,21 @@ namespace tga
 		destinationHeader.imageDescriptor = sourceHeader.imageDescriptor;
 		destinationHeader.imageId = sourceHeader.imageId;
 		destinationHeader.colorMap = sourceHeader.colorMap;
+
+		return true;
 	}
 
-	void Resampler::resampleBody(const Image& sourceImage,
+	bool Resampler::resampleBody(const Image& sourceImage,
 								 const KernelType kernel,
 								 Image& destinationImage)
 	{
+		const bool isValidInput = (kernel != Unknown);
+
+		if (!isValidInput)
+		{
+			return false;
+		}
+
 		const auto& sourceHeader{ sourceImage.header };
 		const auto& sourceBody{ sourceImage.body };
 		const auto& destinationHeader{ destinationImage.header };
@@ -108,6 +125,8 @@ namespace tga
 						  destinationHeader.width,
 						  destinationHeader.height,
 						  destinationBody.pixels);
+
+		return true;
 	}
 
 	bool Resampler::resampleDirection(const std::shared_ptr<KernelSampler> sampler,

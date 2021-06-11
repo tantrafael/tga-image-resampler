@@ -1,8 +1,6 @@
 #ifndef resampler_hpp
 #define resampler_hpp
 
-#include <math.h>
-
 #include "image.hpp"
 #include "kernel_type.hpp"
 #include "kernel_direction.hpp"
@@ -22,12 +20,12 @@ namespace tga
 					  Image& destinationImage);
 
 	private:
-		void resampleHeader(const Image& sourceImage,
+		bool resampleHeader(const Image& sourceImage,
 							const unsigned int destinationWidth,
 							const unsigned int destinationHeight,
 							Image& destinationImage);
 
-		void resampleBody(const Image& sourceImage,
+		bool resampleBody(const Image& sourceImage,
 						  const KernelType kernel,
 						  Image& destinationImage);
 

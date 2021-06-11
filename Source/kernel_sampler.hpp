@@ -17,8 +17,8 @@ namespace tga
 							const float subPixelPosY,
 							const KernelDirection direction,
 							uint8_t* pixels,
-							const int32_t width,
-							const int32_t height,
+							const unsigned int width,
+							const unsigned int height,
 							float& sampleCount,
 							float (&totalSamples)[3]) = 0;
 

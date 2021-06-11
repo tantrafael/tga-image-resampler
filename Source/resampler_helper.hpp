@@ -1,5 +1,7 @@
-#ifndef helper_hpp
-#define helper_hpp
+#ifndef resampler_helper_hpp
+#define resampler_helper_hpp
+
+#include <math.h>
 
 #include "kernel_direction.hpp"
 
@@ -12,7 +14,7 @@ namespace tga
 		return (input < low) ? low : (input > high) ? high : input;
 	}
 
-	class Helper
+	class ResamplerHelper
 	{
 	public:
 		static bool getSourcePixel(const float subPixelPosX,
@@ -74,4 +76,4 @@ namespace tga
 	};
 }
 
-#endif /* helper_hpp */
+#endif /* resampler_helper_hpp */
