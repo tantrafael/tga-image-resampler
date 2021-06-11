@@ -24,21 +24,14 @@ void printUsage(const char* programName) {
 	printf("     10: Lanczos-5\n");
 }
 
-int main(int argc, const char* argv[])
+void readUserInput(const int argc,
+				   const char* argv[],
+				   std::string& sourceFileName,
+				   std::string& destinationFileName,
+				   uint32_t& outputWidth,
+				   uint32_t& outputHeight,
+				   tga::KernelType& kernel)
 {
-	std::string sourceFileName{};
-	std::string destinationFileName{};
-	uint32_t outputWidth{};
-	uint32_t outputHeight{};
-	tga::KernelType kernel{ tga::Lanczos };
-
-	if (argc <= 1)
-	{
-		printUsage(argv[0]);
-		return 0;
-	}
-
-	// Read user input.
 	for (int i = 1; i < argc; i++)
 	{
 		auto optBegin = argv[i];
@@ -67,6 +60,29 @@ int main(int argc, const char* argv[])
 				break;
 		}
 	}
+}
+
+int main(int argc, const char* argv[])
+{
+	std::string sourceFileName{};
+	std::string destinationFileName{};
+	uint32_t outputWidth{};
+	uint32_t outputHeight{};
+	tga::KernelType kernel{ tga::Lanczos };
+
+	if (argc <= 1)
+	{
+		printUsage(argv[0]);
+		return 0;
+	}
+
+	readUserInput(argc,
+				  argv,
+				  sourceFileName,
+				  destinationFileName,
+				  outputWidth,
+				  outputHeight,
+				  kernel);
 
 	// Read source file.
 	printf("Reading source file.\n");
