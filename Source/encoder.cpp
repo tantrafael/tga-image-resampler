@@ -12,6 +12,7 @@ namespace tga
 	{
 		writeHeader(image);
 		writeBody(image);
+		writeFooter();
 	}
 
 	void Encoder::writeHeader(const Image &image)
@@ -82,7 +83,16 @@ namespace tga
 		}
 	}
 
-	template<typename T>
+	void Encoder::writeFooter()
+	{
+		std::string tga2Footer{ "\0\0\0\0\0\0\0\0TRUEVISION-XFILE.\0" };
+
+		for (int i = 0; i < 26; ++i) {
+			write8(tga2Footer[i]);
+		}
+	}
+
+template<typename T>
 	bool Encoder::writeImageUncompressed(const int width,
 										 const int height,
 										 void (Encoder::*writePixel)(T))

@@ -109,6 +109,7 @@ int main(int argc, const char* argv[])
 	tga::StdioFileInterface destinationFile{ destinationFileName, tga::WriteBinary };
 	tga::Encoder encoder{ &destinationFile };
 	encoder.write(destinationImage);
+
 	destinationFile.close();
 
 	return 0;

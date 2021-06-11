@@ -18,6 +18,7 @@ namespace tga
 	private:
 		void writeHeader(const Image& image);
 		void writeBody(const Image& image);
+		void writeFooter();
 
 		template<typename T>
 		bool writeImageUncompressed(const int width,

@@ -22,11 +22,6 @@ namespace tga
 			return false;
 		}
 
-		/*
-		resampleHeader(sourceImage, destinationWidth, destinationHeight, destinationImage);
-		resampleBody(sourceImage, kernel, destinationImage);
-		*/
-
 		auto headerResamplingResult
 		{
 			resampleHeader(sourceImage,
@@ -40,7 +35,6 @@ namespace tga
 			resampleBody(sourceImage, kernel, destinationImage)
 		};
 
-		//return true;
 		return (headerResamplingResult && bodyResamplingResult);
 	}
 
@@ -118,32 +112,6 @@ namespace tga
 
 		const auto sampler = KernelSampler::create(kernel);
 
-		/*
-		// Horizontal pass, from source image to temporary buffer.
-		resampleDirection(sampler,
-						  Horizontal,
-						  mappingRatioX,
-						  mappingRatioY,
-						  sourceHeader.width,
-						  sourceHeader.height,
-						  sourceBody.pixels,
-						  destinationHeader.width,
-						  sourceHeader.height,
-						  tempBufferPixels);
-
-		// Vertical pass, from temporary buffer to destination image.
-		resampleDirection(sampler,
-						  Vertical,
-						  mappingRatioX,
-						  mappingRatioY,
-						  destinationHeader.width,
-						  sourceHeader.height,
-						  tempBufferPixels,
-						  destinationHeader.width,
-						  destinationHeader.height,
-						  destinationBody.pixels);
-		*/
-
 		// Horizontal pass, from source image to temporary buffer.
 		auto horizontalResamplingResult
 		{
@@ -174,7 +142,6 @@ namespace tga
 							  destinationBody.pixels)
 		};
 
-		//return true;
 		return (horizontalResamplingResult && verticalResamplingResult);
 	}
 
@@ -189,23 +156,25 @@ namespace tga
 									  const unsigned int outputHeight,
 									  uint8_t* const outputPixels)
 	{
+		const bool isValidInput = (sampler != nullptr
+								   && mappingRatioX > 0
+								   && mappingRatioY > 0
+								   && inputWidth > 0
+								   && inputHeight > 0
+								   && inputPixels != nullptr
+								   && outputWidth > 0
+								   && outputHeight > 0
+								   && outputPixels != nullptr);
+
+		if (!isValidInput)
+		{
+			return false;
+		}
+
 		for (int outputRow = 0; outputRow < outputHeight; ++outputRow)
 		{
 			for (int outputCol = 0; outputCol < outputWidth; ++outputCol)
 			{
-				/*
-				resamplePosition(sampler,
-								 direction,
-								 mappingRatioX,
-								 mappingRatioY,
-								 outputRow,
-								 outputCol,
-								 inputPixels,
-								 inputWidth,
-								 inputHeight,
-								 outputWidth,
-								 outputPixels);
-				*/
 				if (!resamplePosition(sampler,
 									  direction,
 									  mappingRatioX,
@@ -269,29 +238,6 @@ namespace tga
 		// specified algorithm in the the current direction.
 		float sampleCount{ 0 };
 		float totalSamples[3]{0, 0, 0};
-
-		/*
-		sampler->sample(subPixelPosX,
-						subPixelPosY,
-						direction,
-						inputPixels,
-						inputWidth,
-						inputHeight,
-						sampleCount,
-						totalSamples);
-
-		 // Normalize our sum back to the valid pixel range.
-		 const float scaleFactor = 1.0f / sampleCount;
-
-		 uint8_t* output = BLOCK_OFFSET_RGB32(outputPixels,
-											  outputWidth,
-											  outputCol,
-											  outputRow);
-
-		 output[0] = clipRange(scaleFactor * totalSamples[0], 0, 255);
-		 output[1] = clipRange(scaleFactor * totalSamples[1], 0, 255);
-		 output[2] = clipRange(scaleFactor * totalSamples[2], 0, 255);
-		 */
 
 		auto samplingResult
 		{
