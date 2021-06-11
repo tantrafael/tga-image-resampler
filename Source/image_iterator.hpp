@@ -15,9 +15,7 @@ namespace tga
 		template<typename T>
 		void putPixel(const T value)
 		{
-			// TODO: Clean up type cast.
-			*((T*)m_ptr) = value;
-			//*static_cast<T*>(m_ptr) = value;
+			*reinterpret_cast<T*>(m_ptr) = value;
 			advance();
 		}
 
@@ -25,9 +23,7 @@ namespace tga
 		template<typename T>
 		T getPixel()
 		{
-			// TODO: Clean up type cast.
-			T value = *((T*)m_ptr);
-			//T value = *static_cast<T*>(m_ptr);
+			T value = *reinterpret_cast<T*>(m_ptr);
 			advance();
 			return value;
 		}
