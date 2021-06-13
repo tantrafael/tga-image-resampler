@@ -13,13 +13,11 @@ namespace tga
 		uint8_t idLength;
 		uint8_t colorMapType;
 		ImageType imageType;
-		uint16_t colorMapOrigin;
-		uint16_t colorMapLength;
+		int colorMapOrigin;
+		int colorMapLength;
 		uint8_t colorMapBitDepth;
-		uint16_t originX;
-		uint16_t originY;
-		//uint16_t width;
-		//uint16_t height;
+		int originX;
+		int originY;
 		int width;
 		int height;
 		uint8_t pixelBitDepth;

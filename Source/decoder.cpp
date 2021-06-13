@@ -114,6 +114,7 @@ namespace tga
 				break;
 			case UncompressedTrueColor:
 				readImageUncompressed<uint32_t>(width, height, readPixel);
+				//readImageUncompressed<unsigned long int>(width, height, readPixel);
 				break;
 			case RunLengthEncodedColorMapped:
 			case RunLengthEncodedGrayscale:
@@ -149,6 +150,7 @@ namespace tga
 
 	// Read 16 bits using little-endian byte ordering.
 	uint16_t Decoder::read16()
+	//int Decoder::read16()
 	{
 		// TODO: List initialize.
 		uint8_t b1 = m_file->read8();
@@ -173,7 +175,7 @@ namespace tga
 
 	color Decoder::read16AsRgb()
 	{
-		const uint16_t v{ read16() };
+		const int v{ read16() };
 		auto a{ 255 };
 
 		if (m_hasAlpha)

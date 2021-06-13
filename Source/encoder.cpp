@@ -72,13 +72,14 @@ namespace tga
 				break;
 			case UncompressedTrueColor:
 				writeImageUncompressed<uint32_t>(width, height, writePixel);
+				//writeImageUncompressed<unsigned long int>(width, height, writePixel);
 				break;
 			case RunLengthEncodedColorMapped:
 			case RunLengthEncodedGrayscale:
-				//readImageRunLengthEncoded<uint8_t>(width, height, readPixel);
+				//writeImageRunLengthEncoded<uint8_t>(width, height, readPixel);
 				break;
 			case RunLengthEncodedTrueColor:
-				//readImageRunLengthEncoded<uint32_t>(width, height, readPixel);
+				//writeImageRunLengthEncoded<uint32_t>(width, height, readPixel);
 				break;
 		}
 	}
@@ -92,7 +93,7 @@ namespace tga
 		}
 	}
 
-template<typename T>
+	template<typename T>
 	bool Encoder::writeImageUncompressed(const int width,
 										 const int height,
 										 void (Encoder::*writePixel)(T))
@@ -114,6 +115,7 @@ template<typename T>
 	}
 
 	void Encoder::write16(uint16_t value)
+	//void Encoder::write16(int value)
 	{
 		// Little endian
 		m_file->write8(value & 0x00FF);

@@ -27,6 +27,7 @@ namespace tga
 
 		void write8(uint8_t value);
 		void write16(uint16_t value);
+		//void write16(int value);
 		void write24AsRgb(color c);
 
 		FileInterface* m_file;

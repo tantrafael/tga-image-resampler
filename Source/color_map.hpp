@@ -12,7 +12,8 @@ namespace tga
 		ColorMap(const int size) : m_color(size) {}
 
 	private:
-		std::vector<uint32_t> m_color;
+		//std::vector<uint_32_t> m_color;
+		std::vector<long int> m_color;
 	};
 }
 

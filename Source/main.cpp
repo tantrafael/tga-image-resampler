@@ -28,8 +28,8 @@ void readUserInput(const int argc,
 				   const char* argv[],
 				   std::string& sourceFileName,
 				   std::string& destinationFileName,
-				   uint32_t& outputWidth,
-				   uint32_t& outputHeight,
+				   int& outputWidth,
+				   int& outputHeight,
 				   tga::KernelType& kernel)
 {
 	for (int i = 1; i < argc; i++)
@@ -66,8 +66,8 @@ int main(int argc, const char* argv[])
 {
 	std::string sourceFileName{};
 	std::string destinationFileName{};
-	uint32_t outputWidth{};
-	uint32_t outputHeight{};
+	int outputWidth{};
+	int outputHeight{};
 	tga::KernelType kernel{ tga::Lanczos };
 
 	if (argc <= 1)

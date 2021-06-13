@@ -31,10 +31,11 @@ namespace tga
 		template<typename T>
 		void readImageUncompressed(const int width,
 								   const int height,
-								   uint32_t (Decoder::*readPixel)());
+								   color (Decoder::*readPixel)());
 
 		uint8_t read8();
 		uint16_t read16();
+		//int read16();
 
 		color read8color();
 		color read16AsRgb();
