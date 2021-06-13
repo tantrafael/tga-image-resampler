@@ -109,13 +109,13 @@ namespace tga
 		return true;
 	}
 
-	void Encoder::write8(uint8_t value)
+	//void Encoder::write8(uint8_t value)
+	void Encoder::write8(int value)
 	{
 		m_file->write8(value);
 	}
 
 	void Encoder::write16(uint16_t value)
-	//void Encoder::write16(int value)
 	{
 		// Little endian
 		m_file->write8(value & 0x00FF);

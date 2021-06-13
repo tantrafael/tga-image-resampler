@@ -3,7 +3,7 @@
 
 namespace tga
 {
-	enum ImageType : uint8_t
+	enum ImageType
 	{
 		NoImageData = 0,
 		UncompressedColorMapped = 1,

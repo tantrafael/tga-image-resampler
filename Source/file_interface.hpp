@@ -30,10 +30,12 @@ namespace tga
 		virtual void seek(size_t absPos) = 0;
 
 		// Returns the next byte in the file or 0 if ok() = false.
-		virtual uint8_t read8() = 0;
+		//virtual uint8_t read8() = 0;
+		virtual int read8() = 0;
 
 		// Writes one byte in the file (or do nothing if ok() = false).
-		virtual void write8(uint8_t value) = 0;
+		//virtual void write8(uint8_t value) = 0;
+		virtual void write8(const int value) = 0;
 
 		// Closes the file.
 		virtual void close() = 0;
