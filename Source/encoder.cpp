@@ -72,7 +72,8 @@ namespace tga
 				break;
 			case UncompressedTrueColor:
 				writeImageUncompressed<uint32_t>(width, height, writePixel);
-				//writeImageUncompressed<unsigned long int>(width, height, writePixel);
+				//writeImageUncompressed<const color>(width, height, writePixel);
+				//writeImageUncompressed<int>(width, height, writePixel);
 				break;
 			case RunLengthEncodedColorMapped:
 			case RunLengthEncodedGrayscale:
@@ -109,20 +110,19 @@ namespace tga
 		return true;
 	}
 
-	//void Encoder::write8(uint8_t value)
 	void Encoder::write8(const int value)
 	{
 		m_file->write8(value);
 	}
 
-	void Encoder::write16(uint16_t value)
+	void Encoder::write16(const int value)
 	{
 		// Little endian
 		m_file->write8(value & 0x00FF);
 		m_file->write8((value & 0xFF00) >> 8);
 	}
 
-	void Encoder::write24AsRgb(color c)
+	void Encoder::write24AsRgb(const color c)
 	{
 		write8(getB(c));
 		write8(getG(c));

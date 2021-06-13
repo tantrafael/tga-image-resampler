@@ -14,12 +14,8 @@ namespace tga
 		bool ok() const override;
 		size_t tell() override;
 		void seek(size_t absPos) override;
-		//uint8_t read8() override;
 		int read8() override;
-		//unsigned char read8() override;
-		//void write8(uint8_t value) override;
 		void write8(const int value) override;
-		//void write8(const unsigned char value) override;
 		void close() override;
 
 	private:

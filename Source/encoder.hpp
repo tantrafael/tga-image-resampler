@@ -25,11 +25,10 @@ namespace tga
 									const int height,
 									void (Encoder::*writePixel)(T));
 
-		//void write8(uint8_t value);
 		void write8(const int value);
-		void write16(uint16_t value);
-		//void write16(int value);
-		void write24AsRgb(color c);
+		//void write16(uint16_t value);
+		void write16(const int value);
+		void write24AsRgb(const color c);
 
 		FileInterface* m_file;
 		ImageIterator m_iterator;

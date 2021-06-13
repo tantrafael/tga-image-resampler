@@ -40,18 +40,16 @@ namespace tga
 		fseek(m_file, static_cast<long>(absPos), SEEK_SET);
 	}
 
-	//uint8_t StdioFileInterface::read8()
-	int StdioFileInterface::read8()
 	//unsigned char StdioFileInterface::read8()
+	int StdioFileInterface::read8()
 	{
 		const int value{ fgetc(m_file) };
 
 		if (value != EOF) {
-			// We can safely cast to uint8_t, as EOF is the only special
+			// We can safely cast to unsigned char, as EOF is the only special
 			// non-uint8 value that fgetc() should return.
-			//return static_cast<uint8_t>(value);
-			//return value;
-			return static_cast<unsigned char>(value);
+			//return static_cast<unsigned char>(value);
+			return value;
 		}
 		else
 		{
@@ -60,7 +58,6 @@ namespace tga
 		}
 	}
 
-	//void StdioFileInterface::write8(uint8_t value)
 	void StdioFileInterface::write8(const int value)
 	//void StdioFileInterface::write8(const unsigned char value)
 	{

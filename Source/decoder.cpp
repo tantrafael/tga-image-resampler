@@ -54,7 +54,6 @@ namespace tga
 		// Read ID string.
 		if (header.idLength > 0)
 		{
-			//uint8_t byte{};
 			int byte{};
 
 			for (int i = 0; i < header.idLength; ++i)
@@ -115,7 +114,6 @@ namespace tga
 				break;
 			case UncompressedTrueColor:
 				readImageUncompressed<uint32_t>(width, height, readPixel);
-				//readImageUncompressed<unsigned long int>(width, height, readPixel);
 				break;
 			case RunLengthEncodedColorMapped:
 			case RunLengthEncodedGrayscale:
@@ -144,15 +142,13 @@ namespace tga
 		}
 	}
 
-	//uint8_t Decoder::read8()
-	int Decoder::read8()
 	//unsigned char Decoder::read8()
+	int Decoder::read8()
 	{
 		return m_file->read8();
 	}
 
 	// Read 16 bits using little-endian byte ordering.
-	//uint16_t Decoder::read16()
 	int Decoder::read16()
 	{
 		// TODO: List initialize.
