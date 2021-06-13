@@ -21,7 +21,7 @@ namespace tga
 		body.pixelByteDepth = header.pixelByteDepth();
 		body.rowStride = header.width * header.pixelByteDepth();
 
-		const unsigned int bufferSize{ body.rowStride * header.height };
+		const long int bufferSize{ body.rowStride * header.height };
 		std::unique_ptr<uint8_t[]> buffer(new uint8_t[bufferSize]);
 		body.pixels = buffer.get();
 
@@ -128,8 +128,8 @@ namespace tga
 	}
 
 	template<typename T>
-	void Decoder::readImageUncompressed(const unsigned int width,
-										const unsigned int height,
+	void Decoder::readImageUncompressed(const int width,
+										const int height,
 										color (Decoder::*readPixel)())
 	{
 		for (int y = 0; y < height; ++y)

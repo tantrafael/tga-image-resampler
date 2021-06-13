@@ -7,7 +7,8 @@ namespace tga
 	{
 		uint8_t* pixels;
 		uint32_t pixelByteDepth;
-		uint32_t rowStride;
+		//uint32_t rowStride;
+		long int rowStride;
 	};
 }
 

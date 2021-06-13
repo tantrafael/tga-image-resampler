@@ -8,8 +8,8 @@ namespace tga
 	{}
 
 	bool Resampler::resample(const Image& sourceImage,
-							 const unsigned int destinationWidth,
-							 const unsigned int destinationHeight,
+							 const int destinationWidth,
+							 const int destinationHeight,
 							 const KernelType kernel,
 							 Image& destinationImage)
 	{
@@ -39,8 +39,8 @@ namespace tga
 	}
 
 	bool Resampler::resampleHeader(const Image& sourceImage,
-								   const unsigned int destinationWidth,
-								   const unsigned int destinationHeight,
+								   const int destinationWidth,
+								   const int destinationHeight,
 								   Image& destinationImage)
 	{
 		const bool isValidInput = (destinationWidth > 0
@@ -149,11 +149,11 @@ namespace tga
 									  const ResamplingDirection direction,
 									  const float mappingRatioX,
 									  const float mappingRatioY,
-									  const unsigned int inputWidth,
-									  const unsigned int inputHeight,
+									  const int inputWidth,
+									  const int inputHeight,
 									  uint8_t* const inputPixels,
-									  const unsigned int outputWidth,
-									  const unsigned int outputHeight,
+									  const int outputWidth,
+									  const int outputHeight,
 									  uint8_t* const outputPixels)
 	{
 		const bool isValidInput = (sampler != nullptr
@@ -199,18 +199,23 @@ namespace tga
 									 const ResamplingDirection direction,
 									 const float mappingRatioX,
 									 const float mappingRatioY,
-									 const unsigned int outputRow,
-									 const unsigned int outputCol,
+									 const int outputRow,
+									 const int outputCol,
 									 uint8_t* const inputPixels,
-									 const unsigned int inputWidth,
-									 const unsigned int inputHeight,
-									 const unsigned int outputWidth,
+									 const int inputWidth,
+									 const int inputHeight,
+									 const int outputWidth,
 									 uint8_t* const outputPixels)
 	{
 		const bool isValidInput = (sampler != nullptr
 								   && mappingRatioX > 0
 								   && mappingRatioY > 0
+								   && outputRow >= 0
+								   && outputCol >= 0
 								   && inputPixels != nullptr
+								   && inputWidth > 0
+								   && inputHeight > 0
+								   && outputWidth > 0
 								   && outputPixels != nullptr);
 
 		if (!isValidInput)

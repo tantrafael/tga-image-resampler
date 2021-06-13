@@ -29,8 +29,8 @@ namespace tga
 		void readColorMap(ImageHeader& header);
 
 		template<typename T>
-		void readImageUncompressed(const unsigned int width,
-								   const unsigned int height,
+		void readImageUncompressed(const int width,
+								   const int height,
 								   uint32_t (Decoder::*readPixel)());
 
 		uint8_t read8();
