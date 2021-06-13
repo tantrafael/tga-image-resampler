@@ -21,7 +21,7 @@ namespace tga
 		body.pixelByteDepth = header.pixelByteDepth();
 		body.rowStride = header.width * header.pixelByteDepth();
 
-		const long int bufferSize{ body.rowStride * header.height };
+		const auto bufferSize{ body.rowStride * header.height };
 		std::unique_ptr<uint8_t[]> buffer(new uint8_t[bufferSize]);
 		body.pixels = buffer.get();
 
@@ -54,11 +54,9 @@ namespace tga
 		// Read ID string.
 		if (header.idLength > 0)
 		{
-			int byte{};
-
 			for (int i = 0; i < header.idLength; ++i)
 			{
-				byte = m_file->read8();
+				const auto byte{ m_file->read8() };
 				header.imageId.push_back(byte);
 			}
 		}
@@ -136,13 +134,13 @@ namespace tga
 		{
 			for (int x = 0; x < width; ++x)
 			{
-				T value = static_cast<T>((this->*readPixel)());
-				m_iterator.putPixel<T>(value);
+				const auto colorValue{ (this->*readPixel)() };
+				const auto pixelValue{ static_cast<T>(colorValue) };
+				m_iterator.putPixel<T>(pixelValue);
 			}
 		}
 	}
 
-	//unsigned char Decoder::read8()
 	int Decoder::read8()
 	{
 		return m_file->read8();
@@ -151,9 +149,8 @@ namespace tga
 	// Read 16 bits using little-endian byte ordering.
 	int Decoder::read16()
 	{
-		// TODO: List initialize.
-		const auto b1 = m_file->read8();
-		const auto b2 = m_file->read8();
+		const auto b1{ m_file->read8() };
+		const auto b2{ m_file->read8() };
 
 		if (m_file->ok())
 		{

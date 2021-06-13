@@ -6,7 +6,6 @@
 namespace tga
 {
 	typedef uint32_t color;
-	//typedef unsigned long int color;
 	//typedef long int color;
 
 	const color colorRShift{ 0 };
@@ -19,12 +18,12 @@ namespace tga
 	const color colorRgbMask{ 0x00ffffff };
 	const color colorAMask{ 0xff000000 };
 
-	inline uint8_t getR(color c) { return (c >> colorRShift) & 0xff; }
-	inline uint8_t getG(color c) { return (c >> colorGShift) & 0xff; }
-	inline uint8_t getB(color c) { return (c >> colorBShift) & 0xff; }
-	inline uint8_t getA(color c) { return (c >> colorAShift) & 0xff; }
+	inline int getR(color c) { return (c >> colorRShift) & 0xff; }
+	inline int getG(color c) { return (c >> colorGShift) & 0xff; }
+	inline int getB(color c) { return (c >> colorBShift) & 0xff; }
+	inline int getA(color c) { return (c >> colorAShift) & 0xff; }
 
-	inline color rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255)
+	inline color rgba(const int r, const int g, const int b, const int a = 255)
 	{
 		return
 		(

@@ -23,11 +23,12 @@ namespace tga
 		template<typename T>
 		bool writeImageUncompressed(const int width,
 									const int height,
-									void (Encoder::*writePixel)(T));
+									void (Encoder::*writePixel)(color));
 
 		void write8(const int value);
-		//void write16(uint16_t value);
 		void write16(const int value);
+
+		void write8color(const color c);
 		void write24AsRgb(const color c);
 
 		FileInterface* m_file;

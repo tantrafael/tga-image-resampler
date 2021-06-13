@@ -48,17 +48,17 @@ namespace tga
 		switch (header.pixelBitDepth)
 		{
 			case 8:
-				//writePixel = &Encoder::read8color;
+				writePixel = &Encoder::write8color;
 				break;
 			case 15:
 			case 16:
-				//writePixel = &Encoder::read16AsRgb;
+				//writePixel = &Encoder::write16AsRgb;
 				break;
 			case 24:
 				writePixel = &Encoder::write24AsRgb;
 				break;
 			case 32:
-				//writePixel = &Encoder::read32AsRgb;
+				//writePixel = &Encoder::write32AsRgb;
 				break;
 		}
 
@@ -68,19 +68,17 @@ namespace tga
 				break;
 			case UncompressedColorMapped:
 			case UncompressedGrayscale:
-				//writeImageUncompressed<uint8_t>(width, height, writePixel);
+				writeImageUncompressed<uint8_t>(width, height, writePixel);
 				break;
 			case UncompressedTrueColor:
 				writeImageUncompressed<uint32_t>(width, height, writePixel);
-				//writeImageUncompressed<const color>(width, height, writePixel);
-				//writeImageUncompressed<int>(width, height, writePixel);
 				break;
 			case RunLengthEncodedColorMapped:
 			case RunLengthEncodedGrayscale:
-				//writeImageRunLengthEncoded<uint8_t>(width, height, readPixel);
+				//writeImageRunLengthEncoded<uint8_t>(width, height, writePixel);
 				break;
 			case RunLengthEncodedTrueColor:
-				//writeImageRunLengthEncoded<uint32_t>(width, height, readPixel);
+				//writeImageRunLengthEncoded<uint32_t>(width, height, writePixel);
 				break;
 		}
 	}
@@ -97,13 +95,15 @@ namespace tga
 	template<typename T>
 	bool Encoder::writeImageUncompressed(const int width,
 										 const int height,
-										 void (Encoder::*writePixel)(T))
+										 void (Encoder::*writePixel)(color))
 	{
 		for (int y = 0; y < height; ++y)
 		{
 			for (int x = 0; x < width; ++x)
 			{
-				(this->*writePixel)(m_iterator.getPixel<T>());
+				const auto pixelValue{ m_iterator.getPixel<T>() };
+				const auto colorValue{ static_cast<color>(pixelValue) };
+				(this->*writePixel)(colorValue);
 			}
 		}
 
@@ -120,6 +120,11 @@ namespace tga
 		// Little endian
 		m_file->write8(value & 0x00FF);
 		m_file->write8((value & 0xFF00) >> 8);
+	}
+
+	void Encoder::write8color(const color c)
+	{
+		write8(static_cast<uint8_t>(c));
 	}
 
 	void Encoder::write24AsRgb(const color c)

@@ -10,7 +10,7 @@
 
 namespace tga
 {
-	static inline uint8_t scale5BitsTo8Bits(uint8_t v)
+	static inline int scale5BitsTo8Bits(int v)
 	{
 		assert(v >= 0 && v < 32);
 		return (v << 3) | (v >> 2);
