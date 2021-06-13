@@ -10,29 +10,18 @@ namespace tga
 {
 	struct ImageHeader
 	{
-		//uint8_t idLength;
 		int idLength;
-		//uint8_t colorMapType;
 		int colorMapType;
 		ImageType imageType;
-		//uint16_t colorMapOrigin;
-		uint16_t colorMapOrigin;
-		//uint16_t colorMapLength;
-		uint16_t colorMapLength;
-		//uint8_t colorMapBitDepth;
-		uint8_t colorMapBitDepth;
-		//uint16_t originX;
-		uint16_t originX;
-		//uint16_t originY;
-		uint16_t originY;
-		//uint16_t width;
-		uint16_t width;
-		//uint16_t height;
-		uint16_t height;
-		//uint8_t pixelBitDepth;
+		int colorMapOrigin;
+		int colorMapLength;
+		int colorMapBitDepth;
+		int originX;
+		int originY;
+		int width;
+		int height;
 		int pixelBitDepth;
-		//uint8_t imageDescriptor;
-		uint8_t imageDescriptor;
+		int imageDescriptor;
 		std::string imageId;
 		ColorMap colorMap;
 

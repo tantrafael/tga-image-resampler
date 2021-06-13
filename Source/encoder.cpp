@@ -110,7 +110,7 @@ namespace tga
 	}
 
 	//void Encoder::write8(uint8_t value)
-	void Encoder::write8(int value)
+	void Encoder::write8(const int value)
 	{
 		m_file->write8(value);
 	}

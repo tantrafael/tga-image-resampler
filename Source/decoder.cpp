@@ -54,7 +54,8 @@ namespace tga
 		// Read ID string.
 		if (header.idLength > 0)
 		{
-			uint8_t byte{};
+			//uint8_t byte{};
+			int byte{};
 
 			for (int i = 0; i < header.idLength; ++i)
 			{
@@ -145,16 +146,18 @@ namespace tga
 
 	//uint8_t Decoder::read8()
 	int Decoder::read8()
+	//unsigned char Decoder::read8()
 	{
 		return m_file->read8();
 	}
 
 	// Read 16 bits using little-endian byte ordering.
-	uint16_t Decoder::read16()
+	//uint16_t Decoder::read16()
+	int Decoder::read16()
 	{
 		// TODO: List initialize.
-		uint8_t b1 = m_file->read8();
-		uint8_t b2 = m_file->read8();
+		const auto b1 = m_file->read8();
+		const auto b2 = m_file->read8();
 
 		if (m_file->ok())
 		{

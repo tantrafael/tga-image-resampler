@@ -42,6 +42,7 @@ namespace tga
 
 	//uint8_t StdioFileInterface::read8()
 	int StdioFileInterface::read8()
+	//unsigned char StdioFileInterface::read8()
 	{
 		const int value{ fgetc(m_file) };
 
@@ -49,7 +50,8 @@ namespace tga
 			// We can safely cast to uint8_t, as EOF is the only special
 			// non-uint8 value that fgetc() should return.
 			//return static_cast<uint8_t>(value);
-			return value;
+			//return value;
+			return static_cast<unsigned char>(value);
 		}
 		else
 		{
@@ -60,6 +62,7 @@ namespace tga
 
 	//void StdioFileInterface::write8(uint8_t value)
 	void StdioFileInterface::write8(const int value)
+	//void StdioFileInterface::write8(const unsigned char value)
 	{
 		fputc(value, m_file);
 	}

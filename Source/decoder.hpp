@@ -35,7 +35,9 @@ namespace tga
 
 		//uint8_t read8();
 		int read8();
-		uint16_t read16();
+		//unsigned char read8();
+		//uint16_t read16();
+		int read16();
 
 		color read8color();
 		color read16AsRgb();
