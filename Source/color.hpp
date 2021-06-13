@@ -5,8 +5,7 @@
 
 namespace tga
 {
-	typedef uint32_t color;
-	//typedef long int color;
+	typedef long color;
 
 	const color colorRShift{ 0 };
 	const color colorGShift{ 8 };

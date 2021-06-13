@@ -46,9 +46,9 @@ namespace tga
 	}
 
 	void ResamplerHelper::accumulateSamples(const uint8_t* const sourcePixel,
-								  const float weight,
-								  float (&totalSamples)[3],
-								  float& sampleCount)
+											const float weight,
+											float (&totalSamples)[3],
+											float& sampleCount)
 	{
 		// Accumulate weighted samples from the source.
 		totalSamples[0] += sourcePixel[0] * weight;

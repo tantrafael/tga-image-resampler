@@ -37,7 +37,6 @@ namespace tga
 	{
 		auto& header{ image.header };
 
-		// TODO: Make sure to start at beginning of file.
 		header.idLength = read8();
 		header.colorMapType = read8();
 		header.imageType = static_cast<ImageType>(read8());

@@ -29,9 +29,12 @@ namespace tga
 		void write16(const int value);
 
 		void write8color(const color c);
+		void write16AsRgb(const color c);
 		void write24AsRgb(const color c);
+		void write32AsRgb(const color c);
 
 		FileInterface* m_file;
+		bool m_hasAlpha;
 		ImageIterator m_iterator;
 	};
 }

@@ -6,6 +6,8 @@ namespace tga
 {
 	Encoder::Encoder(FileInterface* file)
 		: m_file{ file }
+		, m_hasAlpha{ false }
+		, m_iterator{}
 	{}
 
 	void Encoder::write(const Image& image)
@@ -32,6 +34,9 @@ namespace tga
 		write8(header.pixelBitDepth);
 		write8(header.imageDescriptor);
 
+		m_hasAlpha = (header.pixelBitDepth == 16
+					  || header.pixelBitDepth == 32);
+
 		assert(header.colorMapLength == 0);
 	}
 
@@ -39,7 +44,6 @@ namespace tga
 	{
 		m_iterator = ImageIterator{ const_cast<Image&>(image) };
 
-		//const ImageHeader* const header{ &image.header };
 		const auto& header{ image.header };
 		const auto& width{ header.width };
 		const auto& height{ header.height };
@@ -52,13 +56,13 @@ namespace tga
 				break;
 			case 15:
 			case 16:
-				//writePixel = &Encoder::write16AsRgb;
+				writePixel = &Encoder::write16AsRgb;
 				break;
 			case 24:
 				writePixel = &Encoder::write24AsRgb;
 				break;
 			case 32:
-				//writePixel = &Encoder::write32AsRgb;
+				writePixel = &Encoder::write32AsRgb;
 				break;
 		}
 
@@ -124,7 +128,23 @@ namespace tga
 
 	void Encoder::write8color(const color c)
 	{
-		write8(static_cast<uint8_t>(c));
+		write8(static_cast<int>(c));
+	}
+
+	void Encoder::write16AsRgb(const color c)
+	{
+		const auto r{ getR(c) };
+		const auto g{ getG(c) };
+		const auto b{ getB(c) };
+		const auto a{ getA(c) };
+
+		const auto value = (((r>>3) << 10)
+							| ((g>>3) << 5)
+							| ((b>>3))
+							| (m_hasAlpha && a >= 128 ? 0x8000 : 0)
+							);
+
+		write16(value);
 	}
 
 	void Encoder::write24AsRgb(const color c)
@@ -132,5 +152,13 @@ namespace tga
 		write8(getB(c));
 		write8(getG(c));
 		write8(getR(c));
+	}
+
+	void Encoder::write32AsRgb(const color c)
+	{
+		write8(getB(c));
+		write8(getG(c));
+		write8(getR(c));
+		write8(getA(c));
 	}
 }
