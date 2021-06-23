@@ -1,7 +1,11 @@
 #include "lanczos_sampler.hpp"
 
+#include <cmath>
+
 namespace tga
 {
+	constexpr auto pi{ 3.14159265358979323846 };
+
 	inline float sinc(const float x)
 	{
 		if (x == 0.0f)
@@ -9,7 +13,7 @@ namespace tga
 			return 1.0f;
 		}
 
-		return sin(M_PI * x) / (M_PI * x);
+		return std::sin(pi * x) / (pi * x);
 	}
 
 	inline float lanczosWeight(const float coeffA, const float distance)

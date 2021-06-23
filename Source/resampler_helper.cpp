@@ -1,5 +1,7 @@
 #include "resampler_helper.hpp"
 
+#include <cmath>
+
 namespace tga
 {
 	bool ResamplerHelper::getSourcePixel(const float subPixelPosX,
@@ -39,7 +41,7 @@ namespace tga
 			return false;
 		}
 
-		distance = fabs(delta);
+		distance = std::fabs(delta);
 		sourcePixel = BLOCK_OFFSET_RGB32(pixels, width, samplePosX, samplePosY);
 
 		return true;

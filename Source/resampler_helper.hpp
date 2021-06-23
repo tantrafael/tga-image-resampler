@@ -1,7 +1,7 @@
 #ifndef resampler_helper_hpp
 #define resampler_helper_hpp
 
-#include <math.h>
+#include <cstdint>
 
 #include "resampling_direction.hpp"
 

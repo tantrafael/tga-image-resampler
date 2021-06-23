@@ -1,8 +1,8 @@
 #ifndef image_hpp
 #define image_hpp
 
-#import "image_header.hpp"
-#import "image_body.hpp"
+#include "image_header.hpp"
+#include "image_body.hpp"
 
 namespace tga
 {
