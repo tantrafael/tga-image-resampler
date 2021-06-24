@@ -32,7 +32,8 @@ namespace tga
 		bool advance();
 		void calcPtr();
 
-		ImageBody* m_body;
+		//ImageBody* m_body;
+		Image* m_image;
 		int m_x, m_y;
 		int m_w, m_h;
 		int m_dx, m_dy;

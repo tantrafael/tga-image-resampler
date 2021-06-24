@@ -15,15 +15,12 @@ namespace tga
 			return false;
 		}
 
-		const auto& header{ image.header };
-		auto& body{ image.body };
+		image.pixelByteDepth = image.getPixelByteDepth();
+		image.rowStride = image.width * image.pixelByteDepth;
 
-		body.pixelByteDepth = header.pixelByteDepth();
-		body.rowStride = header.width * header.pixelByteDepth();
-
-		const auto bufferSize{ body.rowStride * header.height };
+		const auto bufferSize{ image.rowStride * image.height };
 		std::unique_ptr<uint8_t[]> buffer(new uint8_t[bufferSize]);
-		body.pixels = buffer.get();
+		image.pixels = buffer.get();
 
 		if (!readBody(image))
 		{
@@ -35,43 +32,41 @@ namespace tga
 
 	bool Decoder::readHeader(Image& image)
 	{
-		auto& header{ image.header };
-
-		header.idLength = read8();
-		header.colorMapType = read8();
-		header.imageType = static_cast<ImageType>(read8());
-		header.colorMapOrigin = read16();
-		header.colorMapLength = read16();
-		header.colorMapBitDepth = read8();
-		header.originX = read16();
-		header.originY = read16();
-		header.width = read16();
-		header.height = read16();
-		header.pixelBitDepth = read8();
-		header.imageDescriptor = read8();
+		image.idLength = read8();
+		image.colorMapType = read8();
+		image.imageType = static_cast<ImageType>(read8());
+		image.colorMapOrigin = read16();
+		image.colorMapLength = read16();
+		image.colorMapBitDepth = read8();
+		image.originX = read16();
+		image.originY = read16();
+		image.width = read16();
+		image.height = read16();
+		image.pixelBitDepth = read8();
+		image.imageDescriptor = read8();
 
 		// Read ID string.
-		if (header.idLength > 0)
+		if (image.idLength > 0)
 		{
-			for (int i = 0; i < header.idLength; ++i)
+			for (int i = 0; i < image.idLength; ++i)
 			{
 				const auto byte{ m_file->read8() };
-				header.imageId.push_back(byte);
+				image.imageId.push_back(byte);
 			}
 		}
 
 		// Read color map.
-		if (header.colorMapType == 1)
+		if (image.colorMapType == 1)
 		{
-			readColorMap(header);
+			readColorMap(image);
 		}
 
-		return header.validate();
+		return image.validate();
 	}
 
-	void Decoder::readColorMap(ImageHeader& header)
+	void Decoder::readColorMap(Image& image)
 	{
-		header.colorMap = ColorMap{ header.colorMapLength };
+		image.colorMap = ColorMap{ image.colorMapLength };
 		// TODO: Read color map.
 	}
 
@@ -79,12 +74,12 @@ namespace tga
 	{
 		m_iterator = ImageIterator{ image };
 
-		const auto& header{ image.header };
-		const auto& width{ header.width };
-		const auto& height{ header.height };
+		//const auto& header{ image.header };
+		const auto& width{ image.width };
+		const auto& height{ image.height };
 		color (Decoder::*readPixel)(){};
 
-		switch (header.pixelBitDepth)
+		switch (image.pixelBitDepth)
 		{
 			case 8:
 				readPixel = &Decoder::read8color;
@@ -101,7 +96,7 @@ namespace tga
 				break;
 		}
 
-		switch (header.imageType)
+		switch (image.imageType)
 		{
 			case NoImageData:
 				return false;

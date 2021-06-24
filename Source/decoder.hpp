@@ -26,7 +26,7 @@ namespace tga
 	private:
 		bool readHeader(Image& image);
 		bool readBody(Image& image);
-		void readColorMap(ImageHeader& header);
+		void readColorMap(Image& image);
 
 		template<typename T>
 		void readImageUncompressed(const int width,

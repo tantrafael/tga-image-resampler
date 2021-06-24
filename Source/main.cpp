@@ -99,9 +99,9 @@ int main(int argc, const char* argv[])
 
 	sourceFile.close();
 
-	printf("TGA image type: %i.\n", sourceImage.header.imageType);
-	printf("Dimensions: %ix%i px.\n", sourceImage.header.width, sourceImage.header.height);
-	printf("Pixel bit depth: %i.\n", sourceImage.header.pixelBitDepth);
+	printf("TGA image type: %i.\n", sourceImage.imageType);
+	printf("Dimensions: %ix%i px.\n", sourceImage.width, sourceImage.height);
+	printf("Pixel bit depth: %i.\n", sourceImage.pixelBitDepth);
 
 	// Resample image.
 	printf("Resampling image using kernel %i, destination dimensions %ix%i px.\n",
